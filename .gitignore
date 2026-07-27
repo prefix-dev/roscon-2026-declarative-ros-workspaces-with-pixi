@@ -1,0 +1,28 @@
+# Pixi environments and build directories (also inside exercises/ and solutions/)
+.pixi/
+**/.pixi/
+
+# Zensical output
+site/
+.zensical/
+
+# Slidev
+node_modules/
+slides/dist/
+
+# Python build artifacts, left behind by setuptools during a package build
+__pycache__/
+*.egg-info/
+*.py[cod]
+
+# colcon leftovers, in case someone brings their own workspace
+build/
+install/
+log/
+
+# Built conda packages
+*.conda
+output/
+
+# OS
+.DS_Store

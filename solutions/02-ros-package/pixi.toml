@@ -1,0 +1,75 @@
+# Solution to Exercise 2 — Build a ROS package with Pixi.
+#
+# `turtle_dancer` is a normal ROS 2 package with a normal package.xml. What is
+# different is that Pixi builds and installs it: no colcon, no
+# `source install/setup.bash`.
+#
+#     pixi run sim      # in one terminal
+#     pixi run dance    # in another — the node is built on demand
+#
+# The `cuda` environment shows how to declare GPU support for the platforms
+# that can have a GPU, while the default environment stays buildable
+# everywhere.
+
+[workspace]
+name = "turtle-dancer-workspace"
+description = "A ROS 2 package built and installed by Pixi"
+channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
+version = "0.1.0"
+preview = ["pixi-build"]
+
+# A platform entry can be more than a name: `linux-64-gpu` is still linux-64,
+# but the solver may assume the machine reports `__cuda >= 12.0`.
+#
+# Because these are the *workspace* platforms, the default environment is
+# solved for `linux-64-gpu` too. That is intentional: on a Linux machine with a
+# GPU, the default environment picks the CUDA-capable builds by itself.
+platforms = [
+  "linux-64",
+  "osx-arm64",
+  "win-64",
+  { name = "linux-64-gpu", platform = "linux-64", cuda = "12.0" },
+]
+
+[dependencies]
+# Our own package, built from source by the pixi-build-ros backend. The name is
+# the package.xml name, prefixed with the ROS distro.
+ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }
+# What we need to run it.
+ros-jazzy-ros2run = ">=0.32"
+ros-jazzy-ros2topic = ">=0.32"
+ros-jazzy-turtlesim = ">=1.8"
+
+[tasks.sim]
+cmd = "ros2 run turtlesim turtlesim_node"
+description = "Start the turtlesim window"
+
+# `dance` is the console script from setup.py. Pixi installed our package into
+# the environment, so the node is simply a program on PATH.
+#
+# NOTE: `ros2 run turtle_dancer dance` does *not* work here — see
+# docs/exercises/02-ros-package.md for why.
+[tasks.dance]
+cmd = "dance"
+description = "Run our own package — Pixi builds it first if the source changed"
+
+[tasks.test]
+cmd = "python -c \"import turtle_dancer.dance as d; assert d.main; print('turtle_dancer: ok')\""
+description = "Prove the package was built and installed"
+
+# ---------------------------------------------------------------------------
+# CUDA
+#
+# Only Linux machines in this workshop can have an NVIDIA GPU, so the feature
+# is restricted to those platforms. Declaring `cuda` on the platform tells the
+# solver to assume a machine that reports `__cuda >= 12`, whether or not this
+# machine has one.
+# ---------------------------------------------------------------------------
+[feature.cuda]
+platforms = ["linux-64-gpu"]
+
+[feature.cuda.dependencies]
+cuda-version = ">=12.0"
+
+[environments]
+cuda = { features = ["cuda"] }

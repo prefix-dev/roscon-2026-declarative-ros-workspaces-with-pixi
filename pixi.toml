@@ -1,0 +1,89 @@
+[workspace]
+name = "roscon-2026-declarative-ros-workspaces-with-pixi"
+description = "ROSCon 2026 workshop: Declarative ROS workspaces with Pixi and RoboStack"
+authors = [
+  "Ruben Arts <ruben@prefix.dev>",
+  "Wolf Vollprecht <wolf@prefix.dev>",
+  "Bas Zalmstra <bas@prefix.dev>",
+]
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
+version = "0.1.0"
+
+# This workspace only builds the *workshop materials* (docs site + slides).
+# The ROS workspaces the participants work in live in `exercises/` and
+# `solutions/`, each with their own `pixi.toml`.
+[dependencies]
+zensical = ">=0.0.51,<0.0.52"
+nodejs = ">=22"
+
+[feature.lint.dependencies]
+pre-commit = ">=4"
+
+# Defined on the feature, not at the top level, so `pixi run lint` always picks
+# the environment that actually has pre-commit in it.
+[feature.lint.tasks.lint]
+cmd = "pre-commit run --all-files"
+description = "Run the formatters and linters over the whole repository"
+
+[environments]
+lint = { features = ["lint"], no-default-feature = true }
+
+# ---------------------------------------------------------------------------
+# Docs site (Zensical)
+# ---------------------------------------------------------------------------
+[tasks.docs]
+cmd = "zensical serve"
+description = "Serve the docs site locally with live reload"
+
+[tasks.build-docs]
+cmd = "zensical build --strict"
+description = "Build the docs site into site/"
+
+# ---------------------------------------------------------------------------
+# Slides (Slidev)
+# ---------------------------------------------------------------------------
+[tasks.slides-install]
+cmd = "npm install"
+cwd = "slides"
+description = "Install the Slidev dependencies"
+inputs = ["slides/package.json", "slides/package-lock.json"]
+
+[tasks.slides]
+cmd = "npx slidev --open"
+cwd = "slides"
+depends-on = ["slides-install"]
+description = "Present the slides locally"
+
+[tasks.build-slides]
+cmd = "npx slidev build --out ../site/slides --base /roscon-2026-declarative-ros-workspaces-with-pixi/slides/"
+cwd = "slides"
+depends-on = ["slides-install"]
+description = "Build the slides into site/slides/"
+
+[tasks.build]
+depends-on = ["build-docs", "build-slides"]
+description = "Build the full site: docs + slides"
+
+# ---------------------------------------------------------------------------
+# Exercise solutions
+#
+# Every solution is a standalone Pixi workspace. `lock-solutions` proves that
+# all of them still resolve on every platform we promise to support, which is
+# the cheap check we run on every pull request.
+# ---------------------------------------------------------------------------
+[tasks.lock-solution-01]
+cmd = "pixi lock --manifest-path solutions/01-ros-workspace/pixi.toml"
+description = "Re-solve solution 01"
+
+[tasks.lock-solution-02]
+cmd = "pixi lock --manifest-path solutions/02-ros-package/pixi.toml"
+description = "Re-solve solution 02"
+
+[tasks.lock-solution-03]
+cmd = "pixi lock --manifest-path solutions/03-collaboration/pixi.toml"
+description = "Re-solve solution 03"
+
+[tasks.lock-solutions]
+depends-on = ["lock-solution-01", "lock-solution-02", "lock-solution-03"]
+description = "Re-solve every solution workspace for all platforms"

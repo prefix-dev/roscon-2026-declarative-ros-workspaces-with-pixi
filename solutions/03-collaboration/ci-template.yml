@@ -1,0 +1,72 @@
+# A GitHub Actions workflow to copy into your own ROS project.
+#
+# Not active in this repository — GitHub only runs workflows from
+# `.github/workflows/`. The live version of this, running against all three
+# solutions, is in `.github/workflows/ci.yml` at the root of this repository.
+#
+# Copy this file to `.github/workflows/ci.yml` in your project and adjust the
+# environment names.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # The cheap gate: did somebody change pixi.toml and forget to commit the
+  # lockfile? This takes seconds and catches the most common mistake.
+  lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          run-install: false
+      - run: pixi lock --check
+
+  # The real check: install and run on every platform the team uses.
+  test:
+    needs: lockfile
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            environment: default
+          - os: ubuntu-24.04-arm
+            environment: default
+          - os: macos-latest
+            environment: default
+          - os: windows-latest
+            environment: default
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          environments: ${{ matrix.environment }}
+          # Install exactly what the lockfile says, and fail if it is stale.
+          locked: true
+      - name: Run the tests
+        run: pixi run -e ${{ matrix.environment }} test
+
+  # Build the conda package and publish it to a channel. Only from main.
+  publish:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          run-install: false
+      - name: Publish to prefix.dev
+        env:
+          PREFIX_API_KEY: ${{ secrets.PREFIX_API_KEY }}
+        run: pixi publish --to https://prefix.dev/your-channel

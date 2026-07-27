@@ -1,0 +1,24 @@
+# Run with `pixi run lint`.
+exclude: ^(slides/package-lock\.json|.*\.lock)$
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: check-toml
+      - id: mixed-line-ending
+
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.29.4
+    hooks:
+      - id: typos
+        args: []
+
+  - repo: https://github.com/ComPWA/taplo-pre-commit
+    rev: v0.9.3
+    hooks:
+      - id: taplo-format

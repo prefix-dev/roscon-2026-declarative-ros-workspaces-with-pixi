@@ -1,0 +1,38 @@
+# Exercise 3 — starting point.
+#
+# This is where Exercise 2 left off: Pixi builds the ROS package, and it works
+# on your machine. Now make it work for everyone else's.
+#
+# Your job:
+#   1. Add every platform your team uses.
+#   2. Add a named target for the robot — aarch64 with CUDA.
+#   3. Turn on CI.
+#   4. Publish the package to a channel.
+#
+# Instructions: https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/03-collaboration/
+
+[workspace]
+name = "turtle-dancer-team"
+description = "A ROS 2 workspace that works on exactly one machine"
+channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
+platforms = ["osx-arm64"]
+version = "0.1.0"
+preview = ["pixi-build"]
+
+[dependencies]
+ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }
+ros-jazzy-ros2run = ">=0.32"
+ros-jazzy-ros2topic = ">=0.32"
+ros-jazzy-turtlesim = ">=1.8"
+
+[tasks.sim]
+cmd = "ros2 run turtlesim turtlesim_node"
+description = "Start the turtlesim window"
+
+[tasks.dance]
+cmd = "dance"
+description = "Run the node"
+
+[tasks.test]
+cmd = "python -c \"import turtle_dancer.dance as d; assert d.main; print('turtle_dancer: ok')\""
+description = "Prove the package was built and installed"

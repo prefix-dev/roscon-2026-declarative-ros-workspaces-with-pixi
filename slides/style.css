@@ -1,0 +1,103 @@
+/* prefix.dev brand colors — matching the docs site */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --prefix-navy: #001838;
+  --prefix-yellow: #ffd432;
+  --prefix-red: #ff6a38;
+  --prefix-blue: #5773ff;
+  --prefix-green: #70c038;
+  --prefix-white: #f8f6f2;
+
+  --slidev-theme-primary: var(--prefix-navy);
+  --slidev-theme-accents-yellow: var(--prefix-yellow);
+}
+
+.slidev-layout {
+  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+code,
+pre {
+  font-family: 'JetBrains Mono', ui-monospace, monospace !important;
+}
+
+/* Light off-white background on every layout */
+.slidev-layout,
+.slidev-layout.cover,
+.slidev-layout.section,
+.slidev-layout.center,
+.slidev-layout.end {
+  background: var(--prefix-white);
+  color: var(--prefix-navy);
+}
+
+.slidev-layout h1,
+.slidev-layout h2,
+.slidev-layout h3,
+.slidev-layout.cover h1,
+.slidev-layout.section h1,
+.slidev-layout.center h1 {
+  color: var(--prefix-navy);
+}
+
+.slidev-layout h1 {
+  font-weight: 700;
+}
+
+.slidev-layout a {
+  color: var(--prefix-blue);
+}
+
+.slidev-layout table th {
+  background: #edeae4;
+  color: var(--prefix-navy);
+  font-weight: 600;
+}
+
+.slidev-layout table td {
+  border-bottom: 1px solid #e0ded9;
+}
+
+.slidev-layout table tr:hover td {
+  background: rgb(0 24 56 / 3%);
+}
+
+.slidev-layout pre {
+  background: #edeae4 !important;
+  border-radius: 8px;
+}
+
+.slidev-layout :not(pre) > code {
+  background: #edeae4;
+  color: var(--prefix-navy);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.slidev-layout blockquote {
+  border-left: 4px solid var(--prefix-yellow);
+  background: rgb(255 212 50 / 8%);
+  padding: 0.8em 1em;
+  border-radius: 0 8px 8px 0;
+}
+
+.slidev-layout strong {
+  color: var(--prefix-navy);
+  font-weight: 700;
+}
+
+.slidev-page-number {
+  color: var(--prefix-navy);
+  opacity: 0.5;
+}
+
+.slidev-nav {
+  --slidev-controls-foreground: var(--prefix-navy);
+}
+
+/* Force the light code theme regardless of the OS preference */
+html.dark {
+  color-scheme: light;
+}

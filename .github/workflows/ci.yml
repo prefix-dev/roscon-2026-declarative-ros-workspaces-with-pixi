@@ -1,0 +1,83 @@
+# Keeps the exercise solutions honest.
+#
+# This workflow is also teaching material: Exercise 3 asks participants to read
+# it. Keep it simple enough to explain in two minutes.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # Package versions move underneath us. A weekly run tells us before a
+  # participant finds out.
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # The cheap gate: is every lockfile up to date with its manifest?
+  lockfiles:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          run-install: false
+      - name: Check the workshop lockfile
+        run: pixi lock --check
+      - name: Check the solution lockfiles
+        run: |
+          for solution in solutions/*/; do
+            echo "::group::$solution"
+            pixi lock --check --manifest-path "$solution/pixi.toml"
+            echo "::endgroup::"
+          done
+
+  # The real check: every solution installs and runs, on every OS we promise.
+  solutions:
+    needs: lockfiles
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        solution:
+          - 01-ros-workspace
+          - 02-ros-package
+          - 03-collaboration
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          manifest-path: solutions/${{ matrix.solution }}/pixi.toml
+          locked: true
+
+      - name: Run the smoke test
+        run: pixi run --manifest-path solutions/${{ matrix.solution }}/pixi.toml test
+
+  # Make sure the docs and the slides still build.
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          locked: true
+      - run: pixi run build-docs
+      - run: pixi run build-slides
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          environments: lint
+          locked: true
+      - run: pixi run lint

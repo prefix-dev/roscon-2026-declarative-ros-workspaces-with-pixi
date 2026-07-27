@@ -1,0 +1,100 @@
+# Solution to Exercise 3 — Ready for your team.
+#
+# The same package as Exercise 2, now set up the way you would hand it to
+# colleagues:
+#
+#   * every platform the team uses, solved from any one of them
+#   * a named target for the robot, so the Jetson is not a special snowflake
+#   * a lockfile check, a build and a publish step that CI can run
+#   * a Dockerfile that ships the exact environment from the lockfile
+#
+#     pixi run lock-check      # what CI runs on every pull request
+#     pixi run robot-list      # what would land on the Jetson
+#     pixi run build-package   # produce a .conda file
+#     pixi run docker-build    # build the runtime image
+
+[workspace]
+name = "turtle-dancer-team"
+description = "A multi-platform ROS 2 workspace ready for a team, CI and a robot"
+channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
+version = "0.1.0"
+preview = ["pixi-build"]
+
+# Every machine the team develops on, plus the hardware we deploy to. The named
+# entries describe machines we do not have in front of us: the solver is told
+# what they report, so we can resolve for them from a laptop.
+platforms = [
+  "linux-64",
+  "linux-aarch64",
+  "osx-arm64",
+  "osx-64",
+  "win-64",
+  { name = "workstation-gpu", platform = "linux-64", cuda = "12.0" },
+  { name = "jetson", platform = "linux-aarch64", cuda = "12.6" },
+]
+
+[dependencies]
+ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }
+ros-jazzy-ros2run = ">=0.32"
+ros-jazzy-ros2topic = ">=0.32"
+
+[tasks.dance]
+cmd = "dance"
+description = "Run the node"
+
+[tasks.lock-check]
+cmd = "pixi lock --check"
+description = "Fail if the lockfile is out of date — the gate CI enforces"
+
+[tasks.test]
+cmd = "python -c \"import turtle_dancer.dance as d; assert d.main; print('turtle_dancer: ok')\""
+description = "Prove the package was built and installed — this is what CI runs"
+
+[tasks.build-package]
+cmd = "pixi build --output-dir output"
+description = "Build the ROS package into a .conda file"
+
+[tasks.robot-list]
+cmd = "pixi list -e robot --platform jetson"
+description = "Show what would be installed on the Jetson"
+
+[tasks.docker-build]
+cmd = "docker build -t turtle-dancer:latest ."
+description = "Build the runtime image"
+
+# ---------------------------------------------------------------------------
+# The simulator is only useful where somebody is looking at a screen, so it is
+# not part of what we ship to the robot.
+# ---------------------------------------------------------------------------
+[feature.sim.dependencies]
+ros-jazzy-turtlesim = ">=1.8"
+
+[feature.sim.tasks.sim]
+cmd = "ros2 run turtlesim turtlesim_node"
+description = "Start the turtlesim window"
+
+# ---------------------------------------------------------------------------
+# The robot: aarch64 with CUDA. Solved on your laptop, installed on the Jetson.
+# ---------------------------------------------------------------------------
+[feature.robot]
+platforms = ["jetson"]
+
+[feature.robot.dependencies]
+cuda-version = ">=12.6"
+
+# ---------------------------------------------------------------------------
+# A GPU workstation, for the developer who has one.
+# ---------------------------------------------------------------------------
+[feature.gpu]
+platforms = ["workstation-gpu"]
+
+[feature.gpu.dependencies]
+cuda-version = ">=12.0"
+
+[environments]
+# What you get by default: the package plus the simulator.
+default = { features = ["sim"] }
+# What goes on the robot: no GUI, CUDA assumed.
+robot = { features = ["robot"] }
+# A desktop with an NVIDIA card.
+gpu = { features = ["sim", "gpu"] }

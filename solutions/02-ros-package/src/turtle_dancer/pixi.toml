@@ -1,0 +1,11 @@
+# The package manifest. Everything else — name, version, description,
+# maintainer, dependencies — comes out of package.xml, which stays the single
+# source of truth.
+
+[package.build.backend]
+channels = ["conda-forge"]
+name = "pixi-build-ros"
+version = "*"
+
+[package.build.config]
+distro = "jazzy"

@@ -1,0 +1,28 @@
+# Exercise 2 — starting point.
+#
+# This is roughly where Exercise 1 left off: a working ROS 2 environment. What
+# is missing is in `src/turtle_dancer/`: a perfectly normal ROS package that
+# nothing is building yet.
+#
+# Your job:
+#   1. Let Pixi build `src/turtle_dancer` with the pixi-build-ros backend.
+#   2. Run the node from the environment.
+#   3. Declare CUDA support for the platforms that can have a GPU.
+#
+# Instructions: https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/02-ros-package/
+
+[workspace]
+name = "turtle-dancer-workspace"
+description = "A ROS 2 workspace with a package that Pixi does not build yet"
+channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
+platforms = ["linux-64", "osx-arm64", "win-64"]
+version = "0.1.0"
+
+[dependencies]
+ros-jazzy-ros2run = ">=0.32"
+ros-jazzy-ros2topic = ">=0.32"
+ros-jazzy-turtlesim = ">=1.8"
+
+[tasks.sim]
+cmd = "ros2 run turtlesim turtlesim_node"
+description = "Start the turtlesim window"
