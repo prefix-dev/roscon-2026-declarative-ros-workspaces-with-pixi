@@ -1,6 +1,5 @@
-# The package manifest. Everything else — name, version, description,
-# maintainer, dependencies — comes out of package.xml, which stays the single
-# source of truth.
+# The package manifest. Name, version, description, maintainer and dependencies
+# all come out of package.xml, which stays the single source of truth.
 
 [package.build.backend]
 channels = ["conda-forge"]

@@ -1,13 +1,14 @@
 # Exercise 3 — starting point.
 #
-# This is where Exercise 2 left off: Pixi builds the ROS package, and it works
-# on your machine. Now make it work for everyone else's.
+# This is where Exercise 2 left off: Pixi builds both packages, and it all works
+# on your machine. Now make it work for everyone else's, and for the robot.
 #
 # Your job:
 #   1. Add every platform your team uses.
-#   2. Add a named target for the robot — aarch64 with CUDA.
+#   2. Add named targets for hardware you do not have in front of you — a GPU
+#      workstation and a Jetson — and solve for them from here.
 #   3. Turn on CI.
-#   4. Publish the package to a channel.
+#   4. Run the node on a machine that really has a GPU.
 #
 # Instructions: https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/03-collaboration/
 
@@ -21,6 +22,7 @@ preview = ["pixi-build"]
 
 [dependencies]
 ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }
+ros-jazzy-turtle-choreographer = { path = "src/turtle_choreographer" }
 ros-jazzy-ros2run = ">=0.32"
 ros-jazzy-ros2topic = ">=0.32"
 ros-jazzy-turtlesim = ">=1.8"
@@ -30,9 +32,13 @@ cmd = "ros2 run turtlesim turtlesim_node"
 description = "Start the turtlesim window"
 
 [tasks.dance]
-cmd = "dance"
-description = "Run the node"
+cmd = "ros2 run turtle_dancer dance"
+description = "Run the C++ node"
+
+[tasks.choreograph]
+cmd = "ros2 run turtle_choreographer choreograph"
+description = "Run the Python node"
 
 [tasks.test]
-cmd = "python -c \"import turtle_dancer.dance as d; assert d.main; print('turtle_dancer: ok')\""
-description = "Prove the package was built and installed"
+cmd = "python -c \"import turtle_choreographer.choreograph as c; assert c.main; print('packages: ok')\""
+description = "Prove both packages were built and installed"

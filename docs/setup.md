@@ -38,15 +38,25 @@ cd roscon-2026-declarative-ros-workspaces-with-pixi
 
 ## 3. Warm up your cache
 
-This downloads the ROS 2 packages you will need, so the exercises install from disk instead of over
-conference Wi-Fi.
+!!! warning "This is the step that matters"
+
+    The exercises use two ROS distributions. Downloading them at home means the workshop installs
+    from your disk instead of over conference Wi-Fi. Expect this to take a while and to use a couple
+    of GB &mdash; run it the evening before, not on the morning of.
 
 ```bash
-pixi install --manifest-path solutions/01-ros-workspace/pixi.toml
+pixi install --all --manifest-path solutions/01-ros-workspace/pixi.toml
 ```
 
-<!-- TODO(content): decide whether to prefetch solutions 02 and 03 too, and note the download size
-     per platform once measured. -->
+`--all` is what fetches both the Jazzy and the Kilted environments.
+
+<!-- TODO(content): state the measured download size per platform after a dry run. Installed size is
+     ~1.7 GB per distro on osx-arm64; the compressed download is smaller and the two distros share
+     their conda-forge dependencies, so the incremental cost of the second is well under 2x.
+     Measure it properly and put a real number here. -->
+
+<!-- TODO(logistics): decide what happens for attendees who arrive without having done this.
+     Tracked in IMPLEMENTATION_PLAN.md Stage 5. -->
 
 ## 4. Check that it works
 
@@ -54,7 +64,13 @@ pixi install --manifest-path solutions/01-ros-workspace/pixi.toml
 pixi run --manifest-path solutions/01-ros-workspace/pixi.toml sim
 ```
 
-A window with a turtle should appear. Close it; you are ready.
+A window with a turtle should appear. Close it, then check the second distro too:
+
+```bash
+pixi run --manifest-path solutions/01-ros-workspace/pixi.toml test-kilted
+```
+
+If both worked, you are ready.
 
 ## What you do not need
 

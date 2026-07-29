@@ -1,17 +1,18 @@
 # Solution to Exercise 3 — Ready for your team.
 #
-# The same package as Exercise 2, now set up the way you would hand it to
-# colleagues:
+# The packages from Exercise 2, set up the way you would hand them to
+# colleagues and to a robot:
 #
-#   * every platform the team uses, solved from any one of them
-#   * a named target for the robot, so the Jetson is not a special snowflake
+#   * every platform the team uses, all solved from whichever one you are on
+#   * named targets for hardware nobody is sitting at — a GPU box and a Jetson
 #   * a lockfile check, a build and a publish step that CI can run
 #   * a Dockerfile that ships the exact environment from the lockfile
 #
-#     pixi run lock-check      # what CI runs on every pull request
-#     pixi run robot-list      # what would land on the Jetson
-#     pixi run build-package   # produce a .conda file
-#     pixi run docker-build    # build the runtime image
+#     pixi run lock-check       # what CI runs on every pull request
+#     pixi run robot-list       # what would land on the Jetson, solved from here
+#     pixi run gpu-run          # run the node on a real GPU (see docs: Brev)
+#     pixi run build-package    # produce .conda files
+#     pixi run docker-build     # build the runtime image
 
 [workspace]
 name = "turtle-dancer-team"
@@ -20,9 +21,12 @@ channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
 version = "0.1.0"
 preview = ["pixi-build"]
 
-# Every machine the team develops on, plus the hardware we deploy to. The named
-# entries describe machines we do not have in front of us: the solver is told
-# what they report, so we can resolve for them from a laptop.
+# Every machine the team develops on, plus the hardware we deploy to.
+#
+# The named entries describe machines we do not have in front of us: the solver
+# is told what they report, so we can resolve for them from a laptop. This is
+# the whole trick — solving is cheap and portable, installing is the expensive
+# part you only do where you need it.
 platforms = [
   "linux-64",
   "linux-aarch64",
@@ -35,28 +39,29 @@ platforms = [
 
 [dependencies]
 ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }
+ros-jazzy-turtle-choreographer = { path = "src/turtle_choreographer" }
 ros-jazzy-ros2run = ">=0.32"
 ros-jazzy-ros2topic = ">=0.32"
 
 [tasks.dance]
-cmd = "dance"
-description = "Run the node"
+cmd = "ros2 run turtle_dancer dance"
+description = "Run the C++ node"
 
 [tasks.lock-check]
 cmd = "pixi lock --check"
 description = "Fail if the lockfile is out of date — the gate CI enforces"
 
 [tasks.test]
-cmd = "python -c \"import turtle_dancer.dance as d; assert d.main; print('turtle_dancer: ok')\""
-description = "Prove the package was built and installed — this is what CI runs"
+cmd = "python -c \"import turtle_choreographer.choreograph as c; assert c.main; print('packages: ok')\""
+description = "Prove both packages were built and installed — what CI runs"
 
 [tasks.build-package]
 cmd = "pixi build --output-dir output"
-description = "Build the ROS package into a .conda file"
+description = "Build the ROS packages into .conda files"
 
 [tasks.robot-list]
 cmd = "pixi list -e robot --platform jetson"
-description = "Show what would be installed on the Jetson"
+description = "Show what would be installed on the Jetson, without owning one"
 
 [tasks.docker-build]
 cmd = "docker build -t turtle-dancer:latest ."
@@ -83,7 +88,9 @@ platforms = ["jetson"]
 cuda-version = ">=12.6"
 
 # ---------------------------------------------------------------------------
-# A GPU workstation, for the developer who has one.
+# A GPU workstation — a desktop with an NVIDIA card, or the cloud instance the
+# workshop hands out. Only Linux can have CUDA, which is why this feature is
+# restricted to the GPU platform rather than declared workspace-wide.
 # ---------------------------------------------------------------------------
 [feature.gpu]
 platforms = ["workstation-gpu"]
@@ -91,10 +98,18 @@ platforms = ["workstation-gpu"]
 [feature.gpu.dependencies]
 cuda-version = ">=12.0"
 
+[feature.gpu.tasks.gpu-run]
+cmd = "ros2 run turtle_dancer dance"
+description = "Run the node on a machine that actually has a GPU"
+
+[feature.gpu.tasks.gpu-check]
+cmd = "python -c \"import os; print('CUDA visible:', os.path.exists('/proc/driver/nvidia'))\""
+description = "Confirm the GPU is really there"
+
 [environments]
-# What you get by default: the package plus the simulator.
+# What you get by default: the packages plus the simulator.
 default = { features = ["sim"] }
 # What goes on the robot: no GUI, CUDA assumed.
 robot = { features = ["robot"] }
-# A desktop with an NVIDIA card.
+# A desktop or cloud instance with an NVIDIA card.
 gpu = { features = ["sim", "gpu"] }

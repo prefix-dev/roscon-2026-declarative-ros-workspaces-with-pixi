@@ -1,41 +1,34 @@
-# Solution to Exercise 2 — Build a ROS package with Pixi.
+# Solution to Exercise 2 — Build ROS packages with Pixi.
 #
-# `turtle_dancer` is a normal ROS 2 package with a normal package.xml. What is
-# different is that Pixi builds and installs it: no colcon, no
-# `source install/setup.bash`.
+# The same C++ package Exercise 1 built with colcon, plus a Python one, now both
+# built and installed by Pixi straight from their package.xml:
 #
-#     pixi run sim      # in one terminal
-#     pixi run dance    # in another — the node is built on demand
+#     pixi run sim            # in one terminal
+#     pixi run dance          # in another — C++
+#     pixi run choreograph    # ...or Python
 #
-# The `cuda` environment shows how to declare GPU support for the platforms
-# that can have a GPU, while the default environment stays buildable
-# everywhere.
+# Compare with Exercise 1: no `colcon build`, no `source install/setup.bash`, no
+# build/ install/ log/ directories. Edit a source file and `pixi run` again —
+# Pixi rebuilds what changed.
+#
+# NOTE: the edit-then-rerun loop above does not currently rebuild on a source-only
+# change. See PIXI_IMPROVEMENTS.md finding 1; `pixi run check-edit-run-loop` at
+# the repository root watches for the fix.
 
 [workspace]
 name = "turtle-dancer-workspace"
-description = "A ROS 2 package built and installed by Pixi"
+description = "A mixed C++/Python ROS 2 workspace built by Pixi"
 channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
+platforms = ["linux-64", "osx-arm64", "win-64"]
 version = "0.1.0"
 preview = ["pixi-build"]
 
-# A platform entry can be more than a name: `linux-64-gpu` is still linux-64,
-# but the solver may assume the machine reports `__cuda >= 12.0`.
-#
-# Because these are the *workspace* platforms, the default environment is
-# solved for `linux-64-gpu` too. That is intentional: on a Linux machine with a
-# GPU, the default environment picks the CUDA-capable builds by itself.
-platforms = [
-  "linux-64",
-  "osx-arm64",
-  "win-64",
-  { name = "linux-64-gpu", platform = "linux-64", cuda = "12.0" },
-]
-
 [dependencies]
-# Our own package, built from source by the pixi-build-ros backend. The name is
-# the package.xml name, prefixed with the ROS distro.
+# Our own packages, built from source. The names are the package.xml names with
+# the ROS distro prefix that RoboStack uses.
 ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }
-# What we need to run it.
+ros-jazzy-turtle-choreographer = { path = "src/turtle_choreographer" }
+# What we need to run them.
 ros-jazzy-ros2run = ">=0.32"
 ros-jazzy-ros2topic = ">=0.32"
 ros-jazzy-turtlesim = ">=1.8"
@@ -44,32 +37,18 @@ ros-jazzy-turtlesim = ">=1.8"
 cmd = "ros2 run turtlesim turtlesim_node"
 description = "Start the turtlesim window"
 
-# `dance` is the console script from setup.py. Pixi installed our package into
-# the environment, so the node is simply a program on PATH.
-#
-# NOTE: `ros2 run turtle_dancer dance` does *not* work here — see
-# docs/exercises/02-ros-package.md for why.
 [tasks.dance]
-cmd = "dance"
-description = "Run our own package — Pixi builds it first if the source changed"
+cmd = "ros2 run turtle_dancer dance"
+description = "Run the C++ node — Pixi builds it first if the source changed"
+
+[tasks.choreograph]
+cmd = "ros2 run turtle_choreographer choreograph"
+description = "Run the Python node"
 
 [tasks.test]
-cmd = "python -c \"import turtle_dancer.dance as d; assert d.main; print('turtle_dancer: ok')\""
-description = "Prove the package was built and installed"
+cmd = "python -c \"import turtle_choreographer.choreograph as c; assert c.main; print('packages: ok')\""
+description = "Prove both packages were built and installed — what CI runs"
 
-# ---------------------------------------------------------------------------
-# CUDA
-#
-# Only Linux machines in this workshop can have an NVIDIA GPU, so the feature
-# is restricted to those platforms. Declaring `cuda` on the platform tells the
-# solver to assume a machine that reports `__cuda >= 12`, whether or not this
-# machine has one.
-# ---------------------------------------------------------------------------
-[feature.cuda]
-platforms = ["linux-64-gpu"]
-
-[feature.cuda.dependencies]
-cuda-version = ">=12.0"
-
-[environments]
-cuda = { features = ["cuda"] }
+[tasks.executables]
+cmd = "ros2 pkg executables turtle_dancer"
+description = "Show that the ROS tooling sees our node, exactly as after a colcon build"

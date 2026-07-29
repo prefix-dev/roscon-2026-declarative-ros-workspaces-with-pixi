@@ -10,50 +10,73 @@ icon: lucide/git-branch
     **Solution:** `solutions/03-collaboration/` &middot;
     **After:** [Collaboration, CI/CD & Docker](../explainers/collaboration.md)
 
-    **Goal:** the workspace from Exercise 2, but solving for every platform your team uses, building
-    in GitHub Actions, and publishing the package to a channel.
+    **Goal:** take the workspace from your machine to your team's machines, your CI, and a real GPU.
 
-<!-- TODO(content): fill in the steps. 20 minutes is tight — Step 3 should be copy-paste-and-read,
-     not write-from-scratch. -->
+<!-- TODO(content): fill in the steps. 20 minutes for four steps, so Step 3 should be
+     read-and-commit rather than write-from-scratch. -->
 
 ## Step 1 — Add every platform
 
-<!-- TODO(content): pixi workspace platform add for linux-64, linux-aarch64, osx-arm64, osx-64,
-     win-64. Look at what the lockfile does. Handle the package that is not available everywhere. -->
+<!-- TODO(content): pixi workspace platform add for linux-64, linux-aarch64, osx-64, win-64.
+     Re-solve, look at what happened to the lockfile.
+     `pixi list --platform win-64` — what your colleague gets, from your Mac. -->
 
-## Step 2 — Target the robot
+## Step 2 — Target hardware you do not own
 
-<!-- TODO(content): a jetson environment: linux-aarch64 + CUDA system requirements, solved from
-     the laptop. Show `pixi list --platform linux-aarch64`. -->
+<!-- TODO(content): named platform entries for the robot and a GPU box:
+
+         { name = "jetson", platform = "linux-aarch64", cuda = "12.6" }
+
+     Then a robot feature and environment, and `pixi run robot-list`. You just resolved a complete
+     ROS environment for a Jetson from a laptop that is not one. Verified working.
+
+     This is the third time the workshop makes the same point — solving is cheap and portable,
+     installing is the expensive part you only do where you need it. Say it out loud here. -->
 
 ## Step 3 — Add CI
 
-<!-- TODO(content): the provided workflow: setup-pixi, a platform matrix, pixi lock --check,
-     build and test. Have them commit and read the logs rather than write YAML. -->
+<!-- TODO(content): the workflow is provided. Read it, commit it, watch it go green:
+     setup-pixi, a platform matrix, `pixi lock --check` as the cheap gate, then install and test.
 
-## Step 4 — Publish
+     `.github/workflows/ci.yml` in this repository is the live version of exactly this, running
+     against all three solutions — point at it rather than writing YAML from scratch. -->
 
-<!-- TODO(content): pixi build, then publish to a prefix.dev channel from CI. Use a throwaway
-     channel so people can actually run it in the room. -->
+## Step 4 — Run it on a real GPU
+
+<!-- TODO(content): the GPU payoff, on a cloud instance (Brev launchable — link TBD once the
+     billing model is confirmed and credits are secured; see IMPLEMENTATION_PLAN.md Stage 5).
+
+     Two paths, both written and tested:
+       * GPU box: install the gpu environment, `pixi run gpu-check`, `pixi run gpu-run`.
+       * Laptop only: solve for it and inspect, as in Exercise 2. Nobody is blocked.
+
+     Kick off the instance at the START of the session so provisioning is not on the clock here. -->
 
 ## Check your work
 
-<!-- TODO(content): green CI on a matrix of platforms, and the package visible in a channel. -->
+```bash
+pixi run lock-check    # the gate CI enforces
+pixi run robot-list    # a Jetson environment, resolved from your laptop
+```
+
+<!-- TODO(content): plus a green CI run on a matrix of platforms. -->
 
 ## Going further
 
 <!-- TODO(content):
      - The Dockerfile in the solution: build it, compare the image size with a ROS base image.
-     - pixi-pack for the robot that has no network.
-     - Dependabot-style lockfile updates in CI.
+     - `pixi publish` to your own channel — we demo this rather than have 50 people mint tokens.
+       Full recipe belongs on the migration page for afterwards.
+     - pixi-pack for a robot with no network.
+     - Automated lockfile update PRs.
 -->
 
 !!! note "With your own workspace"
 
-    <!-- TODO(content): the realistic order to adopt this in an existing team: lockfile in CI
-         first, platforms second, packaging last. -->
+    <!-- TODO(content): the realistic adoption order for an existing team: lockfile in CI first,
+         platforms second, packaging last. Each step ships independently and reverts cleanly. -->
 
 ---
 
 That is the workshop. See [Migrating from rosdep & colcon](../reference/migration.md) for the write-up
-you can hand to your team on Monday.
+you can hand your team on Monday.

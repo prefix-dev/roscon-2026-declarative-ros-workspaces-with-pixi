@@ -14,6 +14,8 @@ slides/dist/
 __pycache__/
 *.egg-info/
 *.py[cod]
+# setuptools install record, dropped into the source tree by the ROS build backend
+files.txt
 
 # colcon leftovers, in case someone brings their own workspace
 build/

@@ -5,14 +5,15 @@ smoke-tested on Linux, macOS and Windows on every commit, so these are never sta
 
 | Directory | Shows |
 | --- | --- |
-| `01-ros-workspace/` | ROS 2 Jazzy from RoboStack, tasks, five platforms, no ROS on the machine |
-| `02-ros-package/` | A ROS package built by the `pixi-build-ros` backend, plus a CUDA platform variant |
-| `03-collaboration/` | Every platform, a named Jetson target, a lockfile gate, Docker and publishing |
+| `01-ros-workspace/` | ROS 2 from RoboStack on five platforms, tasks, a colcon-built C++ package, and Jazzy plus Kilted as two environments in one workspace |
+| `02-ros-package/` | The same C++ package and a Python one, both built by the `pixi-build-ros` backend — no colcon, no sourcing — plus a named GPU platform |
+| `03-collaboration/` | Every platform, named `jetson` and `workstation-gpu` targets solved from a laptop, a lockfile gate, Docker and publishing |
 
 Run any of them from the repository root:
 
 ```bash
 pixi run --manifest-path solutions/01-ros-workspace/pixi.toml sim
+pixi run --manifest-path solutions/01-ros-workspace/pixi.toml sim-kilted   # a different distro
 ```
 
 Or from inside the directory:

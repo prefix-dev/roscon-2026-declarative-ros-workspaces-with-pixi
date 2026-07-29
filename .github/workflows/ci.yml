@@ -61,6 +61,67 @@ jobs:
       - name: Run the smoke test
         run: pixi run --manifest-path solutions/${{ matrix.solution }}/pixi.toml test
 
+  # Exercise 1 claims one workspace can hold two ROS distributions. Prove it.
+  # Linux only — this installs two full ROS stacks, and the claim is not
+  # platform-specific.
+  two-distros:
+    needs: lockfiles
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          manifest-path: solutions/01-ros-workspace/pixi.toml
+          environments: default kilted
+          locked: true
+      - name: Jazzy in the default environment
+        run: pixi run --manifest-path solutions/01-ros-workspace/pixi.toml test
+      - name: Kilted in the same workspace
+        run: pixi run --manifest-path solutions/01-ros-workspace/pixi.toml test-kilted
+
+  # Exercise 1 asks participants to build a package with colcon inside the Pixi
+  # environment, including on Windows. None of us develops on Windows, so this
+  # job is the only thing standing between that claim and a room full of people
+  # who cannot complete step 4. Treat a failure here as a content decision, not
+  # a flake.
+  colcon-on-every-os:
+    needs: lockfiles
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          manifest-path: solutions/01-ros-workspace/pixi.toml
+          locked: true
+      - name: colcon build
+        run: pixi run --manifest-path solutions/01-ros-workspace/pixi.toml build
+      - name: The node is only findable after sourcing the overlay
+        run: pixi run --manifest-path solutions/01-ros-workspace/pixi.toml dance --help
+        continue-on-error: true
+
+  # Exercise 2 is built on the edit-run loop, so we watch it. This is expected to
+  # fail on pixi 0.73.0 (PIXI_IMPROVEMENTS.md finding 1); it is non-blocking so
+  # CI stays honest without going red, and it becomes a real regression test the
+  # moment the fix lands. Drop continue-on-error then.
+  edit-run-loop:
+    needs: lockfiles
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          manifest-path: solutions/02-ros-package/pixi.toml
+          locked: true
+      - uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          run-install: false
+      - run: pixi run check-edit-run-loop
+
   # Make sure the docs and the slides still build.
   site:
     runs-on: ubuntu-latest
