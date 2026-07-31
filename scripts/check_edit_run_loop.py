@@ -5,7 +5,7 @@ Pixi: change a source file, `pixi run`, see the change. If that stops being
 true, the exercise silently teaches the room to trust stale code, so we assert
 it here rather than find out on stage.
 
-This currently FAILS on pixi 0.73.0 — see PIXI_IMPROVEMENTS.md, finding 1. It is
+This currently FAILS on pixi 0.73.0; see PIXI_IMPROVEMENTS.md, finding 1. It is
 wired into CI as a non-blocking job so it flips to green when the fix lands, and
 turns into a regression test from then on.
 
@@ -69,7 +69,7 @@ def main() -> int:
             if got == "<absent>":
                 print(
                     f"FAIL ({expected} edit): the edited source is not in the "
-                    f"environment at all — the added function is missing, so "
+                    f"environment at all: the added function is missing, so "
                     f"nothing was rebuilt.\n"
                     f"      See PIXI_IMPROVEMENTS.md finding 1.",
                     file=sys.stderr,
@@ -79,7 +79,7 @@ def main() -> int:
             if got != expected:
                 print(
                     f"FAIL ({expected} edit): source returns {expected!r}, but the "
-                    f"environment still returns {got!r} — stale build.\n"
+                    f"environment still returns {got!r}, a stale build.\n"
                     f"      See PIXI_IMPROVEMENTS.md finding 1.",
                     file=sys.stderr,
                 )

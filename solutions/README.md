@@ -1,12 +1,12 @@
 # Solutions
 
-The finished version of each exercise. Every one is a standalone Pixi workspace, installed and
-smoke-tested on Linux, macOS and Windows on every commit, so these are never stale.
+The finished version of each exercise.
+Every one is a standalone Pixi workspace, installed and smoke-tested on Linux, macOS and Windows on every commit, so these are never stale.
 
 | Directory | Shows |
 | --- | --- |
 | `01-ros-workspace/` | ROS 2 from RoboStack on five platforms, tasks, a colcon-built C++ package, and Jazzy plus Kilted as two environments in one workspace |
-| `02-ros-package/` | The same C++ package and a Python one, both built by the `pixi-build-ros` backend — no colcon, no sourcing — plus a named GPU platform |
+| `02-ros-package/` | The same C++ package and a Python one, both built by the `pixi-build-ros` backend (no colcon, no sourcing) plus a named GPU platform |
 | `03-collaboration/` | Every platform, named `jetson` and `workstation-gpu` targets solved from a laptop, a lockfile gate, Docker and publishing |
 
 Run any of them from the repository root:

@@ -6,11 +6,9 @@ icon: lucide/cpu
 
 !!! abstract "30 minutes, presented"
 
-    **Slides:** [Advanced package management](../slides/) &middot;
-    **Followed by:** [Exercise 2](../exercises/02-ros-package.md)
+    **Slides:** [Advanced package management](../slides/) &middot; **Followed by:** [Exercise 2](../exercises/02-ros-package.md)
 
-    By the end of this block you should understand the difference between depending on a package and
-    *being* one, and how Pixi decides whether your machine can run a CUDA build.
+    By the end of this block you should understand the difference between depending on a package and *being* one, and how Pixi decides whether your machine can run a CUDA build.
 
 <!-- TODO(content): 30 min. This is the densest block; cut ruthlessly if the room is behind
      schedule, because Exercise 2 is where it lands. -->
@@ -58,4 +56,4 @@ icon: lucide/cpu
 
 ---
 
-Now go do [Exercise 2 &mdash; Build a ROS package with Pixi](../exercises/02-ros-package.md).
+Now go do [Exercise 2: Build a ROS package with Pixi](../exercises/02-ros-package.md).

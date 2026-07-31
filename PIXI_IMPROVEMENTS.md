@@ -1,20 +1,19 @@
 # Pixi improvement ideas found while building this workshop
 
-Friction hit while scaffolding the ROSCon 2026 material, in rough order of how much it would hurt a
-ROS developer. Everything here was reproduced on `pixi 0.73.0`, macOS `osx-arm64`, unless noted.
+Friction hit while scaffolding the ROSCon 2026 material, in rough order of how much it would hurt a ROS developer.
+Everything here was reproduced on `pixi 0.73.0`, macOS `osx-arm64`, unless noted.
 
 This is feedback for the Pixi team, not workshop content.
 
 ---
 
-## 1. Editing a node's source does not rebuild it — you silently run stale code
+## 1. Editing a node's source does not rebuild it, so you silently run stale code
 
-**Severity: high. This is the most important item in this document.** It breaks the core inner loop
-of ROS development: edit a node, run it, see the change.
+**Severity: high.
+This is the most important item in this document.** It breaks the core inner loop of ROS development: edit a node, run it, see the change.
 
-With a source dependency (`ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }`), editing the
-node's Python source has no effect. Nothing rebuilds, nothing warns, and the previously built code
-runs again:
+With a source dependency (`ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }`), editing the node's Python source has no effect.
+Nothing rebuilds, nothing warns, and the previously built code runs again:
 
 ```console
 $ # edit src/turtle_dancer/turtle_dancer/dance.py, changing a returned string
@@ -27,8 +26,8 @@ $ pixi lock --check
 ✔ Lock-file was already up-to-date
 ```
 
-Everything reports success. The developer concludes their code change did nothing, and starts
-debugging the wrong thing.
+Everything reports success.
+The developer concludes their code change did nothing, and starts debugging the wrong thing.
 
 **What does and does not invalidate the build:**
 
@@ -41,10 +40,8 @@ debugging the wrong thing.
 | Edit the *workspace* `pixi.toml` | Yes |
 | `rm -rf .pixi/bld` | Yes |
 
-The `package.xml` row is the tell: a rebuild triggered that way *does* pick up the pending source
-edit, so the build itself is fine — only the change detection is wrong. Note that
-`extra-input-globs` did not help, which suggests the staleness check never reaches the backend's
-glob configuration.
+The `package.xml` row is the tell: a rebuild triggered that way *does* pick up the pending source edit, so the build itself is fine; only the change detection is wrong.
+Note that `extra-input-globs` did not help, which suggests the staleness check never reaches the backend's glob configuration.
 
 The lockfile records the source dependency with what looks like a content hash:
 
@@ -54,14 +51,13 @@ The lockfile records the source dependency with what looks like a content hash:
 
 That hash appears not to be recomputed from the source tree on `pixi run` / `pixi install`.
 
-**Suggested fix:** recompute the source hash from the package's input globs on every `pixi run` and
-`pixi install`, and rebuild when it differs. If a full hash is too expensive for the hot path, an
-mtime pre-check over the glob set would catch this case at almost no cost. Failing silently is the
-worst possible behaviour here — a warning would at least be actionable.
+**Suggested fix:** recompute the source hash from the package's input globs on every `pixi run` and `pixi install`, and rebuild when it differs.
+If a full hash is too expensive for the hot path, an mtime pre-check over the glob set would catch this case at almost no cost.
+Failing silently is the worst possible behaviour here.
+A warning would at least be actionable.
 
-**Why this matters for the workshop:** we intend to teach the edit-run loop as the payoff of using
-Pixi for ROS ("no colcon invocation, no sourcing, just edit and run"). Today that demo would show
-the room stale code, which is worse than not showing it at all.
+**Why this matters for the workshop:** we intend to teach the edit-run loop as the payoff of using Pixi for ROS ("no colcon invocation, no sourcing, just edit and run").
+Today that demo would show the room stale code, which is worse than not showing it at all.
 
 ---
 
@@ -69,9 +65,7 @@ the room stale code, which is worse than not showing it at all.
 
 **Severity: medium**, and closely related to the above.
 
-When a rebuild *is* finally triggered after the source tree has moved on, the cached build directory
-can be inconsistent, and the failure surfaces as a setuptools error with no hint that the cache is
-the problem:
+When a rebuild *is* finally triggered after the source tree has moved on, the cached build directory can be inconsistent, and the failure surfaces as a setuptools error with no hint that the cache is the problem:
 
 ```
 × failed to build 'ros-jazzy-turtle-dancer' from 'src/turtle_dancer'
@@ -86,20 +80,19 @@ UserWarning: Unknown distribution option: 'entry_points'
 error: option --single-version-externally-managed not recognized
 ```
 
-Nothing there points at the build cache. `rm -rf .pixi/bld` fixed it immediately, and an identical
-clean workspace built the same sources without complaint.
+Nothing there points at the build cache.
+`rm -rf .pixi/bld` fixed it immediately, and an identical clean workspace built the same sources without complaint.
 
-**Suggested fix:** detect the inconsistency and re-create the work directory automatically, or
-mention `.pixi/bld` in the error so `rm -rf .pixi/bld` is the obvious next step.
+**Suggested fix:** detect the inconsistency and re-create the work directory automatically, or mention `.pixi/bld` in the error so `rm -rf .pixi/bld` is the obvious next step.
 
 ---
 
 ## 3. `ament_python` install-scripts handling works, but the warning reads like a problem
 
-**Severity: low — this is a docs/wording issue, not a bug.**
+**Severity: low.
+This is a docs/wording issue, not a bug.**
 
-I initially believed the backend put `console_scripts` in `bin/` rather than the `lib/<package>/`
-directory `ros2 run` searches, because a package without a `setup.cfg` gave:
+I initially believed the backend put `console_scripts` in `bin/` rather than the `lib/<package>/` directory `ros2 run` searches, because a package without a `setup.cfg` gave:
 
 ```console
 $ pixi run ros2 pkg executables turtle_dancer     # (empty)
@@ -107,46 +100,42 @@ $ pixi run ros2 run turtle_dancer dance
 No executable found
 ```
 
-That was my package being non-canonical, not a backend fault: `ros2 pkg create --build-type
-ament_python` always generates a `setup.cfg` with `install_scripts=$base/lib/<package>`, and adding it
-fixed everything. The backend also already handles the missing case itself:
+That was my package being non-canonical, not a backend fault: `ros2 pkg create --build-type ament_python` always generates a `setup.cfg` with `install_scripts=$base/lib/<package>`, and adding it fixed everything.
+The backend also already handles the missing case itself:
 
 ```
 WARNING: setup.cfg not set, will set INSTALL_SCRIPTS_ARG to:
          --install-scripts=$PREFIX/lib/turtle_dancer
 ```
 
-So the behaviour is right. Two small things:
+So the behaviour is right.
+Two small things:
 
-1. The message is phrased as a warning about something being unset, when it is really the backend
-   doing the correct thing. Something like *"no `install_scripts` in setup.cfg; defaulting to
-   `lib/turtle_dancer` so `ros2 run` can find it"* would reassure rather than alarm.
-2. It is only visible with `-v`, so in practice nobody sees it. Given how confusing the
-   `No executable found` symptom is when it does go wrong, this one is worth surfacing by default.
+1. The message is phrased as a warning about something being unset, when it is really the backend doing the correct thing.
+   Something like *"no `install_scripts` in setup.cfg; defaulting to `lib/turtle_dancer` so `ros2 run` can find it"* would reassure rather than alarm.
+2. It is only visible with `-v`, so in practice nobody sees it.
+   Given how confusing the `No executable found` symptom is when it does go wrong, this one is worth surfacing by default.
 
-**Note:** `ament_cmake` is unaffected — `install(TARGETS ... DESTINATION lib/${PROJECT_NAME})` is
-idiomatic in every `CMakeLists.txt`. Verified working, including `rosidl` interface generation for a
-custom `.msg`.
+**Note:** `ament_cmake` is unaffected: `install(TARGETS ... DESTINATION lib/${PROJECT_NAME})` is idiomatic in every `CMakeLists.txt`.
+Verified working, including `rosidl` interface generation for a custom `.msg`.
 
 ---
 
 ## 4. The build drops `files.txt` into the source tree
 
-**Severity: low**, but it is the kind of papercut that makes a tool feel untidy, and it lands in
-`git status` where users will commit it by accident.
+**Severity: low**, but it is the kind of papercut that makes a tool feel untidy, and it lands in `git status` where users will commit it by accident.
 
-After building, a 14-line `files.txt` appears in `src/turtle_dancer/` — the setuptools install
-record, listing absolute paths into `.pixi/bld/.../host_placehold_placehold_.../`:
+After building, a 14-line `files.txt` appears in `src/turtle_dancer/`.
+It is the setuptools install record, listing absolute paths into `.pixi/bld/.../host_placehold_placehold_.../`:
 
 ```
 /…/.pixi/bld/ros-jazzy-turtle-dancer/ODuh_Nus3y4/host_placehold_placehold_…/lib/python3.12/site-packages/turtle_dancer/dance.py
 ```
 
-It is build output living in the user's source directory, and it references a throwaway prefix, so it
-has no value to the user at all.
+It is build output living in the user's source directory, and it references a throwaway prefix, so it has no value to the user at all.
 
-**Suggested fix:** write it inside the build directory, or delete it afterwards. (`*.egg-info/` and
-`build/` also land in the source tree; those are at least familiar to Python developers.)
+**Suggested fix:** write it inside the build directory, or delete it afterwards.
+(`*.egg-info/` and `build/` also land in the source tree; those are at least familiar to Python developers.)
 
 ---
 
@@ -179,8 +168,7 @@ platforms = [{ platform = "linux-64", cuda = "12" }]
 Error:   × expected a string, found table
 ```
 
-The rich inline form is only accepted in `[workspace] platforms`; a feature must reference a
-*named* entry declared there:
+The rich inline form is only accepted in `[workspace] platforms`; a feature must reference a *named* entry declared there:
 
 ```toml
 [workspace]
@@ -190,13 +178,11 @@ platforms = ["linux-64", { name = "linux-64-gpu", platform = "linux-64", cuda = 
 platforms = ["linux-64-gpu"]
 ```
 
-That is a reasonable model, but nothing in the warning hints at it, and `expected a string, found
-table` does not point anywhere useful.
+That is a reasonable model, but nothing in the warning hints at it, and `expected a string, found table` does not point anywhere useful.
 
-**Suggested fix:** make the deprecation help context-aware. When the deprecated table is on a
-feature, show the two-part form. And on the parse error, say so directly: *"feature platforms must
-reference platform entries declared in `[workspace] platforms` by name; rich entries cannot be
-declared here."*
+**Suggested fix:** make the deprecation help context-aware.
+When the deprecated table is on a feature, show the two-part form.
+And on the parse error, say so directly: *"feature platforms must reference platform entries declared in `[workspace] platforms` by name; rich entries cannot be declared here."*
 
 ---
 
@@ -204,8 +190,8 @@ declared here."*
 
 **Severity: low, but it undercuts the feature's main benefit.**
 
-Naming platform variants is genuinely great for robotics — `jetson` and `workstation-gpu` say what
-they mean. But the lockfile renames them:
+Naming platform variants is genuinely great for robotics: `jetson` and `workstation-gpu` say what they mean.
+But the lockfile renames them:
 
 ```yaml
 platforms:
@@ -221,11 +207,11 @@ environments:
       p2:        # which machine was this again?
 ```
 
-The point of naming a target is that humans can tell targets apart. Reviewing a lockfile diff — the
-main thing a team does with lockfiles — you now have to map `p2` back to `jetson` by hand.
+The point of naming a target is that humans can tell targets apart.
+Reviewing a lockfile diff, the main thing a team does with lockfiles, you now have to map `p2` back to `jetson` by hand.
 
-**Suggested fix:** keep the author's name in the lockfile. If the internal identifier must stay
-opaque, carry the manifest name alongside it as a comment or field.
+**Suggested fix:** keep the author's name in the lockfile.
+If the internal identifier must stay opaque, carry the manifest name alongside it as a comment or field.
 
 ---
 
@@ -233,8 +219,7 @@ opaque, carry the manifest name alongside it as a comment or field.
 
 **Severity: low-medium.**
 
-Because `[workspace] platforms` is the default feature's platform list, adding a variant for one
-feature also solves the default environment for it:
+Because `[workspace] platforms` is the default feature's platform list, adding a variant for one feature also solves the default environment for it:
 
 ```yaml
 environments:
@@ -244,12 +229,10 @@ environments:
     -> p2
 ```
 
-For a workshop manifest, `default` picking up two GPU variants is noise I had to explain in a
-comment. In a real project with several hardware targets it grows quickly, and there is no
-`no-default-feature` equivalent for platforms.
+For a workshop manifest, `default` picking up two GPU variants is noise I had to explain in a comment.
+In a real project with several hardware targets it grows quickly, and there is no `no-default-feature` equivalent for platforms.
 
-**Suggested fix:** let an environment or the default feature narrow its platform list — or let a
-named platform entry be marked as opt-in, so only features that reference it get solved for it.
+**Suggested fix:** let an environment or the default feature narrow its platform list, or let a named platform entry be marked as opt-in, so only features that reference it get solved for it.
 
 ---
 
@@ -263,7 +246,8 @@ cmd = "pre-commit run --all-files"
 default-environment = "lint"     # accepted by the schema
 ```
 
-`pre-commit` exists only in the `lint` feature. Running it:
+`pre-commit` exists only in the `lint` feature.
+Running it:
 
 ```console
 $ pixi run lint
@@ -271,17 +255,16 @@ $ pixi run lint
 [...hooks run and pass...]
 ```
 
-It ran in `default`, not `lint`. It appeared to work only because a *globally* installed
-`pre-commit` was on `PATH` (`/Users/…/.pixi/bin/pre-commit`); `.pixi/envs/default/bin/pre-commit`
-does not exist. On a clean CI runner this fails with `pre-commit: not found`.
+It ran in `default`, not `lint`.
+It appeared to work only because a *globally* installed `pre-commit` was on `PATH` (`/Users/…/.pixi/bin/pre-commit`); `.pixi/envs/default/bin/pre-commit` does not exist.
+On a clean CI runner this fails with `pre-commit: not found`.
 
 Two separate problems:
 
-1. `default-environment` is accepted by the schema but had no effect here. If it is not supported for
-   this case, it should be rejected at parse time rather than ignored.
-2. A task falling through to a binary outside the environment defeats the purpose of having an
-   environment. At minimum, warn when a task's command resolves outside the activated prefix —
-   *"`pre-commit` was not found in environment `default`; using `/Users/…/.pixi/bin/pre-commit`"*.
+1. `default-environment` is accepted by the schema but had no effect here.
+   If it is not supported for this case, it should be rejected at parse time rather than ignored.
+2. A task falling through to a binary outside the environment defeats the purpose of having an environment.
+   At minimum, warn when a task's command resolves outside the activated prefix: *"`pre-commit` was not found in environment `default`; using `/Users/…/.pixi/bin/pre-commit`"*.
    That single line would have caught this immediately.
 
 The workaround is to define the task on the feature, which is arguably better style anyway:
@@ -291,7 +274,7 @@ The workaround is to define the task on the feature, which is arguably better st
 cmd = "pre-commit run --all-files"
 ```
 
-But the failure mode — green locally, red in CI, for a non-obvious reason — is worth closing.
+But the failure mode (green locally, red in CI, for a non-obvious reason) is worth closing.
 
 ---
 
@@ -307,12 +290,12 @@ Available tasks:
 	sim
 ```
 
-`timeout` does not exist on macOS. The output implies the problem is that `timeout` is not a *task*,
-when the real problem is that no such *command* exists in the environment. For anyone following a
-tutorial written on Linux, that is a confusing signpost.
+`timeout` does not exist on macOS.
+The output implies the problem is that `timeout` is not a *task*, when the real problem is that no such *command* exists in the environment.
+For anyone following a tutorial written on Linux, that is a confusing signpost.
 
-**Suggested fix:** distinguish the two cases. If the first argument is not a task *and* not
-resolvable on `PATH`, say `command not found: timeout` and only then offer the task list.
+**Suggested fix:** distinguish the two cases.
+If the first argument is not a task *and* not resolvable on `PATH`, say `command not found: timeout` and only then offer the task list.
 
 ---
 
@@ -320,8 +303,8 @@ resolvable on `PATH`, say `command not found: timeout` and only then offer the t
 
 **Severity: medium for anyone using environments as variants**, which is the pattern we teach.
 
-Two ROS distributions in one workspace, as two environments, is a great demo. But giving both a
-`sim` task makes the obvious command fail:
+Two ROS distributions in one workspace, as two environments, is a great demo.
+But giving both a `sim` task makes the obvious command fail:
 
 ```console
 $ pixi run sim
@@ -331,32 +314,26 @@ Error:   × the task 'sim' is ambiguous
 ```
 
 The error is clear and the fix is easy, but one of the two candidates is *the default environment*.
-Preferring it would make `pixi run sim` do the obvious thing while `pixi run -e kilted sim` stays
-available — which is exactly the mental model the feature invites.
+Preferring it would make `pixi run sim` do the obvious thing while `pixi run -e kilted sim` stays available, which is exactly the mental model the feature invites.
 
-As it stands, the first command in our Exercise 1 would error, so we renamed the second
-environment's tasks to `sim-kilted` and friends. That works, but it hides the nicer story: same task
-name, different environment.
+As it stands, the first command in our Exercise 1 would error, so we renamed the second environment's tasks to `sim-kilted` and friends.
+That works, but it hides the nicer story: same task name, different environment.
 
-**Suggested fix:** when a task name is ambiguous and one of the candidate environments is `default`,
-run it there. Optionally emit a hint the first time, naming the other environments that also provide
-it.
+**Suggested fix:** when a task name is ambiguous and one of the candidate environments is `default`, run it there.
+Optionally emit a hint the first time, naming the other environments that also provide it.
 
 ---
 
 ## 11. RoboStack channel emits a malformed CEP-42 reference
 
-**Severity: cosmetic, and probably RoboStack's to fix rather than Pixi's** — noted because it shows
-up on every solve against these channels, and this workshop will put it in front of a few hundred
-ROS developers.
+**Severity: cosmetic, and probably RoboStack's to fix rather than Pixi's.** Noted because it shows up on every solve against these channels, and this workshop will put it in front of a few hundred ROS developers.
 
 ```
 WARN malformed CEP-42 reference `/conda-forge` declared by `https://prefix.dev/robostack-jazzy/`:
 must be a relative path starting with `../`
 ```
 
-Worth either fixing the channel metadata or suppressing the warning for this case, so the first
-thing a workshop attendee sees is not a warning they cannot act on.
+Worth either fixing the channel metadata or suppressing the warning for this case, so the first thing a workshop attendee sees is not a warning they cannot act on.
 
 ---
 
@@ -364,15 +341,12 @@ thing a workshop attendee sees is not a warning they cannot act on.
 
 Noted because they are load-bearing for the workshop and worth not regressing:
 
-- **Cross-solving is excellent.** Resolving a `linux-aarch64 + __cuda=12.6` Jetson environment from a
-  MacBook, and inspecting it with `pixi list --platform jetson`, is the single most compelling thing
-  we will show. Nothing in the ROS ecosystem comes close.
-- **Solve speed sells itself.** A cold solve of an entirely different ROS distro — 391 packages —
-  took **1.3 s**. That number does more persuading than any slide.
+- **Cross-solving is excellent.** Resolving a `linux-aarch64 + __cuda=12.6` Jetson environment from a MacBook, and inspecting it with `pixi list --platform jetson`, is the single most compelling thing we will show.
+  Nothing in the ROS ecosystem comes close.
+- **Solve speed sells itself.** A cold solve of an entirely different ROS distro, 391 packages, took **1.3 s**.
+  That number does more persuading than any slide.
 - **Two ROS distros in one workspace works**, via per-feature channels and separate environments.
   `pixi run -e kilted sim` next to `pixi run -e jazzy sim` is a genuinely striking demo.
-- **`colcon` runs happily inside a Pixi environment** (5.2 s for a C++ package), which makes the
-  migration story teachable: attendees keep their existing build, then replace it.
-- **`pixi-build-ros` reading `package.xml`** as the single source of truth is the right call, and
-  sibling source discovery across a workspace works as advertised. Custom `rosidl` interface
-  generation worked first try.
+- **`colcon` runs happily inside a Pixi environment** (5.2 s for a C++ package), which makes the migration story teachable: attendees keep their existing build, then replace it.
+- **`pixi-build-ros` reading `package.xml`** as the single source of truth is the right call, and sibling source discovery across a workspace works as advertised.
+  Custom `rosidl` interface generation worked first try.

@@ -2,26 +2,24 @@
 icon: lucide/git-branch
 ---
 
-# Exercise 3 — Ready for your team
+# Exercise 3: Ready for your team
 
 !!! exercise "20 minutes, hands-on"
 
-    **Work in:** `exercises/03-collaboration/` &middot;
-    **Solution:** `solutions/03-collaboration/` &middot;
-    **After:** [Collaboration, CI/CD & Docker](../explainers/collaboration.md)
+    **Work in:** `exercises/03-collaboration/` &middot; **Solution:** `solutions/03-collaboration/` &middot; **After:** [Collaboration, CI/CD & Docker](../explainers/collaboration.md)
 
     **Goal:** take the workspace from your machine to your team's machines, your CI, and a real GPU.
 
 <!-- TODO(content): fill in the steps. 20 minutes for four steps, so Step 3 should be
      read-and-commit rather than write-from-scratch. -->
 
-## Step 1 — Add every platform
+## Step 1: Add every platform
 
 <!-- TODO(content): pixi workspace platform add for linux-64, linux-aarch64, osx-64, win-64.
      Re-solve, look at what happened to the lockfile.
-     `pixi list --platform win-64` — what your colleague gets, from your Mac. -->
+     `pixi list --platform win-64`: what your colleague gets, from your Mac. -->
 
-## Step 2 — Target hardware you do not own
+## Step 2: Target hardware you do not own
 
 <!-- TODO(content): named platform entries for the robot and a GPU box:
 
@@ -30,20 +28,20 @@ icon: lucide/git-branch
      Then a robot feature and environment, and `pixi run robot-list`. You just resolved a complete
      ROS environment for a Jetson from a laptop that is not one. Verified working.
 
-     This is the third time the workshop makes the same point — solving is cheap and portable,
+     This is the third time the workshop makes the same point: solving is cheap and portable,
      installing is the expensive part you only do where you need it. Say it out loud here. -->
 
-## Step 3 — Add CI
+## Step 3: Add CI
 
 <!-- TODO(content): the workflow is provided. Read it, commit it, watch it go green:
      setup-pixi, a platform matrix, `pixi lock --check` as the cheap gate, then install and test.
 
      `.github/workflows/ci.yml` in this repository is the live version of exactly this, running
-     against all three solutions — point at it rather than writing YAML from scratch. -->
+     against all three solutions. Point at it rather than writing YAML from scratch. -->
 
-## Step 4 — Run it on a real GPU
+## Step 4: Run it on a real GPU
 
-<!-- TODO(content): the GPU payoff, on a cloud instance (Brev launchable — link TBD once the
+<!-- TODO(content): the GPU payoff, on a cloud instance (Brev launchable, link TBD once the
      billing model is confirmed and credits are secured; see IMPLEMENTATION_PLAN.md Stage 5).
 
      Two paths, both written and tested:
@@ -65,7 +63,7 @@ pixi run robot-list    # a Jetson environment, resolved from your laptop
 
 <!-- TODO(content):
      - The Dockerfile in the solution: build it, compare the image size with a ROS base image.
-     - `pixi publish` to your own channel — we demo this rather than have 50 people mint tokens.
+     - `pixi publish` to your own channel. We demo this rather than have 50 people mint tokens.
        Full recipe belongs on the migration page for afterwards.
      - pixi-pack for a robot with no network.
      - Automated lockfile update PRs.
@@ -78,5 +76,5 @@ pixi run robot-list    # a Jetson environment, resolved from your laptop
 
 ---
 
-That is the workshop. See [Migrating from rosdep & colcon](../reference/migration.md) for the write-up
-you can hand your team on Monday.
+That is the workshop.
+See [Migrating from rosdep & colcon](../reference/migration.md) for the write-up you can hand your team on Monday.

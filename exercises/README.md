@@ -1,7 +1,7 @@
 # Exercises
 
-Work in these directories. Each one starts where the previous exercise ended, so you can jump in
-anywhere.
+Work in these directories.
+Each one starts where the previous exercise ended, so you can jump in anywhere.
 
 | Directory | You start with | You end with |
 | --- | --- | --- |
@@ -9,8 +9,7 @@ anywhere.
 | `02-ros-package/` | That workspace, with colcon doing the building | Pixi building both packages, no sourcing, GPU support declared |
 | `03-collaboration/` | A single-platform workspace | Every platform, a Jetson target, CI, and a run on a real GPU |
 
-The finished versions live in [`../solutions/`](../solutions/). They are installed and smoke-tested on
-Linux, macOS and Windows on every commit, so if something here does not work, compare against those.
+The finished versions live in [`../solutions/`](../solutions/).
+They are installed and smoke-tested on Linux, macOS and Windows on every commit, so if something here does not work, compare against those.
 
-Instructions are on the
-[workshop site](https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/).
+Instructions are on the [workshop site](https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/).

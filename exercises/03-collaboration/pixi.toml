@@ -1,12 +1,12 @@
-# Exercise 3 — starting point.
+# Exercise 3: starting point.
 #
 # This is where Exercise 2 left off: Pixi builds both packages, and it all works
 # on your machine. Now make it work for everyone else's, and for the robot.
 #
 # Your job:
 #   1. Add every platform your team uses.
-#   2. Add named targets for hardware you do not have in front of you — a GPU
-#      workstation and a Jetson — and solve for them from here.
+#   2. Add named targets for hardware you do not have in front of you: a GPU
+#      workstation and a Jetson. Solve for them from here.
 #   3. Turn on CI.
 #   4. Run the node on a machine that really has a GPU.
 #

@@ -6,11 +6,9 @@ icon: lucide/box
 
 !!! abstract "30 minutes, presented"
 
-    **Slides:** [Pixi introduction](../slides/) &middot;
-    **Followed by:** [Exercise 1](../exercises/01-ros-workspace.md)
+    **Slides:** [Pixi introduction](../slides/) &middot; **Followed by:** [Exercise 1](../exercises/01-ros-workspace.md)
 
-    By the end of this block you should be able to read a `pixi.toml`, know which command to reach
-    for, and know where the lockfile fits in.
+    By the end of this block you should be able to read a `pixi.toml`, know which command to reach for, and know where the lockfile fits in.
 
 <!-- TODO(content): 30 min. Everything here should be something Exercise 1 immediately uses.
      Resist adding features the exercise does not touch. -->
@@ -56,4 +54,4 @@ icon: lucide/box
 
 ---
 
-Now go do [Exercise 1 &mdash; Your first ROS 2 workspace](../exercises/01-ros-workspace.md).
+Now go do [Exercise 1: Your first ROS 2 workspace](../exercises/01-ros-workspace.md).

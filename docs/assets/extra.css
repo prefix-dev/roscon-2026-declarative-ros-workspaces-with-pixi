@@ -1,31 +1,124 @@
 /* ==========================================================================
-   prefix.dev brand colors.
+   prefix.dev brand theme for the ROSCon 2026 workshop site.
 
-   Kept deliberately small: we only feed the brand palette into the variables
-   that Zensical already uses, so theme updates keep working.
+   The palette, the Moranga display font and the "white card on off-white
+   page" layout are lifted from the Pixi documentation
+   (pixi/docs/stylesheets/extra.css) so the two sites feel like one family.
+
+   Everything below only feeds brand values into the variables Zensical
+   already uses, so theme updates keep working.
+   ========================================================================== */
+
+/* Display font ----------------------------------------------------------- */
+@font-face {
+  font-family: "Moranga";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("https://fonts.prefix.dev/moranga/MorangaLight/font.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Moranga";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("https://fonts.prefix.dev/moranga/MorangaRegular/font.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Moranga";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("https://fonts.prefix.dev/moranga/MorangaMedium/font.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Moranga";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("https://fonts.prefix.dev/moranga/MorangaBold/font.woff2") format("woff2");
+}
+
+/* ==========================================================================
+   Palette
    ========================================================================== */
 
 :root {
+  /* Brand colors */
   --prefix-navy: #001838;
   --prefix-yellow: #ffd432;
   --prefix-red: #ff6a38;
   --prefix-blue: #5773ff;
   --prefix-green: #70c038;
   --prefix-white: #f8f6f2;
+
+  /* Neutral ("greyscale dark") ramp, shared with the Pixi docs. */
+  --gsd-50: #f8f6f2;
+  --gsd-100: #f1ede4;
+  --gsd-200: #dee0e3;
+  --gsd-300: #b2b7bd;
+  --gsd-400: #868e93;
+  --gsd-500: #5e656e;
+  --gsd-600: #383d42;
+  --gsd-700: #181f25;
+  --gsd-800: #111518;
+
+  --font-display: "Moranga";
 }
 
 /* Light mode ------------------------------------------------------------- */
 [data-md-color-scheme="default"] {
-  --md-primary-fg-color: var(--prefix-navy);
-  --md-primary-fg-color--light: #002050;
-  --md-primary-fg-color--dark: #000c1e;
-  --md-primary-bg-color: var(--prefix-white);
+  /* Header and tabs: clean off-white with navy type. */
+  --md-primary-fg-color: var(--prefix-white);
+  --md-primary-fg-color--light: #fdfcfa;
+  --md-primary-fg-color--dark: var(--gsd-100);
+  --md-primary-bg-color: var(--prefix-navy);
+  --md-primary-bg-color--light: var(--gsd-500);
 
-  --md-accent-fg-color: var(--prefix-blue);
-  --md-accent-fg-color--transparent: rgb(87 115 255 / 10%);
+  /* Like the Pixi docs, light mode accents in navy and links in blue. */
+  --md-accent-fg-color: var(--prefix-navy);
+  --md-accent-fg-color--transparent: rgb(0 24 56 / 8%);
 
+  /* Off-white page, white content card. */
+  --md-default-bg-color: var(--prefix-white);
+
+  /* Every muted tone is navy at low alpha rather than neutral black, so
+     breadcrumbs, hover states, table rules and scrollbars stay in the family
+     instead of drifting grey. */
+  --md-default-fg-color: var(--prefix-navy);
+  --md-default-fg-color--light: rgb(0 24 56 / 58%);
+  --md-default-fg-color--lighter: rgb(0 24 56 / 30%);
+  --md-default-fg-color--lightest: rgb(0 24 56 / 7%);
+
+  --md-typeset-color: var(--prefix-navy);
   --md-typeset-a-color: var(--prefix-blue);
   --md-typeset-mark-color: rgb(255 212 50 / 40%);
+  --md-typeset-table-color: rgb(0 24 56 / 12%);
+  --md-typeset-kbd-color: var(--gsd-50);
+  --md-typeset-kbd-accent-color: #fff;
+  --md-typeset-kbd-border-color: var(--gsd-200);
+
+  --md-admonition-fg-color: var(--prefix-navy);
+  --md-admonition-bg-color: var(--gsd-50);
+  --md-code-bg-color: var(--gsd-50);
+  --md-code-fg-color: var(--prefix-navy);
+
+  /* Navy-tinted shadows: neutral black shadows read as dirt on cream. */
+  --md-shadow-z1: 0 0.2rem 0.5rem rgb(0 24 56 / 5%), 0 0 0.05rem rgb(0 24 56 / 10%);
+  --md-shadow-z2: 0 0.2rem 0.5rem rgb(0 24 56 / 10%), 0 0 0.05rem rgb(0 24 56 / 25%);
+  --md-shadow-z3: 0 0.2rem 0.5rem rgb(0 24 56 / 20%), 0 0 0.05rem rgb(0 24 56 / 35%);
+
+  /* Syntax colors, tuned for readability on a projector. */
+  --md-code-hl-string-color: #007a55;
+  --md-code-hl-name-color: #7008e7;
+  --md-code-hl-keyword-color: #007595;
+  --md-code-hl-number-color: var(--prefix-red);
+  --md-code-hl-constant-color: #007a55;
+  --md-code-hl-punctuation-color: var(--gsd-600);
+  --md-code-hl-comment-color: rgb(0 24 56 / 55%);
 }
 
 /* Dark mode -------------------------------------------------------------- */
@@ -34,33 +127,610 @@
   --md-primary-fg-color--light: #002050;
   --md-primary-fg-color--dark: #000c1e;
   --md-primary-bg-color: var(--prefix-white);
+  --md-primary-bg-color--light: var(--gsd-200);
 
   --md-accent-fg-color: var(--prefix-yellow);
   --md-accent-fg-color--transparent: rgb(255 212 50 / 10%);
 
+  --md-default-bg-color: var(--gsd-800);
+  --md-default-bg-color--light: var(--gsd-700);
+  --md-default-bg-color--lighter: var(--gsd-600);
+  --md-default-bg-color--lightest: var(--gsd-500);
+
+  /* Warm off-white rather than pure white, matching --prefix-white. */
+  --md-default-fg-color: var(--prefix-white);
+  --md-default-fg-color--light: rgb(248 246 242 / 62%);
+  --md-default-fg-color--lighter: rgb(248 246 242 / 32%);
+  --md-default-fg-color--lightest: rgb(248 246 242 / 10%);
+
+  --md-typeset-color: var(--prefix-white);
   --md-typeset-a-color: var(--prefix-yellow);
   --md-typeset-mark-color: rgb(255 212 50 / 30%);
+  --md-typeset-table-color: rgb(248 246 242 / 14%);
+  --md-typeset-kbd-color: var(--gsd-600);
+  --md-typeset-kbd-accent-color: var(--gsd-500);
+  --md-typeset-kbd-border-color: var(--gsd-800);
+
+  --md-admonition-fg-color: var(--prefix-white);
+  --md-admonition-bg-color: var(--gsd-800);
+  --md-code-bg-color: var(--gsd-800);
+  --md-code-fg-color: var(--gsd-50);
+
+  --md-code-hl-string-color: #79c0ff;
+  --md-code-hl-name-color: #d2a8ff;
+  --md-code-hl-keyword-color: #eab40a;
+  --md-code-hl-number-color: var(--prefix-red);
+  --md-code-hl-constant-color: #79c0ff;
+  --md-code-hl-punctuation-color: var(--gsd-200);
+  --md-code-hl-comment-color: rgb(248 246 242 / 55%);
+}
+
+/* ==========================================================================
+   Chrome: header, tabs, footer
+   ========================================================================== */
+
+[data-md-color-scheme="default"] .md-header {
+  background-color: #fff;
+  border-bottom: 1px solid var(--gsd-100);
+  box-shadow: none;
+}
+
+[data-md-color-scheme="slate"] .md-header {
+  background-color: var(--gsd-700);
+  box-shadow: none;
+}
+
+.md-header__topic {
+  font-family: var(--font-display), serif;
+}
+
+.md-header__topic:first-child {
+  font-weight: normal;
+}
+
+[dir="ltr"] .md-header__title {
+  margin-left: 0.5rem;
+  font-size: 1.4rem;
+}
+
+.md-header__button.md-logo {
+  padding: 0;
+  margin: 0;
+}
+
+.md-header__button.md-logo img,
+.md-header__button.md-logo svg {
+  height: 2.2rem;
+}
+
+/* Search field picks up the page background rather than the header color. */
+.md-search__form {
+  background: none;
+}
+
+.md-search__input {
+  border-radius: 0.25rem;
+}
+
+[data-md-color-scheme="default"] .md-search__input,
+[data-md-color-scheme="default"] .md-search-result__meta,
+[data-md-color-scheme="default"] .md-search__output {
+  background-color: var(--prefix-white);
+}
+
+[data-md-color-scheme="slate"] .md-search__input,
+[data-md-color-scheme="slate"] .md-search-result__meta,
+[data-md-color-scheme="slate"] .md-search__output {
+  background-color: var(--gsd-800);
+}
+
+[data-md-color-scheme="default"] .md-search-result__article {
+  background-color: #fff;
+}
+
+[data-md-color-scheme="slate"] .md-search-result__article {
+  background-color: var(--gsd-700);
+}
+
+.md-footer {
+  background-color: transparent;
+}
+
+.md-footer__inner {
+  padding-bottom: 1.5rem;
+}
+
+/* Previous/next become rounded cards that highlight in brand yellow. */
+.md-footer__link {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 4rem;
+  padding: 0 1rem;
+  border-radius: 1rem;
+  font-family: var(--font-display), serif;
+}
+
+.md-footer__title {
+  padding: 0;
+  margin: 0;
+}
+
+[data-md-color-scheme="default"] .md-footer__link {
+  color: var(--md-accent-fg-color);
+  border: 1px solid var(--gsd-100);
+  background-color: #fff;
+}
+
+[data-md-color-scheme="slate"] .md-footer__link {
+  color: #fff;
+  border: 1px solid transparent;
+  background-color: var(--gsd-700);
+}
+
+.md-footer__link:hover {
+  border-color: var(--prefix-yellow);
+  opacity: 1;
+}
+
+[data-md-color-scheme="default"] .md-footer-meta {
+  background-color: #fff;
+  color: var(--prefix-navy);
+  border-top: 1px solid var(--gsd-100);
+}
+
+[data-md-color-scheme="slate"] .md-footer-meta {
+  background-color: var(--gsd-700);
+  color: #fff;
+}
+
+[data-md-color-scheme="default"] .md-footer-meta.md-typeset a {
+  color: var(--prefix-navy);
+}
+
+[data-md-color-scheme="default"] .md-footer-meta.md-typeset a:hover {
+  color: var(--prefix-navy);
+  opacity: 0.6;
+}
+
+[data-md-color-scheme="default"] .md-copyright {
+  color: var(--gsd-400);
+}
+
+.md-social__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   Navigation
+
+   The structure is Zensical's; only the colors change. Zensical fills the
+   active item with --md-accent-fg-color--transparent, which lands as a flat
+   grey. We give it a brand-yellow wash instead, so the active page is the one
+   thing in the sidebar wearing brand color.
+   ========================================================================== */
+
+/* Sidebar: navy on a yellow wash, like a highlighter mark. The table of
+   contents keeps the link color instead, because there "where am I on this
+   page" wants to read as a link, not as a heading. */
+.md-nav--primary .md-nav__item .md-nav__link--active,
+.md-nav--primary .md-nav__item .md-nav__link--active code {
+  color: var(--md-accent-fg-color);
+  font-weight: 700;
+}
+
+.md-nav--secondary .md-nav__link--active {
+  color: var(--md-typeset-a-color);
+  font-weight: 700;
+}
+
+.md-nav--primary .md-nav__item > .md-nav__link--active {
+  background-color: rgb(255 212 50 / 24%);
+}
+
+[data-md-color-scheme="slate"] .md-nav--primary .md-nav__item > .md-nav__link--active {
+  background-color: rgb(255 212 50 / 14%);
+}
+
+/* Hover is the same wash at a whisper, so it previews the active state
+   instead of flashing a different color. */
+.md-nav--primary .md-nav__link[href]:hover:not(.md-nav__link--active),
+.md-nav--primary .md-nav__link[href]:focus:not(.md-nav__link--active),
+.md-nav--primary .md-nav__link[for]:hover:not(.md-nav__link--active),
+.md-nav--primary .md-nav__link[for]:focus:not(.md-nav__link--active) {
+  background-color: rgb(255 212 50 / 10%);
+  color: var(--md-default-fg-color);
+}
+
+/* Inactive links sit slightly back from body text so the tree reads as
+   navigation rather than as a wall of links. */
+.md-nav--primary .md-nav__link:not(.md-nav__link--active) {
+  color: rgb(0 24 56 / 78%);
+}
+
+[data-md-color-scheme="slate"] .md-nav--primary .md-nav__link:not(.md-nav__link--active) {
+  color: rgb(248 246 242 / 80%);
+}
+
+/* "Explainers", "Reference", … and the "On this page" heading. */
+.md-nav--primary .md-nav__title,
+.md-nav__item--section > .md-nav__link > .md-ellipsis,
+.md-nav--secondary .md-nav__title {
+  font-family: var(--font-display), serif;
+  font-weight: 500;
+  color: var(--md-default-fg-color);
+}
+
+.md-nav--primary .md-nav__title {
+  font-weight: 300;
+  font-size: 1.4rem;
+}
+
+.md-nav__item--section > .md-nav__link > .md-ellipsis,
+.md-nav--secondary .md-nav__title {
+  font-size: 0.85rem;
+}
+
+.md-nav__item--section > .md-nav__link > .md-ellipsis {
+  margin-top: 1rem;
+}
+
+/* The default scrollbar is a hard grey bar down the sidebar; make it a navy
+   hairline that only shows when it has to. */
+.md-sidebar__scrollwrap {
+  scrollbar-color: rgb(0 24 56 / 14%) transparent;
+}
+
+[data-md-color-scheme="slate"] .md-sidebar__scrollwrap {
+  scrollbar-color: rgb(248 246 242 / 16%) transparent;
+}
+
+/* ==========================================================================
+   Content card
+   ========================================================================== */
+
+.md-content .md-typeset {
+  padding: 0 1.5rem 1.5rem;
+  border-radius: 1.5rem;
+  background: #fff;
+  border: 1px solid var(--gsd-100);
+
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+
+[data-md-color-scheme="slate"] .md-content .md-typeset {
+  background: var(--gsd-700);
+  border: none;
+}
+
+/* The "edit this page" pencil has nowhere to point on a workshop site. */
+.md-content__button {
+  display: none !important;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4,
+.md-typeset h5,
+.md-typeset h6 {
+  font-family: var(--font-display), serif;
+  font-weight: 400;
+  color: var(--md-default-fg-color);
+}
+
+.md-typeset h1 {
+  padding-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.md-typeset h2 {
+  margin-top: 2rem;
+  margin-bottom: 0.8rem;
+}
+
+.md-typeset h3 {
+  margin-top: 1.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.md-typeset p {
+  text-rendering: optimizeLegibility;
+}
+
+.md-typeset .md-button {
+  border-radius: 0.5rem;
+  color: var(--md-accent-fg-color);
+}
+
+.md-typeset .md-button--primary {
+  color: var(--prefix-navy);
+  background-color: var(--prefix-yellow);
+  border-color: var(--prefix-yellow);
+}
+
+.md-typeset .md-button--primary:hover {
+  color: var(--prefix-navy);
+  background-color: var(--prefix-yellow);
+  border-color: var(--prefix-navy);
+}
+
+::selection {
+  background-color: var(--prefix-yellow);
+  color: var(--prefix-navy);
+}
+
+/* ==========================================================================
+   Code
+   ========================================================================== */
+
+.md-typeset code {
+  background-color: var(--gsd-50);
+  color: var(--prefix-navy);
+  border-radius: 0.4rem;
+}
+
+[data-md-color-scheme="slate"] .md-typeset code {
+  background-color: var(--gsd-600);
+  color: var(--gsd-50);
+}
+
+[data-md-color-scheme="slate"] .md-typeset pre > code {
+  background-color: var(--gsd-800);
+}
+
+[data-md-color-scheme="default"] .md-typeset a > code {
+  color: var(--prefix-blue);
+}
+
+[data-md-color-scheme="slate"] .md-typeset a > code {
+  color: var(--prefix-yellow);
+}
+
+/* YAML/TOML keys and strings. The workshop shows a lot of pixi.toml. */
+[data-md-color-scheme="default"] .highlight .nt,
+[data-md-color-scheme="default"] .highlight .na,
+[data-md-color-scheme="default"] .highlight .nl {
+  color: #96c;
+}
+
+[data-md-color-scheme="default"] .highlight .s,
+[data-md-color-scheme="default"] .highlight .s1,
+[data-md-color-scheme="default"] .highlight .s2,
+[data-md-color-scheme="default"] .highlight .sb,
+[data-md-color-scheme="default"] .highlight .sc {
+  color: #007a55;
+}
+
+[data-md-color-scheme="default"] .highlight .p {
+  color: var(--gsd-500);
+}
+
+[data-md-color-scheme="slate"] .highlight .nt,
+[data-md-color-scheme="slate"] .highlight .na,
+[data-md-color-scheme="slate"] .highlight .nl {
+  color: var(--prefix-yellow);
+}
+
+[data-md-color-scheme="slate"] .highlight .s,
+[data-md-color-scheme="slate"] .highlight .s1,
+[data-md-color-scheme="slate"] .highlight .s2,
+[data-md-color-scheme="slate"] .highlight .sb,
+[data-md-color-scheme="slate"] .highlight .sc {
+  color: #ffe066;
+}
+
+[data-md-color-scheme="slate"] .highlight .p {
+  color: var(--gsd-200);
+}
+
+.highlight span.filename {
+  padding: 0.25rem 0.5rem;
+  border-top-left-radius: 0.25rem !important;
+  border-top-right-radius: 0.25rem !important;
+}
+
+[data-md-color-scheme="default"] .highlight span.filename {
+  background-color: var(--gsd-100) !important;
+}
+
+[data-md-color-scheme="slate"] .highlight span.filename {
+  background-color: var(--gsd-600) !important;
+}
+
+/* Code annotation popups. */
+.md-tooltip {
+  border-radius: 0.5rem;
+}
+
+.md-tooltip .md-tooltip__inner.md-typeset {
+  padding: 0.375rem 0.5rem;
+  border-radius: 0.75rem;
+  border: none;
+}
+
+[data-md-color-scheme="default"] .md-tooltip,
+[data-md-color-scheme="default"] .md-tooltip .md-tooltip__inner.md-typeset {
+  background-color: #fff;
+  color: var(--prefix-navy);
+  box-shadow:
+    0 8px 24px rgb(0 0 0 / 12%),
+    0 0 1px rgb(0 0 0 / 20%);
+}
+
+[data-md-color-scheme="slate"] .md-tooltip,
+[data-md-color-scheme="slate"] .md-tooltip .md-tooltip__inner.md-typeset {
+  background-color: var(--gsd-600);
+  color: var(--prefix-white);
+  box-shadow: 0 0 0 1px var(--gsd-500);
+}
+
+[data-md-color-scheme="default"] .md-tooltip__inner code {
+  background-color: var(--gsd-50);
+  color: var(--prefix-navy);
+}
+
+[data-md-color-scheme="slate"] .md-tooltip__inner code {
+  background-color: var(--gsd-700);
+  color: var(--prefix-yellow);
+}
+
+/* ==========================================================================
+   Tables and tabs
+   ========================================================================== */
+
+table code {
+  white-space: nowrap;
+  word-break: keep-all;
+}
+
+/* Avoid tab overflow on small screens and on projectors. */
+.md-typeset .tabbed-set {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.md-typeset .tabbed-labels {
+  box-shadow: none;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.md-typeset .tabbed-labels > label {
+  white-space: nowrap;
+}
+
+/* The sliding indicator under the active tab defaults to plain body color. */
+.js .md-typeset .tabbed-labels::before {
+  background: var(--md-accent-fg-color);
+}
+
+/* ==========================================================================
+   Admonitions in brand colors
+
+   Zensical tints the whole block and colors the title icon; there is no left
+   border to recolor. So we override the block background and the icon color
+   per type, mapping every type onto one of the five brand hues.
+   ========================================================================== */
+
+/* Brand yellow and green are too light for an icon on the white content card,
+   so light mode uses darkened variants. The tints also differ per mode: the
+   same alpha that reads as a soft wash on white turns muddy on the dark card,
+   so dark mode runs lighter. */
+[data-md-color-scheme="default"] {
+  --icon-yellow: #b8860b;
+  --icon-green: #4f8f22;
+
+  --tint-blue: rgb(87 115 255 / 10%);
+  --tint-green: rgb(112 192 56 / 12%);
+  --tint-yellow: rgb(255 212 50 / 18%);
+  --tint-red: rgb(255 106 56 / 12%);
+  --tint-neutral: rgb(0 24 56 / 6%);
+}
+
+[data-md-color-scheme="slate"] {
+  --icon-yellow: var(--prefix-yellow);
+  --icon-green: var(--prefix-green);
+
+  --tint-blue: rgb(87 115 255 / 15%);
+  --tint-green: rgb(112 192 56 / 10%);
+  --tint-yellow: rgb(255 212 50 / 9%);
+  --tint-red: rgb(255 106 56 / 11%);
+  --tint-neutral: rgb(248 246 242 / 7%);
+}
+
+/* Blue: note, info, question */
+.md-typeset .admonition.note,
+.md-typeset details.note,
+.md-typeset .admonition.info,
+.md-typeset details.info,
+.md-typeset .admonition.question,
+.md-typeset details.question {
+  background-color: var(--tint-blue);
+}
+
+.md-typeset .note > .admonition-title::before,
+.md-typeset .note > summary::before,
+.md-typeset .info > .admonition-title::before,
+.md-typeset .info > summary::before,
+.md-typeset .question > .admonition-title::before,
+.md-typeset .question > summary::before {
+  background-color: var(--prefix-blue);
+}
+
+/* Green: tip, success */
+.md-typeset .admonition.tip,
+.md-typeset details.tip,
+.md-typeset .admonition.success,
+.md-typeset details.success {
+  background-color: var(--tint-green);
+}
+
+.md-typeset .tip > .admonition-title::before,
+.md-typeset .tip > summary::before,
+.md-typeset .success > .admonition-title::before,
+.md-typeset .success > summary::before {
+  background-color: var(--icon-green);
+}
+
+/* Yellow: warning, example */
+.md-typeset .admonition.warning,
+.md-typeset details.warning,
+.md-typeset .admonition.example,
+.md-typeset details.example {
+  background-color: var(--tint-yellow);
+}
+
+.md-typeset .warning > .admonition-title::before,
+.md-typeset .warning > summary::before,
+.md-typeset .example > .admonition-title::before,
+.md-typeset .example > summary::before {
+  background-color: var(--icon-yellow);
+}
+
+/* Red: danger, failure, bug */
+.md-typeset .admonition.danger,
+.md-typeset details.danger,
+.md-typeset .admonition.failure,
+.md-typeset details.failure,
+.md-typeset .admonition.bug,
+.md-typeset details.bug {
+  background-color: var(--tint-red);
+}
+
+.md-typeset .danger > .admonition-title::before,
+.md-typeset .danger > summary::before,
+.md-typeset .failure > .admonition-title::before,
+.md-typeset .failure > summary::before,
+.md-typeset .bug > .admonition-title::before,
+.md-typeset .bug > summary::before {
+  background-color: var(--prefix-red);
+}
+
+/* Neutral: abstract, quote. These carry framing, not a signal, so they get a
+   grey that reads the same on the white card and the dark one. */
+.md-typeset .admonition.abstract,
+.md-typeset details.abstract,
+.md-typeset .admonition.quote,
+.md-typeset details.quote {
+  background-color: var(--tint-neutral);
+}
+
+.md-typeset .abstract > .admonition-title::before,
+.md-typeset .abstract > summary::before,
+.md-typeset .quote > .admonition-title::before,
+.md-typeset .quote > summary::before {
+  background-color: var(--gsd-400);
 }
 
 /* ==========================================================================
    Workshop-specific building blocks
    ========================================================================== */
-
-/* Admonition borders in brand colors. */
-.md-typeset .admonition.tip,
-.md-typeset details.tip {
-  border-color: var(--prefix-green);
-}
-
-.md-typeset .admonition.warning,
-.md-typeset details.warning {
-  border-color: var(--prefix-yellow);
-}
-
-.md-typeset .admonition.danger,
-.md-typeset details.danger {
-  border-color: var(--prefix-red);
-}
 
 /* The schedule table on the landing page: keep the time column narrow and
    unbreakable so the agenda stays readable on a projector. */
@@ -78,17 +748,12 @@
 
 .md-typeset .admonition.exercise,
 .md-typeset details.exercise {
-  border-color: var(--prefix-blue);
-}
-
-.md-typeset .exercise > .admonition-title,
-.md-typeset .exercise > summary {
-  background-color: rgb(87 115 255 / 10%);
+  background-color: var(--tint-yellow);
 }
 
 .md-typeset .exercise > .admonition-title::before,
 .md-typeset .exercise > summary::before {
-  background-color: var(--prefix-blue);
+  background-color: var(--icon-yellow);
   -webkit-mask-image: var(--md-admonition-icon--exercise);
   mask-image: var(--md-admonition-icon--exercise);
 }

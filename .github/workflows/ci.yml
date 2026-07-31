@@ -62,7 +62,7 @@ jobs:
         run: pixi run --manifest-path solutions/${{ matrix.solution }}/pixi.toml test
 
   # Exercise 1 claims one workspace can hold two ROS distributions. Prove it.
-  # Linux only — this installs two full ROS stacks, and the claim is not
+  # Linux only. This installs two full ROS stacks, and the claim is not
   # platform-specific.
   two-distros:
     needs: lockfiles

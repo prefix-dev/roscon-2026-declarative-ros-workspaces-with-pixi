@@ -1,4 +1,4 @@
-# Solution to Exercise 1 — Your first ROS 2 workspace.
+# Solution to Exercise 1: Your first ROS 2 workspace.
 #
 # A complete ROS 2 environment with no ROS installed on the machine, and the
 # same workspace targeting two ROS distributions at once:
@@ -19,7 +19,7 @@ platforms = ["linux-64", "linux-aarch64", "osx-arm64", "osx-64", "win-64"]
 version = "0.1.0"
 
 # ---------------------------------------------------------------------------
-# ROS 2 Jazzy — the 2024 LTS, and what most teams run today.
+# ROS 2 Jazzy: the 2024 LTS, and what most teams run today.
 #
 # Channels are declared per feature, which is what lets one workspace hold two
 # ROS distributions without them ever meeting.
@@ -49,7 +49,7 @@ description = "Drive the turtle with the arrow keys"
 
 [feature.jazzy.tasks.topics]
 cmd = "ros2 topic list"
-description = "List the ROS topics — proof that ROS works without sourcing anything"
+description = "List the ROS topics: proof that ROS works without sourcing anything"
 
 [feature.jazzy.tasks.build]
 cmd = "colcon build --symlink-install"
@@ -57,7 +57,7 @@ description = "Build our own package the way you do it today, with colcon"
 
 [feature.jazzy.tasks.test]
 cmd = "python -c \"import os; print('ros:', os.environ['ROS_DISTRO'], 'ok')\""
-description = "Prove ROS is active — what CI runs"
+description = "Prove ROS is active: what CI runs"
 
 # Running our colcon-built node needs the overlay sourced first, and the command
 # to do that differs per platform. Exercise 2 deletes all of this.
@@ -72,7 +72,7 @@ depends-on = ["build"]
 description = "Run our own node (after sourcing the colcon overlay)"
 
 # ---------------------------------------------------------------------------
-# ROS 2 Kilted — a different distribution, same workspace.
+# ROS 2 Kilted: a different distribution, same workspace.
 #
 # Nothing here is special: a different channel and a different package prefix.
 # That is the whole diff between supporting one ROS distro and supporting two.
@@ -98,7 +98,7 @@ description = "List the ROS topics"
 
 [feature.kilted.tasks.test-kilted]
 cmd = "python -c \"import os; print('ros:', os.environ['ROS_DISTRO'], 'ok')\""
-description = "Prove ROS is active — and that it is a different distro"
+description = "Prove ROS is active, and that it is a different distro"
 
 [environments]
 # Jazzy is what you get by default.

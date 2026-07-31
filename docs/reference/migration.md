@@ -29,7 +29,7 @@ icon: lucide/arrow-right-left
 
 ## What you give up
 
-<!-- TODO(content): be straight about it — packages not yet in RoboStack, apt-only vendor drivers,
+<!-- TODO(content): be straight about it: packages not yet in RoboStack, apt-only vendor drivers,
      the parts of the ROS tooling that assume /opt/ros. And what to do about each. -->
 
 ## Deploying to a robot
@@ -39,7 +39,7 @@ icon: lucide/arrow-right-left
 ## Getting help
 
 - [Pixi documentation](https://pixi.prefix.dev)
-- [RoboStack](https://robostack.github.io) and its
-  [GitHub organisation](https://github.com/RoboStack)
+- [RoboStack](https://robostack.github.io) and its [GitHub organisation](https://github.com/RoboStack)
 - The `#pixi` channel on [Discord](https://discord.gg/kKV8ZxyzY4)
-- Missing a package in RoboStack? It is a pull request, and we will help you write it.
+- Missing a package in RoboStack?
+  It is a pull request, and we will help you write it.

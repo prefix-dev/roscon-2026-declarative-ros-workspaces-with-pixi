@@ -1,10 +1,10 @@
-# Solution to Exercise 3 — Ready for your team.
+# Solution to Exercise 3: Ready for your team.
 #
 # The packages from Exercise 2, set up the way you would hand them to
 # colleagues and to a robot:
 #
 #   * every platform the team uses, all solved from whichever one you are on
-#   * named targets for hardware nobody is sitting at — a GPU box and a Jetson
+#   * named targets for hardware nobody is sitting at: a GPU box and a Jetson
 #   * a lockfile check, a build and a publish step that CI can run
 #   * a Dockerfile that ships the exact environment from the lockfile
 #
@@ -25,7 +25,7 @@ preview = ["pixi-build"]
 #
 # The named entries describe machines we do not have in front of us: the solver
 # is told what they report, so we can resolve for them from a laptop. This is
-# the whole trick — solving is cheap and portable, installing is the expensive
+# the whole trick: solving is cheap and portable, installing is the expensive
 # part you only do where you need it.
 platforms = [
   "linux-64",
@@ -49,11 +49,11 @@ description = "Run the C++ node"
 
 [tasks.lock-check]
 cmd = "pixi lock --check"
-description = "Fail if the lockfile is out of date — the gate CI enforces"
+description = "Fail if the lockfile is out of date: the gate CI enforces"
 
 [tasks.test]
 cmd = "python -c \"import turtle_choreographer.choreograph as c; assert c.main; print('packages: ok')\""
-description = "Prove both packages were built and installed — what CI runs"
+description = "Prove both packages were built and installed: what CI runs"
 
 [tasks.build-package]
 cmd = "pixi build --output-dir output"
@@ -88,7 +88,7 @@ platforms = ["jetson"]
 cuda-version = ">=12.6"
 
 # ---------------------------------------------------------------------------
-# A GPU workstation — a desktop with an NVIDIA card, or the cloud instance the
+# A GPU workstation: a desktop with an NVIDIA card, or the cloud instance the
 # workshop hands out. Only Linux can have CUDA, which is why this feature is
 # restricted to the GPU platform rather than declared workspace-wide.
 # ---------------------------------------------------------------------------

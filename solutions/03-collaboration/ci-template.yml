@@ -1,6 +1,6 @@
 # A GitHub Actions workflow to copy into your own ROS project.
 #
-# Not active in this repository — GitHub only runs workflows from
+# Not active in this repository. GitHub only runs workflows from
 # `.github/workflows/`. The live version of this, running against all three
 # solutions, is in `.github/workflows/ci.yml` at the root of this repository.
 #

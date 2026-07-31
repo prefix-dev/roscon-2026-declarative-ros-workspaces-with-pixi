@@ -6,8 +6,8 @@ icon: lucide/download
 
 <!-- TODO(content): verify every command on Linux, macOS and Windows before the conference. -->
 
-Everything below runs at home on your own laptop. Doing it in advance means you spend the workshop
-learning instead of downloading.
+Everything below runs at home on your own laptop.
+Doing it in advance means you spend the workshop learning instead of downloading.
 
 ## 1. Install Pixi
 
@@ -23,7 +23,8 @@ learning instead of downloading.
     powershell -ExecutionPolicy ByPass -c "irm -useb https://pixi.sh/install.ps1 | iex"
     ```
 
-Open a new terminal and check the version. You need 0.73 or newer:
+Open a new terminal and check the version.
+You need 0.73 or newer:
 
 ```bash
 pixi --version
@@ -40,9 +41,10 @@ cd roscon-2026-declarative-ros-workspaces-with-pixi
 
 !!! warning "This is the step that matters"
 
-    The exercises use two ROS distributions. Downloading them at home means the workshop installs
-    from your disk instead of over conference Wi-Fi. Expect this to take a while and to use a couple
-    of GB &mdash; run it the evening before, not on the morning of.
+    The exercises use two ROS distributions.
+    Downloading them at home means the workshop installs from your disk instead of over conference Wi-Fi.
+    Expect this to take a while and to use a couple of GB.
+    Run it the evening before, not on the morning of.
 
 ```bash
 pixi install --all --manifest-path solutions/01-ros-workspace/pixi.toml
@@ -64,7 +66,8 @@ pixi install --all --manifest-path solutions/01-ros-workspace/pixi.toml
 pixi run --manifest-path solutions/01-ros-workspace/pixi.toml sim
 ```
 
-A window with a turtle should appear. Close it, then check the second distro too:
+A window with a turtle should appear.
+Close it, then check the second distro too:
 
 ```bash
 pixi run --manifest-path solutions/01-ros-workspace/pixi.toml test-kilted
@@ -74,20 +77,21 @@ If both worked, you are ready.
 
 ## What you do not need
 
-- No ROS installation. No `apt`, no `rosdep`, no `/opt/ros`. If you already have one it will not get
-  in the way, and it will not be used.
+- No ROS installation.
+  No `apt`, no `rosdep`, no `/opt/ros`.
+  If you already have one it will not get in the way, and it will not be used.
 - No `sudo`, no Docker, no virtual machine.
-- No GPU. The CUDA parts of the workshop are declared and built without one; only running the result
-  needs the hardware.
+- No GPU.
+  The CUDA parts of the workshop are declared and built without one; only running the result needs the hardware.
 
 ## Bringing your own project
 
-You are welcome to work on your own ROS workspace instead of the example. Have it checked out and
-building the way you build it today, and bring your `package.xml` files. See
-[Migrating from rosdep & colcon](reference/migration.md) for the path we will follow.
+You are welcome to work on your own ROS workspace instead of the example.
+Have it checked out and building the way you build it today, and bring your `package.xml` files.
+See [Migrating from rosdep & colcon](reference/migration.md) for the path we will follow.
 
 !!! tip "Something not working?"
 
-    Check [Troubleshooting](reference/troubleshooting.md) first. Still stuck? Grab one of us at the
-    start of the session, or ask in the `#pixi` channel on
-    [Discord](https://discord.gg/kKV8ZxyzY4).
+    Check [Troubleshooting](reference/troubleshooting.md) first.
+    Still stuck?
+    Grab one of us at the start of the session, or ask in the `#pixi` channel on [Discord](https://discord.gg/kKV8ZxyzY4).

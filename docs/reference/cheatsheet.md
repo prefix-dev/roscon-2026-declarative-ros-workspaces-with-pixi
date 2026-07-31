@@ -34,7 +34,7 @@ icon: lucide/terminal
 | --- | --- |
 | `pixi install` | Install the environment from the lockfile |
 | `pixi lock` | Update the lockfile without installing |
-| `pixi lock --check` | Fail if the lockfile is out of date &mdash; use this in CI |
+| `pixi lock --check` | Fail if the lockfile is out of date. Use this in CI |
 | `pixi update <package>` | Update one package to the newest allowed version |
 | `pixi list` | Show what is installed |
 | `pixi tree <package>` | Show why a package is in the environment |

@@ -2,10 +2,10 @@
 theme: default
 title: Declarative ROS workspaces with Pixi and RoboStack
 info: |
-  ROSCon 2026 — Tuesday, September 22nd, 08:00–12:00
+  ROSCon 2026, Tuesday, September 22nd, 08:00–12:00
   A hands-on workshop for reproducible ROS development.
 
-  Ruben Arts, Wolf Vollprecht, Bas Zalmstra — prefix.dev
+  Ruben Arts, Wolf Vollprecht, Bas Zalmstra (prefix.dev)
 class: text-center
 colorSchema: light
 highlighter: shiki
@@ -29,17 +29,16 @@ Each section ends with a slide that hands over to an exercise.
 -->
 
 ---
-layout: intro
-section: Welcome
+layout: intro section: Welcome
 ---
 
 # Who we are
 
-<!-- TODO(content): 15 min block — three short intros and the setup check. -->
+<!-- TODO(content): 15 min block: three short intros and the setup check. -->
 
-- **Ruben Arts** — prefix.dev
-- **Wolf Vollprecht** — prefix.dev
-- **Bas Zalmstra** — prefix.dev
+- **Ruben Arts:** prefix.dev
+- **Wolf Vollprecht:** prefix.dev
+- **Bas Zalmstra:** prefix.dev
 
 ---
 section: Welcome
@@ -52,18 +51,16 @@ section: Welcome
 | 15 min | Welcome and setup | together |
 | 15 min | Why reproducibility matters | we talk |
 | 30 min | Pixi in 30 minutes | we talk |
-| 30 min | **Exercise 1** — your first ROS 2 workspace | you type |
+| 30 min | **Exercise 1:** your first ROS 2 workspace | you type |
 | 30 min | Packages, virtual packages & CUDA | we talk |
-| 30 min | **Exercise 2** — build a ROS package with Pixi | you type |
+| 30 min | **Exercise 2:** build a ROS package with Pixi | you type |
 | 15 min | Collaboration, CI/CD & Docker | we talk |
-| 20 min | **Exercise 3** — ready for your team | you type |
+| 20 min | **Exercise 3:** ready for your team | you type |
 
-Everything is written up at
-**prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi**
+Everything is written up at **prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi**
 
 ---
-section: Welcome
-layout: center
+section: Welcome layout: center
 ---
 
 # Before we start
@@ -71,8 +68,7 @@ layout: center
 <!-- TODO(content): the QR code to the site, and the one command that proves their setup works. -->
 
 ---
-section: Philosophy
-layout: section
+section: Philosophy layout: section
 ---
 
 # Why reproducibility matters
@@ -112,8 +108,7 @@ section: Philosophy
 <!-- TODO(content) -->
 
 ---
-section: Pixi
-layout: section
+section: Pixi layout: section
 ---
 
 # Pixi in 30 minutes
@@ -153,9 +148,7 @@ section: Pixi
 <!-- TODO(content) -->
 
 ---
-section: Exercise 1
-layout: center
-class: text-center
+section: Exercise 1 layout: center class: text-center
 ---
 
 # Exercise 1
@@ -167,8 +160,7 @@ class: text-center
 <!-- TODO(content): the URL and the four steps, big enough to read from the back of the room. -->
 
 ---
-section: Packaging
-layout: section
+section: Packaging layout: section
 ---
 
 # Packages, virtual packages & CUDA
@@ -208,9 +200,7 @@ section: Packaging
 <!-- TODO(content) -->
 
 ---
-section: Exercise 2
-layout: center
-class: text-center
+section: Exercise 2 layout: center class: text-center
 ---
 
 # Exercise 2
@@ -222,8 +212,7 @@ class: text-center
 <!-- TODO(content) -->
 
 ---
-section: Collaboration
-layout: section
+section: Collaboration layout: section
 ---
 
 # Collaboration, CI/CD & Docker
@@ -255,9 +244,7 @@ section: Collaboration
 <!-- TODO(content) -->
 
 ---
-section: Exercise 3
-layout: center
-class: text-center
+section: Exercise 3 layout: center class: text-center
 ---
 
 # Exercise 3
@@ -269,9 +256,7 @@ class: text-center
 <!-- TODO(content) -->
 
 ---
-section: Wrap-up
-layout: center
-class: text-center
+section: Wrap-up layout: center class: text-center
 ---
 
 # Thank you
@@ -280,4 +265,5 @@ class: text-center
 
 pixi.prefix.dev · robostack.github.io · discord.gg/kKV8ZxyzY4
 
-We are here for the rest of the conference. Bring us your workspace.
+We are here for the rest of the conference.
+Bring us your workspace.

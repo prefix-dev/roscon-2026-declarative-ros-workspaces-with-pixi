@@ -6,11 +6,9 @@ icon: lucide/users
 
 !!! abstract "15 minutes, presented"
 
-    **Slides:** [Prepare for collaboration](../slides/) &middot;
-    **Followed by:** [Exercise 3](../exercises/03-collaboration.md)
+    **Slides:** [Prepare for collaboration](../slides/) &middot; **Followed by:** [Exercise 3](../exercises/03-collaboration.md)
 
-    By the end of this block you should know what changes when the workspace stops being yours and
-    starts being your team's.
+    By the end of this block you should know what changes when the workspace stops being yours and starts being your team's.
 
 <!-- TODO(content): 15 min. Fastest block; the exercise does the heavy lifting. -->
 
@@ -55,4 +53,4 @@ icon: lucide/users
 
 ---
 
-Now go do [Exercise 3 &mdash; Ready for your team](../exercises/03-collaboration.md).
+Now go do [Exercise 3: Ready for your team](../exercises/03-collaboration.md).

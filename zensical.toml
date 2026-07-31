@@ -12,8 +12,23 @@ site_url = "https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-
 site_description = "ROSCon 2026 workshop: build reproducible, multi-platform ROS 2 workspaces with Pixi and RoboStack"
 site_author = "Prefix.dev GmbH"
 
+# The header repository widget points at Pixi rather than at this workshop, so
+# the star and fork counts it fetches are Pixi's and a click goes somewhere
+# worth starring. The workshop repo is linked from the footer and the welcome
+# page instead.
+#
+# These have to be flat keys on [project]: Zensical unwraps [project] into its
+# config and reads repo_url/repo_name. A [project.repo] sub-table is accepted
+# by the TOML parser and then silently ignored, which renders an empty widget.
+repo_url = "https://github.com/prefix-dev/pixi"
+repo_name = "prefix-dev/pixi"
+
+# repo_url would otherwise derive an "edit this page" URI pointing into the
+# Pixi repository, where these pages do not exist.
+edit_uri = ""
+
 copyright = """
-Copyright &copy; 2026 Prefix.dev GmbH &mdash;
+Copyright &copy; 2026 Prefix.dev GmbH.
 <a href="https://github.com/prefix-dev/roscon-2026-declarative-ros-workspaces-with-pixi">source on GitHub</a>
 """
 
@@ -31,9 +46,9 @@ nav = [
   ] },
   { "Exercises" = [
     { "How the exercises work" = "exercises/index.md" },
-    { "1 &mdash; Your first ROS 2 workspace" = "exercises/01-ros-workspace.md" },
-    { "2 &mdash; Build a ROS package with Pixi" = "exercises/02-ros-package.md" },
-    { "3 &mdash; Ready for your team" = "exercises/03-collaboration.md" },
+    { "1. Your first ROS 2 workspace" = "exercises/01-ros-workspace.md" },
+    { "2. Build a ROS package with Pixi" = "exercises/02-ros-package.md" },
+    { "3. Ready for your team" = "exercises/03-collaboration.md" },
   ] },
   { "Reference" = [
     { "Command cheat sheet" = "reference/cheatsheet.md" },
@@ -81,6 +96,9 @@ features = [
 text = "Inter"
 code = "JetBrains Mono"
 
+[project.theme.icon]
+repo = "fontawesome/brands/github"
+
 # Follow the system preference by default, but let the reader override it.
 [[project.theme.palette]]
 media = "(prefers-color-scheme)"
@@ -104,12 +122,10 @@ toggle.icon = "lucide/moon"
 toggle.name = "Switch to system preference"
 
 # ----------------------------------------------------------------------------
-# Repository & social
+# Social
+#
+# The repository widget itself is configured with repo_url on [project] above.
 # ----------------------------------------------------------------------------
-[project.repo]
-url = "https://github.com/prefix-dev/roscon-2026-declarative-ros-workspaces-with-pixi"
-name = "prefix-dev/roscon-2026-…-with-pixi"
-
 [[project.extra.social]]
 icon = "fontawesome/brands/github"
 link = "https://github.com/prefix-dev/pixi"

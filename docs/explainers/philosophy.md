@@ -8,10 +8,9 @@ icon: lucide/lightbulb
 
     **Slides:** [Philosophy](../slides/)
 
-    By the end of this block you should be able to explain, in your own words, why a robotics team
-    ends up with "works on my machine" and what a lockfile does about it.
+    By the end of this block you should be able to explain, in your own words, why a robotics team ends up with "works on my machine" and what a lockfile does about it.
 
-<!-- TODO(content): 15 min of narrative. Keep it opinionated and short — this is the only block
+<!-- TODO(content): 15 min of narrative. Keep it opinionated and short. This is the only block
      without an exercise, so it has to earn its slot. -->
 
 ## Reproducible package management

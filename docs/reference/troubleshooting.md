@@ -13,8 +13,8 @@ icon: lucide/life-buoy
 
 ## The solver cannot find a ROS package
 
-<!-- TODO(content): missing channel, wrong distro prefix, package genuinely absent for the
-     platform. How to tell the three apart with pixi search. -->
+<!-- TODO(content): missing channel, wrong distro prefix, package absent for the platform.
+     How to tell the three apart with pixi search. -->
 
 ## A GUI window does not appear
 
@@ -41,6 +41,5 @@ icon: lucide/life-buoy
 
 ---
 
-Not here? Ask in the room, or open an issue on
-[GitHub](https://github.com/prefix-dev/roscon-2026-declarative-ros-workspaces-with-pixi/issues) so
-the next person finds the answer.
+Not here?
+Ask in the room, or open an issue on [GitHub](https://github.com/prefix-dev/roscon-2026-declarative-ros-workspaces-with-pixi/issues) so the next person finds the answer.
