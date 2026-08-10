@@ -49,7 +49,7 @@ section: Welcome
 | | | |
 | --- | --- | --- |
 | 15 min | Welcome and setup | together |
-| 15 min | Why reproducibility matters | we talk |
+| 15 min | Robotics for everyone | we talk |
 | 30 min | Pixi in 30 minutes | we talk |
 | 30 min | **Exercise 1:** your first ROS 2 workspace | you type |
 | 30 min | Packages, virtual packages & CUDA | we talk |
@@ -71,7 +71,7 @@ section: Welcome layout: center
 section: Philosophy layout: section
 ---
 
-# Why reproducibility matters
+# Robotics for everyone
 
 <!-- TODO(content): 15 min. See docs/explainers/philosophy.md for the outline. -->
 
@@ -79,7 +79,7 @@ section: Philosophy layout: section
 section: Philosophy
 ---
 
-# Reproducible package management
+# Reproducibility is the foundation
 
 <!-- TODO(content) -->
 
@@ -87,7 +87,7 @@ section: Philosophy
 section: Philosophy
 ---
 
-# Development workflows
+# One project, many workflows
 
 <!-- TODO(content) -->
 
@@ -95,7 +95,7 @@ section: Philosophy
 section: Philosophy
 ---
 
-# Avoiding OS lock-in
+# Meeting people where they are
 
 <!-- TODO(content) -->
 
@@ -103,7 +103,7 @@ section: Philosophy
 section: Philosophy
 ---
 
-# conda-forge + RoboStack
+# Standing on conda-forge and RoboStack
 
 <!-- TODO(content) -->
 

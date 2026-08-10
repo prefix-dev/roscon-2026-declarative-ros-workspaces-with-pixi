@@ -36,7 +36,7 @@ All experience levels are welcome.
 | Time | Block | Format |
 | --- | --- | --- |
 | 15 min | Welcome, introductions and [setup check](setup.md) | Together |
-| 15 min | [Why reproducibility matters](explainers/philosophy.md) | Presented |
+| 15 min | [Robotics for everyone](explainers/philosophy.md) | Presented |
 | 30 min | [Pixi in 30 minutes](explainers/pixi-introduction.md) | Presented |
 | 30 min | [Exercise 1: Your first ROS 2 workspace](exercises/01-ros-workspace.md) | Hands-on |
 | 30 min | [Packages, virtual packages & CUDA](explainers/packaging-and-cuda.md) | Presented |
