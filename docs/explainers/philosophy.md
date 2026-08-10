@@ -109,8 +109,10 @@ This allows you to mix and match dependencies from both ecosystems, and gives yo
 None of this would work without an enormous amount of community effort underneath it.
 [conda-forge](https://conda-forge.org) is a huge, community-run collection of pre-built, cross-platform binary packages, tens of thousands of them, already compiled for Linux, macOS, and Windows.
 That is the base layer.
+It provides packages and libraries like `gcc`, `Python`, `cmake`, `OpenCV`, `PyTorch`, and many more, all built for multiple platforms and architectures.
 
 RoboStack builds on conda-forge and packages the ROS distributions themselves as conda packages, so you can install ROS the same way you install anything else, on any of those platforms.
+It provides packages from most ROS distributions, from Noetic to Lyrical, like `ros-noetic-rqt` to `ros-lyrical-plotjuggler`, and everything in between.
 It is maintained by people like [Tobias Fischer](https://github.com/Tobias-Fischer), [Silvio Traversaro](https://github.com/traversaro), and [Daisuke Nishimatsu](https://github.com/wep21), and it is genuinely hard work to keep ROS compiling across multiple operating systems.
 The two channels compose into a single environment: conda-forge for most dependencies, RoboStack for the ROS parts.
 

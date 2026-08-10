@@ -2,7 +2,7 @@
 icon: lucide/cpu
 ---
 
-# Packages, virtual packages & CUDA
+# Using with CUDA machines
 
 !!! abstract "30 minutes, presented"
 
@@ -10,26 +10,10 @@ icon: lucide/cpu
 
     By the end of this block you should understand the difference between depending on a package and *being* one, and how Pixi decides whether your machine can run a CUDA build.
 
-<!-- TODO(content): 30 min. This is the densest block; cut ruthlessly if the room is behind
-     schedule, because Exercise 2 is where it lands. -->
 
-## What is in a conda package
+## What does one require to setup a CUDA-enabled ROS workspace?
 
-<!-- TODO(content):
-     - Anatomy: files, index.json, run/host/build dependencies, run_exports.
-     - Why relocatable prefixes matter and how they are patched.
-     - How a ROS package becomes ros-<distro>-<name>.
--->
 
-## Your workspace as a package
-
-<!-- TODO(content):
-     - `[package]` next to `[workspace]`, and the `pixi-build` preview feature.
-     - Build backends: pixi-build-cmake, pixi-build-python, pixi-build-ros.
-     - What pixi-build-ros reads out of package.xml, and what it maps to.
-     - Source dependencies: `{ path = "src/..." }`, and why editable-by-default matters.
-     - `pixi build` vs `pixi install`: when a rebuild is triggered.
--->
 
 ## Virtual packages
 

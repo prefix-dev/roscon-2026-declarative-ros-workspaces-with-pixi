@@ -587,22 +587,48 @@ table code {
   word-break: keep-all;
 }
 
-/* Avoid tab overflow on small screens and on projectors. */
+/* Content tabs render as a bounded card. Without a border the last tab's
+   content bleeds straight into the next section, so the reader cannot tell
+   where the tabbed block ends. The card makes the boundary obvious: a header
+   strip of labels on top, the active panel inside the same box. */
 .md-typeset .tabbed-set {
   max-width: 100%;
   overflow-x: auto;
+  border: 1px solid var(--gsd-100);
+  border-radius: 0.5rem;
 }
 
+[data-md-color-scheme="slate"] .md-typeset .tabbed-set {
+  border-color: var(--gsd-600);
+}
+
+/* The label row is the card header: a subtle fill and a divider under it, so
+   the tabs read as controls attached to the panel below them. */
 .md-typeset .tabbed-labels {
   box-shadow: none;
   max-width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
+  background-color: var(--gsd-50);
+  border-bottom: 1px solid var(--gsd-100);
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .tabbed-labels {
+  background-color: var(--gsd-800);
+  border-bottom-color: var(--gsd-600);
 }
 
 .md-typeset .tabbed-labels > label {
   white-space: nowrap;
+}
+
+/* Breathing room so the panel's code blocks sit inside the card instead of
+   touching its border. */
+.md-typeset .tabbed-content {
+  padding: 0.6rem 0.8rem;
 }
 
 /* The sliding indicator under the active tab defaults to plain body color. */
