@@ -52,7 +52,7 @@ section: Welcome
 | 15 min | Robotics for everyone | we talk |
 | 30 min | Pixi in 30 minutes | we talk |
 | 30 min | **Exercise 1:** your first ROS 2 workspace | you type |
-| 30 min | Packages, virtual packages & CUDA | we talk |
+| 30 min | CUDA | we talk |
 | 30 min | **Exercise 2:** build a ROS package with Pixi | you type |
 | 15 min | Collaboration, CI/CD & Docker | we talk |
 | 20 min | **Exercise 3:** ready for your team | you type |
@@ -163,9 +163,9 @@ section: Exercise 1 layout: center class: text-center
 section: Packaging layout: section
 ---
 
-# Packages, virtual packages & CUDA
+# CUDA
 
-<!-- TODO(content): 30 min. See docs/explainers/packaging-and-cuda.md for the outline. -->
+<!-- TODO(content): 30 min. See docs/explainers/cuda.md for the outline. -->
 
 ---
 section: Packaging

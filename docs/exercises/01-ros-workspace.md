@@ -82,4 +82,4 @@ pixi run test-kilted     # ...and the same workspace runs a different distro
 
 ---
 
-Next: [Packages, virtual packages & CUDA](../explainers/packaging-and-cuda.md).
+Next: [CUDA](../explainers/cuda.md).

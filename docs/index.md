@@ -39,7 +39,7 @@ All experience levels are welcome.
 | 15 min | [Robotics for everyone](explainers/philosophy.md) | Presented |
 | 30 min | [Pixi in 30 minutes](explainers/pixi-introduction.md) | Presented |
 | 30 min | [Exercise 1: Your first ROS 2 workspace](exercises/01-ros-workspace.md) | Hands-on |
-| 30 min | [Packages, virtual packages & CUDA](explainers/packaging-and-cuda.md) | Presented |
+| 30 min | [CUDA](explainers/cuda.md) | Presented |
 | 30 min | [Exercise 2: Build a ROS package with Pixi](exercises/02-ros-package.md) | Hands-on |
 | 15 min | [Collaboration, CI/CD & Docker](explainers/collaboration.md) | Presented |
 | 20 min | [Exercise 3: Ready for your team](exercises/03-collaboration.md) | Hands-on |

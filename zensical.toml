@@ -41,7 +41,7 @@ nav = [
   { "Explainers" = [
     { "Philosophy" = "explainers/philosophy.md" },
     { "Pixi in 30 minutes" = "explainers/pixi-introduction.md" },
-    { "Packages, virtual packages & CUDA" = "explainers/packaging-and-cuda.md" },
+    { "CUDA" = "explainers/cuda.md" },
     { "Collaboration, CI/CD & Docker" = "explainers/collaboration.md" },
   ] },
   { "Exercises" = [
