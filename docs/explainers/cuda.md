@@ -80,4 +80,3 @@ start = "echo 'Starting on a CUDA machine'"
 [tasks]
 start = "echo 'Starting on a non-CUDA machine'"
 ```
-

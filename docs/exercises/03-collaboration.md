@@ -15,9 +15,12 @@ icon: lucide/git-branch
 
 ## Step 1: Add every platform
 
-<!-- TODO(content): pixi workspace platform add for linux-64, linux-aarch64, osx-64, win-64.
+<!-- TODO(content): this is where multi-platform is introduced; Exercise 1 stays on the
+     participant's own machine. Start from the single-platform starter, then
+     `pixi workspace platform add linux-64 osx-arm64 win-64`.
      Re-solve, look at what happened to the lockfile.
-     `pixi list --platform win-64`: what your colleague gets, from your Mac. -->
+     `pixi list --platform win-64`: what your colleague gets, from your Mac.
+     (The Jetson aarch64 target comes in Step 2.) -->
 
 ## Step 2: Target hardware you do not own
 

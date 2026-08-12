@@ -40,7 +40,7 @@ cmd = "ros2 run turtlesim turtlesim_node"
 description = "Start the turtlesim window"
 
 [tasks.build]
-cmd = "colcon build --symlink-install"
+cmd = "colcon build"
 description = "Build with colcon, the thing you are about to replace"
 
 [tasks.dance]

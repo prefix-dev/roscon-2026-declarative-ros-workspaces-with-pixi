@@ -160,6 +160,13 @@ permalink = true
 [project.markdown_extensions.pymdownx.smartsymbols]
 [project.markdown_extensions.pymdownx.tilde]
 
+# Include tested source straight from the repo (e.g. the solution pixi.toml),
+# so code shown in the docs cannot drift from what CI actually solves.
+# check_paths turns a missing or moved include into a build error.
+[project.markdown_extensions.pymdownx.snippets]
+base_path = ["."]
+check_paths = true
+
 [project.markdown_extensions.pymdownx.emoji]
 emoji_generator = "zensical.extensions.emoji.to_svg"
 emoji_index = "zensical.extensions.emoji.twemoji"

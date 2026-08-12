@@ -15,7 +15,7 @@
 name = "turtle-workspace"
 description = "A ROS 2 workspace managed entirely by Pixi, targeting two distros"
 channels = ["conda-forge"]
-platforms = ["linux-64", "linux-aarch64", "osx-arm64", "osx-64", "win-64"]
+platforms = ["linux-64", "osx-arm64", "win-64"]
 version = "0.1.0"
 
 # ---------------------------------------------------------------------------
@@ -52,24 +52,29 @@ cmd = "ros2 topic list"
 description = "List the ROS topics: proof that ROS works without sourcing anything"
 
 [feature.jazzy.tasks.build]
-cmd = "colcon build --symlink-install"
+cmd = "colcon build"
 description = "Build our own package the way you do it today, with colcon"
 
 [feature.jazzy.tasks.test]
 cmd = "python -c \"import os; print('ros:', os.environ['ROS_DISTRO'], 'ok')\""
 description = "Prove ROS is active: what CI runs"
 
-# Running our colcon-built node needs the overlay sourced first, and the command
-# to do that differs per platform. Exercise 2 deletes all of this.
+# Our colcon-built node is only on the path once the overlay is sourced. Instead
+# of sourcing inside the task, we add the overlay as an activation script, so it
+# is sourced whenever the environment activates: `dance`, `pixi shell`, anything.
+# The script only exists after `build`, and Pixi just warns until then.
+# Exercise 2 deletes all of this.
 [feature.jazzy.tasks.dance]
-cmd = "bash -c 'source install/setup.bash && ros2 run turtle_dancer dance'"
+cmd = "ros2 run turtle_dancer dance"
 depends-on = ["build"]
-description = "Run our own node (after sourcing the colcon overlay)"
+description = "Run our own node (the colcon overlay is sourced on activation)"
 
-[feature.jazzy.target.win-64.tasks.dance]
-cmd = "cmd /c \"install\\setup.bat && ros2 run turtle_dancer dance\""
-depends-on = ["build"]
-description = "Run our own node (after sourcing the colcon overlay)"
+# The overlay filename differs per platform, so the activation is split by target.
+[feature.jazzy.target.unix.activation]
+scripts = ["install/setup.sh"]
+
+[feature.jazzy.target.win-64.activation]
+scripts = ["install/setup.bat"]
 
 # ---------------------------------------------------------------------------
 # ROS 2 Kilted: a different distribution, same workspace.
@@ -81,6 +86,7 @@ description = "Run our own node (after sourcing the colcon overlay)"
 # environments makes `pixi run <task>` ambiguous, even when one of them is the
 # default. See PIXI_IMPROVEMENTS.md finding 10.
 # ---------------------------------------------------------------------------
+# --8<-- [start:kilted]
 [feature.kilted]
 channels = ["https://prefix.dev/robostack-kilted", "conda-forge"]
 
@@ -100,8 +106,12 @@ description = "List the ROS topics"
 cmd = "python -c \"import os; print('ros:', os.environ['ROS_DISTRO'], 'ok')\""
 description = "Prove ROS is active, and that it is a different distro"
 
+# --8<-- [end:kilted]
+
+# --8<-- [start:environments]
 [environments]
 # Jazzy is what you get by default.
 default = { features = ["jazzy"], no-default-feature = true }
 # One flag away from an entirely different ROS distribution.
 kilted = { features = ["kilted"], no-default-feature = true }
+# --8<-- [end:environments]

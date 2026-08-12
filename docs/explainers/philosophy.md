@@ -11,7 +11,10 @@ icon: lucide/lightbulb
     By the end of this block you should be able to explain why robotics has such a high bar to entry today, and how reproducible, cross-platform environments lower that bar so more people can build robots.
 
 Ask someone new to robotics to get a ROS project running and watch what happens.
-They pick the wrong Ubuntu, or they are on a Mac and there is no clear path, or they follow a wiki page that was right two years ago.
+They are not on the right OS so the first have to learn OS upgrading/installation or learn VM/Docker, they have to learn a lot about `apt` `bash` and other Linux specific knowledge.
+While that's all good it's limiting the number of people who can get started with ROS.
+Other frameworks like `lerobot` or `dora` are focusing much more on cross-platform support, and are easier to get started with.
+ROS doesn't have to be that way, and with RoboStack and Pixi it isn't.
 
 !!! note "The routes into ROS today (without RoboStack or Pixi)"
 

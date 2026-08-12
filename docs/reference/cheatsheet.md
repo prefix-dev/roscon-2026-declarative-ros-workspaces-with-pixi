@@ -6,9 +6,6 @@ icon: lucide/terminal
 
 Every command links to its page in the [Pixi documentation](https://pixi.prefix.dev/latest/).
 
-<!-- TODO(content): trim to what the exercises use, then verify every line. A cheat sheet with a
-     command that does not exist is worse than no cheat sheet. -->
-
 ## Workspace
 
 | Command | What it does |
@@ -62,14 +59,14 @@ The ROS build backend that turns a `package.xml` into a conda package is
 
 ## RoboStack channels
 
-| ROS distribution | Channel |
-| --- | --- |
-| Jazzy (LTS) | [`https://prefix.dev/robostack-jazzy`](https://prefix.dev/channels/robostack-jazzy) |
-| Humble (LTS) | [`https://prefix.dev/robostack-humble`](https://prefix.dev/channels/robostack-humble) |
-| Kilted | [`https://prefix.dev/robostack-kilted`](https://prefix.dev/channels/robostack-kilted) |
-| Noetic (ROS 1) | [`https://prefix.dev/robostack-noetic`](https://prefix.dev/channels/robostack-noetic) |
-
-<!-- TODO(content): add the distributions we leave out, or say explicitly that this is a subset. -->
+| ROS distribution | Repository | Channel |
+| --- | --- | --- |
+| Rolling | [GitHub repo](https://github.com/robostack/ros-rolling) | [Build channels](https://prefix.dev/channels/robostack-rolling) |
+| Lyrical | [GitHub repo](https://github.com/robostack/ros-lyrical) | [Build channels](https://prefix.dev/channels/robostack-lyrical) |
+| Kilted | [GitHub repo](https://github.com/robostack/ros-kilted) | [Build channels](https://prefix.dev/channels/robostack-kilted) |
+| Jazzy (LTS) | [GitHub repo](https://github.com/robostack/ros-jazzy) | [Build channels](https://prefix.dev/channels/robostack-jazzy) |
+| Humble (LTS) | [GitHub repo](https://github.com/robostack/ros-humble) | [Build channels](https://prefix.dev/channels/robostack-humble) |
+| Noetic (ROS 1) | [GitHub repo](https://github.com/robostack/ros-noetic) | [Build channels](https://prefix.dev/channels/robostack-noetic) |
 
 ## Reading further
 
