@@ -42,7 +42,7 @@ Try it on your own first, the [cheat sheet](../reference/cheatsheet.md) helps wi
 
     Resulting `pixi.toml` file (the author and platform are read from your machine):
 
-    ```toml title="pixi.toml"
+    ```toml title="exercises/01-ros-workspace/pixi.toml"
     [workspace]
     authors = ["Jane Doe <jane.doe@example.com>"]
     channels = ["conda-forge"]
@@ -90,7 +90,7 @@ A channel works like an apt source, except it is written down in your manifest.
 
     Resulting `pixi.toml` file:
 
-    ```toml title="pixi.toml" hl_lines="3 11 12"
+    ```toml title="exercises/01-ros-workspace/pixi.toml" hl_lines="3 11 12"
     [workspace]
     authors = ["Jane Doe <jane.doe@example.com>"]
     channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
@@ -130,7 +130,7 @@ Commands you reuse get a name in the manifest, so your teammates run them withou
 
     Resulting `[tasks]` table:
 
-    ```toml title="pixi.toml"
+    ```toml title="exercises/01-ros-workspace/pixi.toml"
     [tasks]
     sim = "ros2 run turtlesim turtlesim_node"
     teleop = "ros2 run turtlesim turtle_teleop_key"
@@ -173,14 +173,14 @@ Building it needs a toolchain and the ROS libraries it includes, and those come 
 
     === "Unix (Linux, macOS)"
 
-        ```toml title="pixi.toml"
+        ```toml title="exercises/01-ros-workspace/pixi.toml"
         [target.unix.activation]
         scripts = ["install/setup.sh"]
         ```
 
     === "Windows"
 
-        ```toml title="pixi.toml"
+        ```toml title="exercises/01-ros-workspace/pixi.toml"
         [target.win-64.activation]
         scripts = ["install/setup.bat"]
         ```
@@ -198,7 +198,7 @@ Building it needs a toolchain and the ROS libraries it includes, and those come 
 
     Resulting `pixi.toml` file:
 
-    ```toml title="pixi.toml" hl_lines="12 13 18 20 21"
+    ```toml title="exercises/01-ros-workspace/pixi.toml" hl_lines="12 13 18 20 21"
     [workspace]
     authors = ["Jane Doe <jane.doe@example.com>"]
     channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
@@ -242,13 +242,13 @@ Those distro-specific pieces go into an environment of their own, declared inlin
 
     1: the workspace channel list goes back to `conda-forge` only, and the Jazzy channel and packages become the inline `default` environment:
 
-    ```toml title="pixi.toml"
+    ```toml title="exercises/01-ros-workspace/pixi.toml"
     --8<-- "solutions/01-ros-workspace/pixi.toml:jazzy"
     ```
 
     2: the new environment is the same shape, with a different channel and package prefix:
 
-    ```toml title="pixi.toml"
+    ```toml title="exercises/01-ros-workspace/pixi.toml"
     --8<-- "solutions/01-ros-workspace/pixi.toml:kilted"
     ```
 

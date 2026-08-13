@@ -1,54 +1,41 @@
-# Exercise 2: starting point.
-#
-# This is where Exercise 1 left off: a working ROS 2 environment, and a C++
-# package that colcon builds. Notice what that costs you:
-#
-#   * `pixi run build` before anything works
-#   * `source install/setup.bash` before `ros2 run` can find your node
-#   * build/ install/ log/ directories in your workspace
-#
-# There is also a second package in src/turtle_choreographer that nothing builds
-# yet.
-#
-# Your job:
-#   1. Let Pixi build src/turtle_dancer, and delete the colcon machinery.
-#   2. Do the same for the Python package.
-#   3. Live in the loop: edit a source file, `pixi run`, see the change.
-#
-# Instructions: https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/02-ros-package/
-
 [workspace]
-name = "turtle-dancer-workspace"
-description = "A ROS 2 workspace where colcon still does the building"
-channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
+name = "02-ros-package"
+channels = ["conda-forge"]
 platforms = ["linux-64", "osx-arm64", "win-64"]
-version = "0.1.0"
 
 [dependencies]
+ros-dev-tools = ">=1.0"
+
+[tasks]
+topics = "ros2 topic list"
+build = "colcon build"
+sim = "ros2 run turtlesim turtlesim_node"
+teleop = "ros2 run turtlesim turtle_teleop_key"
+dance = { cmd = "ros2 run turtle_dancer dance", depends-on = ["build"] }
+
+[target.unix.activation]
+scripts = ["install/setup.sh"]
+
+[target.win-64.activation]
+scripts = ["install/setup.bat"]
+
+
+##############################
+### The jazzy environment ###
+##############################
+[environments.default]
+channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
+
+[environments.default.dependencies]
 ros-jazzy-ros-base = ">=0.11"
 ros-jazzy-turtlesim = ">=1.8"
-ros-jazzy-rclcpp = ">=28.1"
-ros-jazzy-rclpy = ">=7.1"
-ros-jazzy-geometry-msgs = ">=4.8"
-colcon-common-extensions = ">=0.3"
-cxx-compiler = ">=1.7"
-cmake = ">=3.30"
-ninja = ">=1.12"
 
-[tasks.sim]
-cmd = "ros2 run turtlesim turtlesim_node"
-description = "Start the turtlesim window"
+##############################
+### The kilted environment ###
+##############################
+[environments.kilted]
+channels = ["https://prefix.dev/robostack-kilted", "conda-forge"]
 
-[tasks.build]
-cmd = "colcon build"
-description = "Build with colcon, the thing you are about to replace"
-
-[tasks.dance]
-cmd = "bash -c 'source install/setup.bash && ros2 run turtle_dancer dance'"
-depends-on = ["build"]
-description = "Run the C++ node, after sourcing the colcon overlay"
-
-[target.win-64.tasks.dance]
-cmd = "cmd /c \"install\\setup.bat && ros2 run turtle_dancer dance\""
-depends-on = ["build"]
-description = "Run the C++ node, after sourcing the colcon overlay"
+[environments.kilted.dependencies]
+ros-kilted-ros-base = "*"
+ros-kilted-turtlesim = "*"
