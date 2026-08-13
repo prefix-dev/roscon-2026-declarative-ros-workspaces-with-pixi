@@ -77,7 +77,7 @@ jobs:
       - name: Jazzy in the default environment
         run: pixi run --manifest-path solutions/01-ros-workspace/pixi.toml test
       - name: Kilted in the same workspace
-        run: pixi run --manifest-path solutions/01-ros-workspace/pixi.toml test-kilted
+        run: pixi run --manifest-path solutions/01-ros-workspace/pixi.toml -e kilted test
 
   # Exercise 1 asks participants to build a package with colcon inside the Pixi
   # environment, including on Windows. None of us develops on Windows, so this

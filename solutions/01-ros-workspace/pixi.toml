@@ -5,11 +5,10 @@
 #
 #     pixi run sim              # turtlesim on Jazzy
 #     pixi run teleop           # drive it with the arrow keys
-#     pixi run sim-kilted       # the same workspace, on Kilted
+#     pixi run -e kilted sim    # the same workspace, on Kilted
 #
 # The custom node here is built by colcon, which is why `dance` has to source
-# install/setup.bash first. Exercise 2 hands that job to Pixi and the sourcing
-# goes away.
+# install/setup.bash first.
 
 [workspace]
 name = "turtle-workspace"
@@ -19,43 +18,30 @@ platforms = ["linux-64", "osx-arm64", "win-64"]
 version = "0.1.0"
 
 # ---------------------------------------------------------------------------
-# ROS 2 Jazzy: the 2024 LTS, and what most teams run today.
-#
-# Channels are declared per feature, which is what lets one workspace hold two
-# ROS distributions without them ever meeting.
+# Shared by every environment: the toolchain, the tasks and the activation.
 # ---------------------------------------------------------------------------
-[feature.jazzy]
-channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
+[dependencies]
+# The toolchain to build our own package with: colcon, CMake and the compilers
+# in one package, so there is nothing to install with apt or Visual Studio.
+ros-dev-tools = ">=1.0"
 
-[feature.jazzy.dependencies]
-ros-jazzy-ros-base = ">=0.11"
-ros-jazzy-turtlesim = ">=1.8"
-ros-jazzy-rclcpp = ">=28.1"
-ros-jazzy-geometry-msgs = ">=4.8"
-# The toolchain to build our own package with. conda-forge ships the compilers,
-# so there is nothing to install with apt or Visual Studio.
-colcon-common-extensions = ">=0.3"
-cxx-compiler = ">=1.7"
-cmake = ">=3.30"
-ninja = ">=1.12"
-
-[feature.jazzy.tasks.sim]
+[tasks.sim]
 cmd = "ros2 run turtlesim turtlesim_node"
 description = "Start the turtlesim window"
 
-[feature.jazzy.tasks.teleop]
+[tasks.teleop]
 cmd = "ros2 run turtlesim turtle_teleop_key"
 description = "Drive the turtle with the arrow keys"
 
-[feature.jazzy.tasks.topics]
+[tasks.topics]
 cmd = "ros2 topic list"
 description = "List the ROS topics: proof that ROS works without sourcing anything"
 
-[feature.jazzy.tasks.build]
+[tasks.build]
 cmd = "colcon build"
 description = "Build our own package the way you do it today, with colcon"
 
-[feature.jazzy.tasks.test]
+[tasks.test]
 cmd = "python -c \"import os; print('ros:', os.environ['ROS_DISTRO'], 'ok')\""
 description = "Prove ROS is active: what CI runs"
 
@@ -63,55 +49,42 @@ description = "Prove ROS is active: what CI runs"
 # of sourcing inside the task, we add the overlay as an activation script, so it
 # is sourced whenever the environment activates: `dance`, `pixi shell`, anything.
 # The script only exists after `build`, and Pixi just warns until then.
-# Exercise 2 deletes all of this.
-[feature.jazzy.tasks.dance]
+[tasks.dance]
 cmd = "ros2 run turtle_dancer dance"
 depends-on = ["build"]
 description = "Run our own node (the colcon overlay is sourced on activation)"
 
 # The overlay filename differs per platform, so the activation is split by target.
-[feature.jazzy.target.unix.activation]
+[target.unix.activation]
 scripts = ["install/setup.sh"]
 
-[feature.jazzy.target.win-64.activation]
+[target.win-64.activation]
 scripts = ["install/setup.bat"]
 
 # ---------------------------------------------------------------------------
-# ROS 2 Kilted: a different distribution, same workspace.
-#
-# Nothing here is special: a different channel and a different package prefix.
-# That is the whole diff between supporting one ROS distro and supporting two.
-#
-# The tasks carry a -kilted suffix only because a task name that exists in two
-# environments makes `pixi run <task>` ambiguous, even when one of them is the
-# default. See PIXI_IMPROVEMENTS.md finding 10.
+# ROS 2 Jazzy: the 2024 LTS, and what most teams run today. The default
+# environment, declared inline: its own channel and its own packages, on top
+# of everything shared above. The rclcpp and geometry-msgs libraries the node
+# uses come with ros-base.
+# ---------------------------------------------------------------------------
+# --8<-- [start:jazzy]
+[environments.default]
+channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
+
+[environments.default.dependencies]
+ros-jazzy-ros-base = ">=0.11"
+ros-jazzy-turtlesim = ">=1.8"
+# --8<-- [end:jazzy]
+
+# ---------------------------------------------------------------------------
+# ROS 2 Kilted: a different distribution, same workspace. A different channel
+# and a different package prefix; the tasks come from the shared set above.
 # ---------------------------------------------------------------------------
 # --8<-- [start:kilted]
-[feature.kilted]
+[environments.kilted]
 channels = ["https://prefix.dev/robostack-kilted", "conda-forge"]
 
-[feature.kilted.dependencies]
+[environments.kilted.dependencies]
 ros-kilted-ros-base = "*"
 ros-kilted-turtlesim = "*"
-
-[feature.kilted.tasks.sim-kilted]
-cmd = "ros2 run turtlesim turtlesim_node"
-description = "Start the turtlesim window, on Kilted"
-
-[feature.kilted.tasks.topics-kilted]
-cmd = "ros2 topic list"
-description = "List the ROS topics"
-
-[feature.kilted.tasks.test-kilted]
-cmd = "python -c \"import os; print('ros:', os.environ['ROS_DISTRO'], 'ok')\""
-description = "Prove ROS is active, and that it is a different distro"
-
 # --8<-- [end:kilted]
-
-# --8<-- [start:environments]
-[environments]
-# Jazzy is what you get by default.
-default = { features = ["jazzy"], no-default-feature = true }
-# One flag away from an entirely different ROS distribution.
-kilted = { features = ["kilted"], no-default-feature = true }
-# --8<-- [end:environments]

@@ -6,8 +6,8 @@ Each one starts where the previous exercise ended, so you can jump in anywhere.
 | Directory | You start with | You end with |
 | --- | --- | --- |
 | `01-ros-workspace/` | An empty workspace and a pre-written C++ package | ROS 2 running, your node built by colcon, and two distros side by side |
-| `02-ros-package/` | That workspace, with colcon doing the building | Pixi building both packages, no sourcing, GPU support declared |
-| `03-collaboration/` | A single-platform workspace | Every platform, a Jetson target, CI, and a run on a real GPU |
+| `02-ros-package/` | A ROS workspace on your own machine | PyTorch on CUDA, every platform, and a Jetson resolved from your laptop, run on a real GPU |
+| `03-collaboration/` | A working multi-platform workspace | CI green on every platform, and a Docker image to deploy |
 
 The finished versions live in [`../solutions/`](../solutions/).
 They are installed and smoke-tested on Linux, macOS and Windows on every commit, so if something here does not work, compare against those.

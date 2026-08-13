@@ -1,98 +1,131 @@
 ---
-icon: lucide/hammer
+icon: lucide/zap
 ---
 
-# Exercise 2: Build ROS packages with Pixi
+# Exercise 2: CUDA, PyTorch and a Jetson
 
-!!! exercise "30 minutes, hands-on"
+!!! plain "30 minutes, hands-on"
 
     **Work in:** `exercises/02-ros-package/` &middot; **Solution:** `solutions/02-ros-package/` &middot; **After:** [CUDA](../explainers/cuda.md)
 
-    **Goal:** hand the build to Pixi.
-    The same C++ node from Exercise 1, plus a Python one, both built and installed from their `package.xml`: no `colcon build`, no `source install/setup.bash`, no `build/` directory.
-    Then declare GPU support for hardware you are not sitting at.
+    **Goal:** add PyTorch on CUDA to your workspace, solve it for every platform including a Jetson from your own laptop, and run it on a real GPU.
 
-<!-- TODO(content): fill in the steps. The subject is the *workflow*, not packaging internals.
-     Wire things up quickly, then spend the time in the edit-run loop. -->
+<!-- TODO(content): the TOML below is hand-written for the docs-first pass. Once
+     solutions/02-ros-package is rebuilt as the CUDA/PyTorch/Jetson workspace,
+     replace these blocks with `--8<--` section includes from that manifest, and
+     confirm the conditional-dependency syntax solves. -->
 
-## Step 1: Let Pixi build the C++ package
+You have a ROS workspace from Exercise 1.
+Now you add GPU work to it: PyTorch on CUDA.
+The part that makes this workshop-friendly is that you can declare and solve a GPU environment from a laptop that has no GPU, even a Mac, and only install it where the hardware is.
 
-<!-- TODO(content): add preview = ["pixi-build"], a src/turtle_dancer/pixi.toml with the
-     pixi-build-ros backend, and the path dependency:
+## Step 1: Add PyTorch with CUDA
 
-         ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }
+PyTorch's GPU build needs CUDA, and Pixi only picks a CUDA build for a platform it knows has a GPU.
+You saw why in [CUDA](../explainers/cuda.md): the `__cuda` virtual package.
+You tell Pixi a platform has a GPU by giving it a CUDA version.
 
-     Note the name: the package.xml name with the RoboStack distro prefix. Nothing about the
-     package itself changes: package.xml and CMakeLists.txt stay exactly as they were. -->
+Add the CUDA platform, the ROS channel, the packages, and a check task:
 
-## Step 2: Delete the colcon machinery
+```bash
+pixi workspace platform add cuda-linux-64=linux-64 --cuda 12
+pixi workspace channel add robostack-jazzy
+pixi add ros-jazzy-ros-base pytorch-gpu
+pixi task add gpu-check "python -c 'import torch; print(torch.cuda.is_available())'"
+```
 
-<!-- TODO(content): remove colcon-common-extensions and the build task, delete build/ install/ log/,
-     then:
+Solve it and look, without a GPU and without installing anything:
 
-         $ pixi run ros2 run turtle_dancer dance
+```bash
+pixi list --platform cuda-linux-64
+```
 
-     No sourcing. This is the before/after that Exercise 1 set up, and it is the emotional centre of
-     the workshop, so give it a moment. Verified working. -->
+Pixi resolves the CUDA build of PyTorch for that platform.
+Solving is not installing, so this works on any laptop in the room.
 
-## Step 3: Live in the edit-run loop
+## Step 2: Every platform, one workspace
 
-<!-- TODO(content): THE point of this exercise. Change the angular speed in dance.cpp, `pixi run
-     dance` again, watch the turtle turn differently. No build command in between.
+Your teammates are not all on a GPU box.
+Add the ordinary platforms next to the CUDA one:
 
-     Then contrast explicitly with the Exercise 1 loop: edit, colcon build, re-source, run.
+```bash
+pixi workspace platform add linux-64 osx-arm64 win-64
+```
 
-     WARNING: this does not work on pixi 0.73.0: a source-only edit does not trigger a rebuild, so
-     you would be demonstrating stale code. See PIXI_IMPROVEMENTS.md finding 1; the fix is expected
-     before the workshop, and `pixi run check-edit-run-loop` at the repo root guards it. Do not write
-     this step until that check passes. -->
+The GPU build cannot install on those, so make it conditional and add a CPU fallback.
+Edit `[dependencies]`:
 
-## Step 4: Add the Python package
+```toml title="pixi.toml"
+[dependencies]
+# GPU build where CUDA is present, CPU build everywhere else.
+pytorch-gpu = { version = ">=2.5", when = "__cuda" }
+pytorch = ">=2.5"
+```
 
-<!-- TODO(content): src/turtle_choreographer is provided. Same treatment: a package pixi.toml with
-     the backend, and a path dependency. One workspace, two languages, one lockfile.
+Now inspect what each machine would get, all from where you are sitting:
 
-     Mention setup.cfg and why it matters (install_scripts -> lib/<pkg>/, which is what lets
-     `ros2 run` find a Python entry point). Every `ros2 pkg create --build-type ament_python`
-     generates it; hand-written packages sometimes lack it. -->
+```bash
+pixi list --platform win-64          # your colleague on Windows: CPU build
+pixi list --platform cuda-linux-64   # the GPU box: CUDA build
+```
 
-## Step 5: Declare GPU support
+## Step 3: Target a Jetson
 
-<!-- TODO(content): a named platform variant, and the key idea: you can solve for a machine you do
-     not have:
+A Jetson is `linux-aarch64` with CUDA.
+That is just another platform, so you add it the same way, with its own CUDA version:
 
-         platforms = [..., { name = "workstation-gpu", platform = "linux-64", cuda = "12.0" }]
+```bash
+pixi workspace platform add jetson=linux-aarch64 --cuda 13
+```
 
-     Then a cuda feature targeting it, an environment, and `pixi list -e gpu --platform
-     workstation-gpu`. Solve, inspect, done. Nothing is installed, so this works on every laptop in
-     the room including the Macs, which cannot install CUDA at all.
+!!! note "We assume JetPack 7.2 or newer"
 
-     Actually running it on a GPU is Exercise 3. -->
+    JetPack 7.2 and up ship CUDA 13, so that is what we target here.
+    On an older JetPack the CUDA version is different (JetPack 6 ships CUDA 12.6), so match `cuda` to what your robot actually runs.
+
+Solve the robot's environment from your laptop:
+
+```bash
+pixi list --platform jetson
+```
+
+That is a complete CUDA environment for a machine you are not sitting at.
+You solve on your laptop and install on the Jetson.
+
+## Step 4: Run it on a real GPU
+
+<!-- TODO(content): the GPU payoff on a cloud instance (Brev launchable, link TBD;
+     see IMPLEMENTATION_PLAN.md Stage 5). Moved here from Exercise 3.
+
+     Two paths, both written and tested:
+       * GPU box: install the environment, `pixi run gpu-check` prints True, run the node.
+       * Laptop only: solve and inspect, as in the steps above. Nobody is blocked.
+
+     Kick off the instance at the START of the session so provisioning is not on the clock. -->
 
 ## Check your work
 
 ```bash
-pixi run dance          # C++ node, no sourcing
-pixi run choreograph    # Python node
-pixi run executables    # ros2 sees your node, exactly as after a colcon build
+pixi run gpu-check                # on a GPU box: torch sees CUDA
+pixi list --platform jetson       # a Jetson environment, resolved from your laptop
 ```
 
-<!-- TODO(content): expected output for each. -->
+On a GPU box `gpu-check` prints `True`.
+On a laptop the Jetson environment still resolves, which is the point.
 
 ## Going further
 
 <!-- TODO(content):
-     - `pixi build` and inspect the resulting .conda file.
-     - Add a custom-interfaces package and depend on it from both nodes. Verified that rosidl
-       generation works with this backend.
-     - Compare the diff of this exercise against Exercise 1: count the lines and files removed.
+     - Add rerun or another GPU-accelerated tool alongside PyTorch.
+     - Pin an exact CUDA version and re-solve; look at what moved in the lockfile.
+     - `pixi list --platform jetson` versus `--platform cuda-linux-64`: spot the aarch64 builds.
 -->
 
 !!! note "With your own workspace"
 
-    <!-- TODO(content): point pixi-build-ros at one leaf package from their repo and expect
-         interesting failures. This is the highest-value ten minutes in the workshop for anyone with
-         an existing project, so leave room to sit with people here. -->
+    <!-- TODO(content): add a CUDA platform variant to their existing workspace and a GPU
+         dependency they actually use, then solve for it. If they have a robot, add its platform
+         and cross-solve for it from the laptop in front of them. -->
 
 ---
 

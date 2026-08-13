@@ -53,7 +53,7 @@ section: Welcome
 | 30 min | Pixi in 30 minutes | we talk |
 | 30 min | **Exercise 1:** your first ROS 2 workspace | you type |
 | 30 min | CUDA | we talk |
-| 30 min | **Exercise 2:** build a ROS package with Pixi | you type |
+| 30 min | **Exercise 2:** CUDA, PyTorch and a Jetson | you type |
 | 15 min | Collaboration, CI/CD & Docker | we talk |
 | 20 min | **Exercise 3:** ready for your team | you type |
 
@@ -205,7 +205,7 @@ section: Exercise 2 layout: center class: text-center
 
 # Exercise 2
 
-## Build a ROS package with Pixi
+## CUDA, PyTorch and a Jetson
 
 30 minutes · `exercises/02-ros-package/`
 

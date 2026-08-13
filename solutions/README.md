@@ -13,7 +13,7 @@ Run any of them from the repository root:
 
 ```bash
 pixi run --manifest-path solutions/01-ros-workspace/pixi.toml sim
-pixi run --manifest-path solutions/01-ros-workspace/pixi.toml sim-kilted   # a different distro
+pixi run --manifest-path solutions/01-ros-workspace/pixi.toml -e kilted sim   # the same task, a different distro
 ```
 
 Or from inside the directory:

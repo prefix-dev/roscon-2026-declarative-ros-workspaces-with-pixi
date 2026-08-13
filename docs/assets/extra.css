@@ -650,7 +650,8 @@ table code {
    so dark mode runs lighter. */
 [data-md-color-scheme="default"] {
   --icon-yellow: #b8860b;
-  --icon-green: #4f8f22;
+  --icon-green: var(--prefix-green);
+  --icon-blue: var(--prefix-blue);
 
   --tint-blue: rgb(87 115 255 / 10%);
   --tint-green: rgb(112 192 56 / 12%);
@@ -662,6 +663,7 @@ table code {
 [data-md-color-scheme="slate"] {
   --icon-yellow: var(--prefix-yellow);
   --icon-green: var(--prefix-green);
+  --icon-blue: var(--prefix-blue);
 
   --tint-blue: rgb(87 115 255 / 15%);
   --tint-green: rgb(112 192 56 / 10%);
@@ -767,6 +769,32 @@ table code {
   width: 1%;
 }
 
+/* Custom "plain" admonition, used as `!!! plain "..."`: a hairline border and
+   no colored fill, for framing (timings, locations) that is information but
+   should not read as a signal. */
+:root {
+  --md-admonition-icon--plain: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>');
+}
+
+.md-typeset .admonition.plain,
+.md-typeset details.plain {
+  background-color: rgb(0 24 56 / 2%);
+  border: 1px solid rgb(0 24 56 / 14%);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition.plain,
+[data-md-color-scheme="slate"] .md-typeset details.plain {
+  background-color: rgb(248 246 242 / 3%);
+  border-color: rgb(248 246 242 / 18%);
+}
+
+.md-typeset .plain > .admonition-title::before,
+.md-typeset .plain > summary::before {
+  background-color: var(--gsd-400);
+  -webkit-mask-image: var(--md-admonition-icon--plain);
+  mask-image: var(--md-admonition-icon--plain);
+}
+
 /* Custom "exercise" admonition, used as `!!! exercise "Your turn"`. */
 :root {
   --md-admonition-icon--exercise: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>');
@@ -774,12 +802,12 @@ table code {
 
 .md-typeset .admonition.exercise,
 .md-typeset details.exercise {
-  background-color: var(--tint-yellow);
+  background-color: var(--tint-blue);
 }
 
 .md-typeset .exercise > .admonition-title::before,
 .md-typeset .exercise > summary::before {
-  background-color: var(--icon-yellow);
+  background-color: var(--icon-blue);
   -webkit-mask-image: var(--md-admonition-icon--exercise);
   mask-image: var(--md-admonition-icon--exercise);
 }
