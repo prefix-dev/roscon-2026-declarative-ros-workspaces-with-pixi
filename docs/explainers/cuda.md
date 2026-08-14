@@ -80,3 +80,15 @@ start = "echo 'Starting on a CUDA machine'"
 [tasks]
 start = "echo 'Starting on a non-CUDA machine'"
 ```
+
+
+## Jetson and other robots
+
+<!-- TODO(content):
+     - linux-aarch64 vs. the Jetson's CUDA and L4T reality.
+     - `[system-requirements]` for the robot, not for the laptop.
+     - Cross-solving on your laptop for hardware you do not have in front of you.
+     - Shipping to the robot: pixi on device, or `pixi-pack`.
+       NOTE: pixi-pack --platform takes the conda subdir, so `pixi-pack --platform linux-aarch64`,
+       NOT the named platform `jetson` (verified pixi-pack 0.7.10; see pixi-pack-named-platforms memory).
+-->

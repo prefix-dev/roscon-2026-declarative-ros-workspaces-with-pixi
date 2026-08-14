@@ -79,7 +79,8 @@ If both worked, you are ready.
 
 - No ROS installation.
   No `apt`, no `rosdep`, no `/opt/ros`.
-  If you already have one it will not get in the way, and it will not be used.
+  If you already have one it will not be used.
+  Do check your `.bashrc` for a `source /opt/ros/<distro>/setup.bash` line and turn it off for the workshop: it sets ROS variables in every terminal, and those can shadow the Pixi environment.
 - No `sudo`, no Docker, no virtual machine.
 - No GPU.
   The CUDA parts of the workshop are declared and built without one; only running the result needs the hardware.
