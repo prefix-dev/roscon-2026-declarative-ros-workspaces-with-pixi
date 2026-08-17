@@ -6,7 +6,7 @@ icon: lucide/cpu
 
 !!! abstract "30 minutes, presented"
 
-    **Slides:** [CUDA](../slides/) &middot; **Followed by:** [Exercise 2](../exercises/02-ros-package.md)
+    **Slides:** [CUDA](../slides/) &middot; **Followed by:** [Exercise 1](../exercises/01-ros-workspace.md)
 
     By the end of this block you should understand how Pixi decides whether your machine can run a CUDA build, and how to declare CUDA in your workspace so a GPU-accelerated ROS node installs the same way everywhere.
 

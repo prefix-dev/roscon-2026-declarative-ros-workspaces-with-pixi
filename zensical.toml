@@ -47,7 +47,7 @@ nav = [
   { "Exercises" = [
     { "How the exercises work" = "exercises/index.md" },
     { "1. Your first ROS 2 workspace" = "exercises/01-ros-workspace.md" },
-    { "2. CUDA, PyTorch and a Jetson" = "exercises/02-ros-package.md" },
+    { "2. Build ROS packages with Pixi" = "exercises/02-ros-package.md" },
     { "3. Ready for your team" = "exercises/03-collaboration.md" },
   ] },
   { "Reference" = [

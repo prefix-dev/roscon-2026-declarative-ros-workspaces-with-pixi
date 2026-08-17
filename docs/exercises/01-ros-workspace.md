@@ -8,7 +8,7 @@ icon: lucide/play
 
     **Work in:** `exercises/01-ros-workspace/` &middot; **Solution:** `solutions/01-ros-workspace/` &middot; **After:** [Pixi in 30 minutes](../explainers/pixi-introduction.md)
 
-    **Goal:** a `pixi.toml` and `pixi.lock` that give you a running ROS 2 turtlesim, a custom node of your own, and the same workspace targeting two ROS distributions.
+    **Goal:** a `pixi.toml` and `pixi.lock` that give you a running ROS 2 turtlesim, a custom node of your own, the same workspace targeting two ROS distributions, and a PyTorch node that resolves for a GPU box and a Jetson from your own laptop.
 
 This page is a series of small exercises.
 Each one lists what to do, and the commands are folded away in a solution underneath.
@@ -267,15 +267,123 @@ Those distro-specific pieces go into an environment of their own, declared inlin
     --8<-- "solutions/01-ros-workspace/pixi.toml"
     ```
 
+<!-- TODO(content): the GPU solution blocks below are hand-written and CLI-verified against
+     pixi 0.76.2, but not yet snippet-included. Once solutions/01 gains the CUDA/PyTorch/Jetson
+     content, replace them with `--8<--` section includes and confirm the `when = "__cuda"`
+     conditional solves alongside the jazzy/kilted inline environments. -->
+
+## 1.6 Give the turtle a PyTorch brain
+
+`src/turtle_brain/` is a second node, provided pre-written.
+It drives the turtle with a small PyTorch computation, on the GPU when one is available and the CPU otherwise.
+
+!!! exercise "Your turn"
+
+    1. Add `pytorch` as a dependency.
+    2. Add a `brain` task that runs `python src/turtle_brain/turtle_brain/brain.py`.
+    3. Run the simulator and the brain, in two terminals.
+
+??? success "Solution"
+
+    ```bash
+    # 1
+    pixi add pytorch
+    # 2
+    pixi task add brain "python src/turtle_brain/turtle_brain/brain.py"
+    # 3: in two terminals
+    pixi run sim
+    pixi run brain    # the turtle moves, and the node logs "thinking on: cpu"
+    ```
+
+    On a laptop the node runs on the CPU.
+    Next you give it a GPU to think on.
+
+## 1.7 Target a GPU, and every platform
+
+A GPU build of PyTorch only resolves for a platform that has CUDA.
+You tell Pixi a platform has a GPU by giving it a CUDA version, the `__cuda` virtual package from [CUDA](../explainers/cuda.md).
+
+!!! exercise "Your turn"
+
+    1. Add a CUDA platform: name it `cuda-linux-64`, on `linux-64`, with CUDA 12.
+    2. Add the ordinary platforms too: `linux-64`, `osx-arm64`, `win-64`.
+    3. Make PyTorch use the GPU build where CUDA is present, and the CPU build everywhere else.
+       Hint: a `when` condition on the dependency.
+    4. Inspect what each platform would get, all from your own machine.
+
+??? success "Solution"
+
+    ```bash
+    # 1
+    pixi workspace platform add cuda-linux-64=linux-64 --cuda 12
+    # 2
+    pixi workspace platform add linux-64 osx-arm64 win-64
+    ```
+
+    3: the GPU build cannot install without CUDA, so make it conditional and keep a CPU fallback.
+    Edit `[dependencies]`:
+
+    ```toml title="exercises/01-ros-workspace/pixi.toml"
+    [dependencies]
+    # GPU build where CUDA is present, CPU build everywhere else.
+    pytorch-gpu = { version = ">=2.5", when = "__cuda" }
+    pytorch = ">=2.5"
+    ```
+
+    ```bash
+    # 4
+    pixi list --platform win-64          # your colleague on Windows: CPU build
+    pixi list --platform cuda-linux-64   # the GPU box: CUDA build
+    ```
+
+    Solving is not installing, so this works from any laptop in the room, even the Macs.
+
+## 1.8 Target a Jetson
+
+A Jetson is `linux-aarch64` with CUDA.
+That is just another platform, so you add it the same way, with its own CUDA version.
+
+!!! exercise "Your turn"
+
+    1. Add a `jetson` platform on `linux-aarch64` with CUDA 13.
+    2. Solve the robot's environment from your laptop.
+
+??? success "Solution"
+
+    ```bash
+    # 1
+    pixi workspace platform add jetson=linux-aarch64 --cuda 13
+    # 2
+    pixi list --platform jetson
+    ```
+
+    !!! note "We assume JetPack 7.2 or newer"
+
+        JetPack 7.2 and up ship CUDA 13, so that is what we target here.
+        On an older JetPack the CUDA version is different (JetPack 6 ships CUDA 12.6), so match `cuda` to what your robot actually runs.
+
+    That is a complete CUDA environment for a machine you are not sitting at.
+    You solve on your laptop and install on the Jetson.
+
+## 1.9 Run it on a real GPU
+
+<!-- TODO(content): the GPU payoff on a cloud instance (Brev launchable, link TBD; see
+     IMPLEMENTATION_PLAN.md Stage 5). Two paths, both written and tested:
+       * GPU box: install the environment, `pixi run brain` logs "thinking on: cuda".
+       * Laptop only: solve and inspect, as in 1.7 and 1.8. Nobody is blocked.
+     Kick off the instance at the START of the session so provisioning is not on the clock. -->
+
 ## Check your work
 
 ```bash
 pixi run topics           # ROS is alive
 pixi run dance            # your node drives the turtle
+pixi run brain            # a PyTorch node drives the turtle
 pixi run -e kilted test   # ...and the same workspace runs a different distro
+pixi list --platform jetson   # a Jetson environment, resolved from your laptop
 ```
 
-You should see a list of `/turtle1/...` topics, a dancing turtle, and `ros: kilted ok`.
+You should see a list of `/turtle1/...` topics, a dancing turtle, the brain logging its device, `ros: kilted ok`, and a full aarch64 environment for the Jetson.
 
 ## Going further
 
@@ -292,4 +400,4 @@ Finished early? Try these.
 
 ---
 
-Next: [CUDA](../explainers/cuda.md).
+Next: [Exercise 2: Build ROS packages with Pixi](02-ros-package.md).
