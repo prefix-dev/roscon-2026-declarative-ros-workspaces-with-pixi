@@ -15,7 +15,8 @@ Change these deliberately, not by drift.
 | Ex1 endpoint | Environment + a package built with **colcon** | Ends on the pain we remove: `ros2 run` fails with `Package not found` until you `source install/setup.bash`. Ex2 deletes it. `colcon` inside a Pixi env verified, 5.2 s. |
 | Ex1 node | **Pre-written** in the starter | Nobody should type C++ in a package-management workshop; buys ~5 min. |
 | Ex2 packages | C++ (`ament_cmake`) **and** Python (`ament_python`), both core | C++ primary: `ros2 run` works and it suits a C++-heavy room. |
-| Ex2 focus | **The edit-run loop**; packaging is the means, not the subject | Directly contrasts the colcon loop from Ex1. **Blocked**, see Stage 0. |
+| Ex2 focus | **The edit-run loop**; packaging is the means, not the subject | Directly contrasts the colcon loop from Ex1. Works on pixi 0.76.2, see Stage 0. |
+| Ex2 starter | **Jazzy only**, no Kilted environment, no PyTorch node | Keeps the diff of the exercise about the build. The starter README says so. |
 | CUDA in Ex2 | **Declare and cross-solve only**, no GPU run | CUDA packages are Linux-only, so a build step excludes every macOS attendee. Solving for a GPU target from a Mac works and is the better demo. |
 | GPU run | Moved to **Ex3**, on **Brev**, with a laptop fallback path | Keeps Ex2 in budget and puts the GPU next to the Jetson target, where "hardware I'm not sitting at" is the theme. |
 | Publishing | **Presenter demo**, not hands-on | A one-line command; avoids distributing write tokens to ~50 people. Buys Ex3 ~5 min. |
@@ -25,21 +26,15 @@ Change these deliberately, not by drift.
 
 **Goal**: `pixi run` rebuilds a source package after its source changes.
 
-Editing a node's `.py` source does not invalidate the build.
-`pixi run`, `pixi install` and `pixi lock --check` all report success while running the previously built code.
-Only editing `package.xml`, editing the *workspace* manifest, or `rm -rf .pixi/bld` forces a rebuild.
-`extra-input-globs` does not help.
-Full write-up: `PIXI_IMPROVEMENTS.md` finding 1.
-
-Exercise 2 teaches this loop as the payoff of using Pixi for ROS, so it must be fixed in Pixi before the workshop.
-Decided: fix upstream rather than teach a workaround.
+On pixi 0.73.0 editing a node's source did not invalidate the build; see `PIXI_IMPROVEMENTS.md` finding 1 for the history.
+On pixi 0.76.2 with `pixi-build-ros` 0.7.2 it does: C++ sources are in the backend's default input globs, Python sources need `extra-input-globs = ["**/*.py"]` in the package manifest, which solution 02 carries.
 
 **Success criteria**:
 
-- `pixi run check-edit-run-loop` passes.
-- The `edit-run-loop` job in `.github/workflows/ci.yml` loses its `continue-on-error: true`.
+- `pixi run check-edit-run-loop` passes. ✅ (2026-08-17, pixi 0.76.2)
+- The `edit-run-loop` job in `.github/workflows/ci.yml` loses its `continue-on-error: true`. ✅
 
-**Status**: Blocked on a Pixi fix, target well before September.
+**Status**: Complete.
 
 ## Stage 1: Repository scaffolding
 
@@ -54,8 +49,9 @@ Decided: fix upstream rather than teach a workaround.
 **Still to do**, following the decisions above:
 
 - Add the `kilted` environment to solution 01 so both distros are prefetchable.
-- Add the C++ `ament_cmake` package to solution 02 as the primary one.
+- ~~Add the C++ `ament_cmake` package to solution 02 as the primary one.~~ Done.
 - Add the colcon "before" state to exercise 01, including a Windows CI job that proves `colcon build` works there.
+  Note: the colcon-built node crashed on macOS (`symbol not found in flat namespace '_PyExc_RuntimeError'`) until `CMakeLists.txt` got `-Wl,-dead_strip_dylibs` on Apple; the `colcon-on-every-os` job never caught it because its run step is `continue-on-error`.
 - Move the CUDA/GPU pieces from solution 02 to solution 03, and add the Brev path.
 
 **Status**: Complete for the site and lockfile machinery; content-shaping work listed above.
@@ -94,7 +90,9 @@ Decided: fix upstream rather than teach a workaround.
 - Timings hold in a dry run with somebody who has not seen the material.
 - Ex1 ≤ 24 min of content, Ex2 ≤ 26, Ex3 ≤ 18, so each has real slack.
 
-**Status**: Not Started
+**Status**: In Progress.
+Exercise 2 is written and every step was walked through from the starter on macOS (2026-08-17); Linux and Windows go through CI.
+Exercises 1 and 3 still have `TODO(content)` markers.
 
 ## Stage 4: Write the reference pages
 

@@ -103,14 +103,12 @@ jobs:
         run: pixi run --manifest-path solutions/01-ros-workspace/pixi.toml dance --help
         continue-on-error: true
 
-  # Exercise 2 is built on the edit-run loop, so we watch it. This is expected to
-  # fail on pixi 0.73.0 (PIXI_IMPROVEMENTS.md finding 1); it is non-blocking so
-  # CI stays honest without going red, and it becomes a real regression test the
-  # moment the fix lands. Drop continue-on-error then.
+  # Exercise 2 is built on the edit-run loop, so we watch it: edit a node's
+  # source, `pixi run`, and the change must be there. Passes since pixi 0.76.2
+  # (PIXI_IMPROVEMENTS.md finding 1), so a failure here is a regression.
   edit-run-loop:
     needs: lockfiles
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: prefix-dev/setup-pixi@v0.9.4

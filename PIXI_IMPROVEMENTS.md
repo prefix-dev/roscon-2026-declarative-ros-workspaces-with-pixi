@@ -9,6 +9,19 @@ This is feedback for the Pixi team, not workshop content.
 
 ## 1. Editing a node's source does not rebuild it, so you silently run stale code
 
+**Update 2026-08-17, pixi 0.76.2 with `pixi-build-ros` 0.7.2: mostly fixed.**
+Editing `dance.cpp` now rebuilds `ros-jazzy-turtle-dancer` on the next `pixi run`, and the build cache sidecar lists the input globs it watches (`**/*.cpp`, `package.xml`, `CMakeLists.txt`, ...).
+Two things remain:
+
+1. `**/*.py` is not in the released backend's default globs, so a Python (`ament_python`) node still runs stale after an edit.
+   `extra-input-globs = ["**/*.py"]` in `[package.build.config]` fixes it, and it is in the backend's `main` branch as a default already.
+2. Changing `extra-input-globs` in the package manifest does **not** invalidate the existing build, so the new globs only take effect after something else triggers a rebuild (`touch package.xml`).
+   Chicken and egg: the setting that makes edits count is itself an edit that does not count.
+   Suggested fix: include the backend configuration in the build cache key.
+
+`pixi run check-edit-run-loop` passes, and CI enforces it.
+The original write-up follows for context.
+
 **Severity: high.
 This is the most important item in this document.** It breaks the core inner loop of ROS development: edit a node, run it, see the change.
 

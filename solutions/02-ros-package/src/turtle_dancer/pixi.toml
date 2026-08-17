@@ -1,5 +1,9 @@
-# The package manifest. Name, version, description, maintainer and dependencies
-# all come out of package.xml, which stays the single source of truth.
+# The package manifest: how to build this one package. There is no [workspace]
+# table here on purpose, that role belongs to the pixi.toml two levels up.
+#
+# Name, version, description, maintainer and dependencies all come out of
+# package.xml, which stays the single source of truth. CMakeLists.txt is
+# untouched too: the backend runs the ament_cmake build you already have.
 
 [package.build.backend]
 channels = ["conda-forge"]

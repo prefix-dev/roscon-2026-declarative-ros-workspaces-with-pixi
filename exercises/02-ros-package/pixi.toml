@@ -1,41 +1,36 @@
+# Exercise 2: starting point.
+#
+# This is where Exercise 1 left off, trimmed to Jazzy: ROS 2 from RoboStack,
+# and our own C++ node in src/turtle_dancer built by colcon. Running it means
+# `colcon build` first and sourcing the overlay after, which is what the
+# activation scripts below do for you.
+#
+# Your job: hand the build to Pixi, then delete everything colcon needed.
+#
+# Instructions: https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/02-ros-package/
+
 [workspace]
 name = "02-ros-package"
-channels = ["conda-forge"]
+channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
 platforms = ["linux-64", "osx-arm64", "win-64"]
+version = "0.1.0"
 
 [dependencies]
-ros-dev-tools = ">=1.0"
+ros-jazzy-ros-base = ">=0.11"
+ros-jazzy-turtlesim = ">=1.8"
+ros-dev-tools = ">=1.0"       # the colcon toolchain: colcon, CMake and the compilers
 
 [tasks]
-topics = "ros2 topic list"
-build = "colcon build"
 sim = "ros2 run turtlesim turtlesim_node"
 teleop = "ros2 run turtlesim turtle_teleop_key"
+topics = "ros2 topic list"
+build = "colcon build"
 dance = { cmd = "ros2 run turtle_dancer dance", depends-on = ["build"] }
 
+# The colcon overlay is only on the path once it is sourced, so it is sourced
+# whenever the environment activates. The filename differs per platform.
 [target.unix.activation]
 scripts = ["install/setup.sh"]
 
 [target.win-64.activation]
 scripts = ["install/setup.bat"]
-
-
-##############################
-### The jazzy environment ###
-##############################
-[environments.default]
-channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
-
-[environments.default.dependencies]
-ros-jazzy-ros-base = ">=0.11"
-ros-jazzy-turtlesim = ">=1.8"
-
-##############################
-### The kilted environment ###
-##############################
-[environments.kilted]
-channels = ["https://prefix.dev/robostack-kilted", "conda-forge"]
-
-[environments.kilted.dependencies]
-ros-kilted-ros-base = "*"
-ros-kilted-turtlesim = "*"

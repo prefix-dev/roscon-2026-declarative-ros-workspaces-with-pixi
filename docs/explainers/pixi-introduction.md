@@ -108,7 +108,7 @@ download-data = "curl -O https://example.com/data.zip"
 build = "colcon build"
 start = {
      cmd = "ros2 launch my_package my_launchfile.launch.py",
-     depends-on = ["build", "download-data"], 
+     depends-on = ["build", "download-data"],
 }
 ```
 
@@ -119,7 +119,7 @@ Add the `inputs` and `outputs` keys to the task, and Pixi will cache the result 
 
 ```toml title="pixi.toml"
 [tasks]
-download-data = { 
+download-data = {
     cmd = "curl -O https://example.com/data.zip",
     outputs = ["data.zip"],
 }
@@ -187,7 +187,7 @@ This allows you to create the right environment for the job, whether it's for de
     ```
 
 === "Split environments"
-    
+
     Split your environment into the default environment and the production environment.
     Here we're using features to define the dependencies for each environment, and then combining them in the `environments` section.
     `features` are a reusable way to define parts of an environment, and can be combined in different ways to create different environments.

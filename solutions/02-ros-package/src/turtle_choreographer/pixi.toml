@@ -1,5 +1,6 @@
-# The package manifest. Name, version, description, maintainer and dependencies
-# all come out of package.xml, which stays the single source of truth.
+# The package manifest for the Python package. Same backend, same shape as the
+# C++ one: the build type (ament_python) is read from package.xml, and setup.py
+# and setup.cfg are used as they are.
 
 [package.build.backend]
 channels = ["conda-forge"]
@@ -8,3 +9,7 @@ version = "*"
 
 [package.build.config]
 distro = "jazzy"
+# The backend rebuilds when a file matching its input globs changes. C++ sources
+# are in that list by default; Python sources are not yet, so we add them, and
+# editing choreograph.py triggers a rebuild like editing dance.cpp does.
+extra-input-globs = ["**/*.py"]

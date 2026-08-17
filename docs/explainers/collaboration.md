@@ -54,7 +54,7 @@ The amount of times failing CI will actually be reproducible locally goes up dra
 
 Some more notable features of the GitHub Actions integration:
 
-You can tell the action to install multiple environments, this helps with propperly caching the environments in the CI runner, and allows you to run tests in multiple environments in one job:
+You can tell the action to install multiple environments, this helps with properly caching the environments in the CI runner, and allows you to run tests in multiple environments in one job:
 
 ```yaml
 - uses: prefix-dev/setup-pixi@v0.10.0
@@ -70,7 +70,7 @@ You can add some dependencies that are only needed in CI, as global environments
 - uses: prefix-dev/setup-pixi@v0.10.0
   with:
     global-dependencies: gcloud,awscli
-- run: gcloud auth activate-service-account --key-file ${{ secrets.GCP_KEY }}   
+- run: gcloud auth activate-service-account --key-file ${{ secrets.GCP_KEY }}
 - run: aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
 ```
 

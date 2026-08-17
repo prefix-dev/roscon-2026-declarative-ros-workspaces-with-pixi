@@ -10,7 +10,7 @@ icon: lucide/git-branch
 
     **Goal:** take the workspace to your team: a green CI run and a Docker image they can deploy.
 
-Testing your workspace in CI or shipping your application with Docker is a natural next step. 
+Testing your workspace in CI or shipping your application with Docker is a natural next step.
 Let's setup GitHub Actions to run your tests and build a Docker image from the environment you can deploy.
 
 ## 3.1 Set up GitHub

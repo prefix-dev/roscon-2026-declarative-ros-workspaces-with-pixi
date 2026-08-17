@@ -89,8 +89,8 @@ depends-on = ["lock-solution-01", "lock-solution-02", "lock-solution-03"]
 description = "Re-solve every solution workspace for all platforms"
 
 # Exercise 2 teaches the edit-run loop, so we assert it actually works rather
-# than discover otherwise on stage. Expected to fail until PIXI_IMPROVEMENTS.md
-# finding 1 is fixed; non-blocking in CI until then.
+# than discover otherwise on stage. Passes since pixi 0.76.2 (PIXI_IMPROVEMENTS.md
+# finding 1); CI treats a failure as a regression.
 [tasks.check-edit-run-loop]
 cmd = "python scripts/check_edit_run_loop.py"
 description = "Assert that editing a node's source rebuilds it"

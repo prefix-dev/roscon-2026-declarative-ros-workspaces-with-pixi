@@ -5,9 +5,9 @@ Pixi: change a source file, `pixi run`, see the change. If that stops being
 true, the exercise silently teaches the room to trust stale code, so we assert
 it here rather than find out on stage.
 
-This currently FAILS on pixi 0.73.0; see PIXI_IMPROVEMENTS.md, finding 1. It is
-wired into CI as a non-blocking job so it flips to green when the fix lands, and
-turns into a regression test from then on.
+It failed on pixi 0.73.0 and passes since 0.76.2; see PIXI_IMPROVEMENTS.md,
+finding 1. CI runs it as a regression test. It edits the Python node, which
+relies on `extra-input-globs = ["**/*.py"]` in that package's manifest.
 
     pixi run check-edit-run-loop
 """
@@ -40,9 +40,14 @@ def main() -> int:
     )
     parser.add_argument(
         "--source",
-        default="solutions/02-ros-package/src/turtle_dancer/turtle_dancer/dance.py",
+        default="solutions/02-ros-package/src/turtle_choreographer/turtle_choreographer/choreograph.py",
         type=pathlib.Path,
         help="node source file to edit",
+    )
+    parser.add_argument(
+        "--module",
+        default="turtle_choreographer.choreograph",
+        help="importable module that --source becomes once the package is built",
     )
     args = parser.parse_args()
 
@@ -56,7 +61,7 @@ def main() -> int:
             )
             result = run(
                 args.manifest,
-                f"import turtle_dancer.dance as d; "
+                f"import {args.module} as d; "
                 f"print(getattr(d, {MARKER!r}, lambda: '<absent>')())",
             )
             got = result.stdout.strip().splitlines()[-1] if result.stdout.strip() else ""

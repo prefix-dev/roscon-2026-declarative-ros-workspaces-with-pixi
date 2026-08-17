@@ -8,12 +8,8 @@
 #     pixi run choreograph    # ...or Python
 #
 # Compare with Exercise 1: no `colcon build`, no `source install/setup.bash`, no
-# build/ install/ log/ directories. Edit a source file and `pixi run` again and
-# Pixi rebuilds what changed.
-#
-# NOTE: the edit-then-rerun loop above does not currently rebuild on a source-only
-# change. See PIXI_IMPROVEMENTS.md finding 1; `pixi run check-edit-run-loop` at
-# the repository root watches for the fix.
+# build/ install/ log/ directories, no activation scripts. Edit a source file
+# and `pixi run` again: Pixi rebuilds what changed before it runs.
 
 [workspace]
 name = "turtle-dancer-workspace"
@@ -21,21 +17,32 @@ description = "A mixed C++/Python ROS 2 workspace built by Pixi"
 channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
 platforms = ["linux-64", "osx-arm64", "win-64"]
 version = "0.1.0"
+# Building packages from source is a preview feature, so it is opt-in.
 preview = ["pixi-build"]
 
+# --8<-- [start:dependencies]
 [dependencies]
 # Our own packages, built from source. The names are the package.xml names with
-# the ROS distro prefix that RoboStack uses.
+# the ROS distro prefix that RoboStack uses, hyphens instead of underscores.
 ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }
 ros-jazzy-turtle-choreographer = { path = "src/turtle_choreographer" }
-# What we need to run them.
-ros-jazzy-ros2run = ">=0.32"
-ros-jazzy-ros2topic = ">=0.32"
+# What we need to run them. The libraries the packages themselves need come
+# from their package.xml.
+ros-jazzy-ros-base = ">=0.11"
 ros-jazzy-turtlesim = ">=1.8"
+# --8<-- [end:dependencies]
 
 [tasks.sim]
 cmd = "ros2 run turtlesim turtlesim_node"
 description = "Start the turtlesim window"
+
+[tasks.teleop]
+cmd = "ros2 run turtlesim turtle_teleop_key"
+description = "Drive the turtle with the arrow keys"
+
+[tasks.topics]
+cmd = "ros2 topic list"
+description = "List the ROS topics"
 
 [tasks.dance]
 cmd = "ros2 run turtle_dancer dance"
@@ -43,12 +50,12 @@ description = "Run the C++ node; Pixi builds it first if the source changed"
 
 [tasks.choreograph]
 cmd = "ros2 run turtle_choreographer choreograph"
-description = "Run the Python node"
+description = "Run the Python node; same story"
+
+[tasks.executables]
+cmd = "ros2 pkg executables turtle_dancer && ros2 pkg executables turtle_choreographer"
+description = "Show that the ROS tooling sees our nodes, exactly as after a colcon build"
 
 [tasks.test]
 cmd = "python -c \"import turtle_choreographer.choreograph as c; assert c.main; print('packages: ok')\""
 description = "Prove both packages were built and installed: what CI runs"
-
-[tasks.executables]
-cmd = "ros2 pkg executables turtle_dancer"
-description = "Show that the ROS tooling sees our node, exactly as after a colcon build"
