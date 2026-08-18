@@ -350,6 +350,29 @@ Worth either fixing the channel metadata or suppressing the warning for this cas
 
 ---
 
+## 12. `pixi-build-ros` fetches the rosdistro index from GitHub on every metadata refresh
+
+**Severity: high for a workshop, medium otherwise.** Found 2026-08-17 on `pixi-build-ros` 0.7.2.
+
+The backend downloads `https://raw.githubusercontent.com/ros/rosdistro/master/index-v4.yaml` to learn whether a distro is ROS 1 or 2, even when `distro = "jazzy"` is configured explicitly.
+The response is cached, but per workspace (`.pixi/scratch-v0/pixi-build-ros-v0/http-cache`) and with GitHub's `max-age=300`, so any `pixi lock`, `pixi install` or `pixi run` that refreshes source metadata more than five minutes after the last one goes back to GitHub.
+Unauthenticated `raw.githubusercontent.com` is rate limited per IP, and after a morning of re-locking from one laptop it answered `429 Too Many Requests` for a good while:
+
+```
+× failed to resolve source package 'ros-jazzy-turtle-choreographer' (at 'src/turtle_choreographer')
+╰─▶ × the ROS distribution index at https://raw.githubusercontent.com/ros/rosdistro/master/index-v4.yaml
+    │ is being rate limited (HTTP 429 Too Many Requests)
+```
+
+Fifty attendees behind one conference NAT will hit this in the first ten minutes of Exercise 2, and nothing they can do locally fixes it.
+Nothing in the workshop needs the index either: RoboStack channel names already say which distro it is, and Jazzy has been ROS 2 for a while.
+
+**Suggested fixes**, any one of which would do:
+
+- Ship the answer for known distros inside the backend and only fetch for names it does not know.
+- Cache globally (`~/.cache/rattler` or the pixi cache dir) and treat a stale cached copy as good enough when the refresh fails (`stale-if-error`).
+- An escape hatch: `ROSDISTRO_INDEX_URL` or a `[package.build.config]` key pointing at a local file, so a workshop can ship the file in the repo.
+
 ## Things that worked well, for balance
 
 Noted because they are load-bearing for the workshop and worth not regressing:

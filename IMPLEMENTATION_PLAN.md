@@ -27,7 +27,10 @@ Change these deliberately, not by drift.
 **Goal**: `pixi run` rebuilds a source package after its source changes.
 
 On pixi 0.73.0 editing a node's source did not invalidate the build; see `PIXI_IMPROVEMENTS.md` finding 1 for the history.
-On pixi 0.76.2 with `pixi-build-ros` 0.7.2 it does: C++ sources are in the backend's default input globs, Python sources need `extra-input-globs = ["**/*.py"]` in the package manifest, which solution 02 carries.
+On pixi 0.76.2 with `pixi-build-ros` 0.7.2 it does for C++: those sources are in the backend's default input globs.
+Python sources need `extra-input-globs = ["**/*.py"]` in the package manifest; the solution stays minimal (two-line package manifests, backend version in `[workspace.dependencies]`) and the page says so in a note in 2.6.
+The check exercises the C++ node.
+Watch out for finding 12 (rosdistro index fetch, GitHub 429) in the room.
 
 **Success criteria**:
 

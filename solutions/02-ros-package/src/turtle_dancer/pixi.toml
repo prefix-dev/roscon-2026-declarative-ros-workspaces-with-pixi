@@ -6,9 +6,5 @@
 # untouched too: the backend runs the ament_cmake build you already have.
 
 [package.build.backend]
-channels = ["conda-forge"]
 name = "pixi-build-ros"
-version = "*"
-
-[package.build.config]
-distro = "jazzy"
+workspace = true

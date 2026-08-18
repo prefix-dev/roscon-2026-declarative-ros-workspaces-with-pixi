@@ -12,13 +12,14 @@
 # and `pixi run` again: Pixi rebuilds what changed before it runs.
 
 [workspace]
-name = "turtle-dancer-workspace"
-description = "A mixed C++/Python ROS 2 workspace built by Pixi"
 channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
 platforms = ["linux-64", "osx-arm64", "win-64"]
-version = "0.1.0"
 # Building packages from source is a preview feature, so it is opt-in.
 preview = ["pixi-build"]
+
+# Share the same backend version for all packages in this workspace.
+[workspace.dependencies]
+pixi-build-ros = ">=0.7.2"
 
 # --8<-- [start:dependencies]
 [dependencies]

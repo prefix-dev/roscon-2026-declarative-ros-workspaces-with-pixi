@@ -5,9 +5,15 @@ Pixi: change a source file, `pixi run`, see the change. If that stops being
 true, the exercise silently teaches the room to trust stale code, so we assert
 it here rather than find out on stage.
 
-It failed on pixi 0.73.0 and passes since 0.76.2; see PIXI_IMPROVEMENTS.md,
-finding 1. CI runs it as a regression test. It edits the Python node, which
-relies on `extra-input-globs = ["**/*.py"]` in that package's manifest.
+It edits the log line of the C++ node (src/turtle_dancer/src/dance.cpp), runs
+the node through `pixi run`, and expects the new text in the output. Twice, so
+a single lucky rebuild does not count. It failed on pixi 0.73.0 and passes since
+0.76.2 with pixi-build-ros 0.7.2; see PIXI_IMPROVEMENTS.md, finding 1. CI runs
+it as a regression test.
+
+The Python node is not checked: pixi-build-ros 0.7.2 does not watch `**/*.py`
+by default (the workshop page says so in 2.6). Point --source at
+choreograph.py once a backend release includes it.
 
     pixi run check-edit-run-loop
 """
@@ -18,16 +24,39 @@ import argparse
 import pathlib
 import subprocess
 import sys
+import time
 
 MARKER = "__WORKSHOP_EDIT_RUN_MARKER__"
+ORIGINAL_LOG_LINE = 'RCLCPP_INFO(get_logger(), "Dancing. Start `pixi run sim` to watch.");'
 
 
-def run(manifest: pathlib.Path, code: str) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
-        ["pixi", "run", "--manifest-path", str(manifest), "python", "-c", code],
-        capture_output=True,
+def run_node(manifest: pathlib.Path, timeout: float) -> str:
+    """Start the node through `pixi run`, return everything it printed.
+
+    The node spins forever, so we stop it ourselves: as soon as a line with the
+    marker shows up, or when the timeout runs out (which covers the first build).
+    """
+    process = subprocess.Popen(
+        ["pixi", "run", "--manifest-path", str(manifest), "ros2", "run", "turtle_dancer", "dance"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
         text=True,
     )
+    assert process.stdout is not None
+    output: list[str] = []
+    deadline = time.monotonic() + timeout
+    try:
+        for line in process.stdout:
+            output.append(line)
+            if MARKER in line or time.monotonic() > deadline:
+                break
+    finally:
+        process.terminate()
+        try:
+            process.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            process.kill()
+    return "".join(output)
 
 
 def main() -> int:
@@ -40,51 +69,46 @@ def main() -> int:
     )
     parser.add_argument(
         "--source",
-        default="solutions/02-ros-package/src/turtle_choreographer/turtle_choreographer/choreograph.py",
+        default="solutions/02-ros-package/src/turtle_dancer/src/dance.cpp",
         type=pathlib.Path,
-        help="node source file to edit",
+        help="node source file to edit; must contain the node's log line",
     )
     parser.add_argument(
-        "--module",
-        default="turtle_choreographer.choreograph",
-        help="importable module that --source becomes once the package is built",
+        "--timeout",
+        default=600.0,
+        type=float,
+        help="seconds to wait for the node to build and print its log line",
     )
     args = parser.parse_args()
 
     source: pathlib.Path = args.source
     original = source.read_text()
+    if ORIGINAL_LOG_LINE not in original:
+        print(f"FAIL: {source} does not contain the expected log line:\n  {ORIGINAL_LOG_LINE}", file=sys.stderr)
+        return 1
 
     try:
         for expected in ("first", "second"):
-            source.write_text(
-                original + f'\n\ndef {MARKER}() -> str:\n    return "{expected}"\n'
-            )
-            result = run(
-                args.manifest,
-                f"import {args.module} as d; "
-                f"print(getattr(d, {MARKER!r}, lambda: '<absent>')())",
-            )
-            got = result.stdout.strip().splitlines()[-1] if result.stdout.strip() else ""
+            edited_line = ORIGINAL_LOG_LINE.replace("Dancing.", f"Dancing {MARKER}={expected}.")
+            source.write_text(original.replace(ORIGINAL_LOG_LINE, edited_line))
+            output = run_node(args.manifest, args.timeout)
 
-            if result.returncode != 0:
-                print(f"FAIL: `pixi run` errored after editing {source}", file=sys.stderr)
-                print(result.stderr.strip()[-2000:], file=sys.stderr)
-                return 1
-
-            if got == "<absent>":
+            marker_lines = [line for line in output.splitlines() if MARKER in line]
+            if not marker_lines:
+                stale = [line for line in output.splitlines() if "Dancing" in line]
                 print(
-                    f"FAIL ({expected} edit): the edited source is not in the "
-                    f"environment at all: the added function is missing, so "
-                    f"nothing was rebuilt.\n"
+                    f"FAIL ({expected} edit): the node never printed the edited log line, "
+                    f"so nothing was rebuilt. Last 'Dancing' line seen: {stale[-1] if stale else '<none>'}\n"
                     f"      See PIXI_IMPROVEMENTS.md finding 1.",
                     file=sys.stderr,
                 )
+                print(output[-2000:], file=sys.stderr)
                 return 1
 
-            if got != expected:
+            if f"{MARKER}={expected}" not in marker_lines[-1]:
                 print(
-                    f"FAIL ({expected} edit): source returns {expected!r}, but the "
-                    f"environment still returns {got!r}, a stale build.\n"
+                    f"FAIL ({expected} edit): source says {expected!r}, but the node printed "
+                    f"{marker_lines[-1].strip()!r}: a stale build.\n"
                     f"      See PIXI_IMPROVEMENTS.md finding 1.",
                     file=sys.stderr,
                 )

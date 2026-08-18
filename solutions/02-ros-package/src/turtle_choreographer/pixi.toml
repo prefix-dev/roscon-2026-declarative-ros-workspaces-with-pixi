@@ -3,13 +3,5 @@
 # and setup.cfg are used as they are.
 
 [package.build.backend]
-channels = ["conda-forge"]
 name = "pixi-build-ros"
-version = "*"
-
-[package.build.config]
-distro = "jazzy"
-# The backend rebuilds when a file matching its input globs changes. C++ sources
-# are in that list by default; Python sources are not yet, so we add them, and
-# editing choreograph.py triggers a rebuild like editing dance.cpp does.
-extra-input-globs = ["**/*.py"]
+workspace = true

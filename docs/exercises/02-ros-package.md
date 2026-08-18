@@ -36,22 +36,31 @@ Same format as before: each step says what to do, the commands are folded away u
 ## 2.1 Turn on Pixi build
 
 Building packages from source is a [preview feature](https://pixi.prefix.dev/latest/reference/pixi_manifest/#preview-features) in Pixi, so a workspace opts in.
+It also needs a [build backend](https://pixi.prefix.dev/latest/build/backends/), the piece that knows the build system.
+For ROS that is [`pixi-build-ros`](https://pixi.prefix.dev/latest/build/backends/pixi-build-ros/), and since every package in the workspace uses the same one, you declare it once, in [`[workspace.dependencies]`](https://pixi.prefix.dev/latest/build/workspace_dependencies/).
 
 !!! exercise "Your turn"
 
     1. Enable the `pixi-build` preview in the `[workspace]` table.
-       There is no CLI command for this one, edit `pixi.toml`.
+    2. Add `pixi-build-ros = ">=0.7.2"` to `[workspace.dependencies]`.
+       There is no CLI command for either, edit `pixi.toml`.
 
 ??? success "Solution"
 
-    ```toml title="exercises/02-ros-package/pixi.toml" hl_lines="6"
+    ```toml title="exercises/02-ros-package/pixi.toml" hl_lines="6 8 9"
     [workspace]
     name = "02-ros-package"
     channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
     platforms = ["linux-64", "osx-arm64", "win-64"]
     version = "0.1.0"
     preview = ["pixi-build"]
+
+    [workspace.dependencies]
+    pixi-build-ros = ">=0.7.2"
     ```
+
+    `[workspace.dependencies]` is a pool of shared specs, not an install list: nothing lands in the environment because of it.
+    Packages pick entries out of the pool, which is the next step, and bumping the backend version later is one line.
 
 ## 2.2 Give the package a manifest
 
@@ -64,12 +73,14 @@ There is a second main table which describes a single package:
 | **Package** | `[package]` | how to build one package | `src/turtle_dancer/pixi.toml` |
 
 A workspace is what you `pixi run`.
-A package is what Pixi turns into a conda package, with a [build backend](https://pixi.prefix.dev/latest/build/backends/) that knows the build system.
-For ROS that backend is [`pixi-build-ros`](https://pixi.prefix.dev/latest/build/backends/pixi-build-ros/): it reads `package.xml` for the name, version, dependencies and build type, maps the dependencies to their RoboStack names, and runs the `ament_cmake` or `ament_python` build you already have.
+A package is what Pixi turns into a conda package, through the backend.
+`pixi-build-ros` reads `package.xml` for the name, version, dependencies and build type, maps the dependencies to their RoboStack names, and runs the `ament_cmake` or `ament_python` build you already have.
+So the package manifest has very little to say.
 
 !!! exercise "Your turn"
 
-    1. Create `src/turtle_dancer/pixi.toml` with the `pixi-build-ros` backend, configured for the `jazzy` distro.
+    1. Create `src/turtle_dancer/pixi.toml` that names `pixi-build-ros` as its build backend, taking the version from the workspace pool.
+       Hint: `workspace = true`.
     2. Open `package.xml` and `CMakeLists.txt`.
        Which lines does the backend need, and which one makes `ros2 run` find the executable?
        Change nothing.
@@ -80,14 +91,12 @@ For ROS that backend is [`pixi-build-ros`](https://pixi.prefix.dev/latest/build/
     --8<-- "solutions/02-ros-package/src/turtle_dancer/pixi.toml"
     ```
 
+    Two lines: which backend, and "the version is in the workspace pool".
+    The ROS distro comes from the `robostack-jazzy` channel of the workspace, and everything else comes from `package.xml`.
+
     From `package.xml` the backend takes `<name>`, `<version>`, `<depend>` and `<build_type>`.
     From `CMakeLists.txt` the line that matters is `install(TARGETS dance DESTINATION lib/${PROJECT_NAME})`: `ros2 run` looks in `lib/<package>/`, and that is where the backend installs whatever your CMake installs.
     Both files are the ones colcon used a minute ago, unchanged.
-
-    !!! note "The distro is optional"
-
-        Leave `distro` out and the backend reads it from the `robostack-jazzy` channel of the workspace.
-        Writing it down keeps the package readable on its own.
 
 ## 2.3 Depend on your own package
 
@@ -165,6 +174,9 @@ Everything colcon needed can go.
     version = "0.1.0"
     preview = ["pixi-build"]
 
+    [workspace.dependencies]
+    pixi-build-ros = ">=0.7.2"
+
     [dependencies]
     ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }
     ros-jazzy-ros-base = ">=0.11"
@@ -210,7 +222,7 @@ See what it means now.
     !!! note "What counts as an input"
 
         The backend watches C and C++ sources, `package.xml`, `CMakeLists.txt`, `setup.py`, launch files, messages and a few more by default.
-        Anything else goes in `extra-input-globs` in the package's `[package.build.config]`, and you will meet that in the next step.
+        Anything else goes in `extra-input-globs` under `[package.build.config]` in the package manifest.
 
 ## 2.6 Add the Python package
 
@@ -219,8 +231,7 @@ It gets the same treatment: a package manifest, a path dependency, a task.
 
 !!! exercise "Your turn"
 
-    1. Create `src/turtle_choreographer/pixi.toml`, same backend as the C++ one.
-       Python sources are not in the backend's default inputs yet, so add `**/*.py` to `extra-input-globs`, or the edit-run loop will not work for this one.
+    1. Create `src/turtle_choreographer/pixi.toml`: the same two lines as the C++ one.
     2. Add `ros-jazzy-turtle-choreographer` as a path dependency.
     3. Add a `choreograph` task that runs `ros2 run turtle_choreographer choreograph`.
     4. Run it, with the simulator open.
@@ -243,6 +254,16 @@ It gets the same treatment: a package manifest, a path dependency, a task.
     ```
 
     One workspace, two languages, one lockfile.
+
+    !!! note "Editing the Python node"
+
+        `pixi-build-ros` 0.7.2 does not have `**/*.py` in its default inputs, so an edit to `choreograph.py` alone does not trigger a rebuild yet.
+        Until the next backend release, add this to the package manifest if you want the loop from 2.5 for the Python node too:
+
+        ```toml title="src/turtle_choreographer/pixi.toml"
+        [package.build.config]
+        extra-input-globs = ["**/*.py"]
+        ```
 
     !!! note "`setup.cfg` is what makes `ros2 run` find a Python node"
 
