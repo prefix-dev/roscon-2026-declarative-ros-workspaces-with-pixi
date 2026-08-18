@@ -2,7 +2,7 @@
   <div class="slide-footer">
     <div class="footer-left">
       <img src="/prefix-logo.svg" alt="prefix.dev" class="footer-logo" />
-      <span class="footer-title">ROSCon 2026: Declarative ROS workspaces with Pixi and RoboStack</span>
+      <span class="footer-title">ROSCon 2026</span>
     </div>
     <div class="footer-center">
       <span

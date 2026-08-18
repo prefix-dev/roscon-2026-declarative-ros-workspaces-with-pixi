@@ -4,8 +4,24 @@
     {
       "name": "docs-static",
       "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8123", "--directory", "site"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8123",
+        "--directory",
+        "site"
+      ],
       "port": 8123
+    },
+    {
+      "name": "slides",
+      "runtimeExecutable": "slides/node_modules/.bin/slidev",
+      "runtimeArgs": [
+        "slides/slides.md",
+        "--port",
+        "3030"
+      ],
+      "port": 3030
     }
   ]
 }

@@ -78,7 +78,10 @@ Watch out for finding 12 (rosdistro index fetch, GitHub 429) in the room.
 - Slides and prose are two files per block.
   Keep them in sync by hand, or generate one from the other?
 
-**Status**: Not Started
+**Status**: In Progress.
+Slides for the Pixi block (before Exercise 1) and a "Building ROS packages with Pixi" block (before Exercise 2) are written, each ending in a "Now it's your turn" hand-off slide.
+Philosophy, CUDA and Collaboration slides are still `TODO(content)`, and so is all the prose except `pixi-introduction.md` and `cuda.md`.
+Note the schedule puts the CUDA block after Exercise 1, while Exercise 1 already uses CUDA platforms in 1.7 and 1.8; the Pixi block covers just enough of that for the exercise.
 
 ## Stage 3: Write the exercises
 

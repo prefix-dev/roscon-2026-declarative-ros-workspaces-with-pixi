@@ -101,3 +101,36 @@ pre {
 html.dark {
   color-scheme: light;
 }
+
+/* References: pinned above the footer, as link text, on every slide that has them */
+.slidev-layout .ref {
+  position: absolute;
+  left: 3.5rem;
+  right: 3.5rem;
+  bottom: 2.6rem;
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+
+.slidev-layout .ref a {
+  color: var(--prefix-blue);
+  border-bottom: none;
+}
+
+/* Code examples are read from the back of the room, so bigger than the theme default */
+.slidev-layout pre.shiki,
+.slidev-layout .slidev-code {
+  font-size: 1.15rem !important;
+  line-height: 1.6 !important;
+}
+
+/* The schedule table on the "Today" slide: no empty header row, tight rows */
+.slidev-layout .schedule table thead {
+  display: none;
+}
+
+.slidev-layout .schedule table td {
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+  font-size: 0.95rem;
+}
