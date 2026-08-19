@@ -35,11 +35,18 @@ section: Welcome
 
 # Who we are
 
-<!-- TODO(content): 15 min block: three short intros and the setup check. -->
+- **Ruben Arts**, prefix.dev: Pixi
+- **Wolf Vollprecht**, prefix.dev: RoboStack, mamba, conda-forge
+- **Bas Zalmstra**, prefix.dev: rattler, the Rust conda libraries under Pixi
 
-- **Ruben Arts:** prefix.dev
-- **Wolf Vollprecht:** prefix.dev
-- **Bas Zalmstra:** prefix.dev
+<br>
+
+Three of us in the room. Raise your hand, we come to you.
+
+<!--
+15 min block with the setup check. Short intros: who you are, what you work on, and that all three of us are here for questions the whole session.
+Ask the room: who runs ROS on Ubuntu, who on macOS or Windows, who brought their own workspace.
+-->
 
 ---
 section: Welcome
@@ -71,7 +78,21 @@ layout: center
 
 # Before we start
 
-<!-- TODO(content): the QR code to the site, and the one command that proves their setup works. -->
+<img src="/site-qr.svg" alt="QR code to the workshop site" style="height: 11rem; margin: 0 auto 1rem;" />
+
+**prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi**
+
+```bash
+pixi run --manifest-path solutions/01-ros-workspace/pixi.toml sim
+```
+
+A turtle appears? You're ready.
+
+<!--
+Everybody did the homework: Pixi installed, repo cloned, packages cached. This one command proves it, from the cache, no Wi-Fi needed.
+No turtle: Troubleshooting on the site, or grab one of us now, not in twenty minutes.
+Also: a `source /opt/ros/.../setup.bash` in .bashrc shadows the Pixi environment, turn it off for today.
+-->
 
 ---
 section: Philosophy
@@ -411,6 +432,35 @@ No sourcing: activation happens when the shell starts, and it is gone when you e
 section: Pixi
 ---
 
+# Activation
+
+Every `pixi run` and `pixi shell` activates the environment first: `PATH`, `ROS_DISTRO`, `AMENT_PREFIX_PATH`, all set for you.
+
+```toml
+[activation]
+scripts = ["install/setup.sh"]
+
+[activation.env]
+ROS_DOMAIN_ID = "42"
+```
+
+- Packages bring their own: the ROS setup comes with `ros-jazzy-ros-workspace`
+- Your workspace can add scripts and variables
+- `pixi shell-hook` prints the whole thing as a shell script
+
+<div class="ref"><a href="https://pixi.prefix.dev/latest/workspace/environment/#activation" target="_blank">Environment activation</a></div>
+
+<!--
+This is the `source setup.bash` you never type again. The RoboStack packages ship activation scripts, Pixi runs them on every activation.
+[activation] is for your own additions: a script (the colcon overlay on the next slide) or plain environment variables like ROS_DOMAIN_ID.
+Per platform with [target.win-64.activation], Windows gets a .bat.
+pixi shell-hook is what Docker and CI use to activate without Pixi present.
+-->
+
+---
+section: Pixi
+---
+
 # Building your own package with colcon
 
 - `ros-dev-tools` gives you colcon, CMake and the compilers
@@ -723,15 +773,22 @@ section: Packaging
 
 # What you write
 
-### In the workspace `pixi.toml`
+```toml
+# pixi.toml, three new lines
+[workspace]
+preview = ["pixi-build"]
+[workspace.dependencies]
+pixi-build-ros = ">=0.7.2"
+[dependencies]
+ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }
+```
 
-- `preview = ["pixi-build"]`
-- `pixi-build-ros = ">=0.7.2"` under `[workspace.dependencies]`
-- `ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }`
-
-### In `src/turtle_dancer/pixi.toml`
-
-- `name = "pixi-build-ros"` and `workspace = true` under `[package.build.backend]`
+```toml
+# src/turtle_dancer/pixi.toml, the whole file
+[package.build.backend]
+name = "pixi-build-ros"
+workspace = true
+```
 
 <div class="ref"><a href="https://pixi.prefix.dev/latest/build/ros/" target="_blank">Building ROS packages with Pixi</a> · <a href="https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/02-ros-package/" target="_blank">Exercise 2</a></div>
 
@@ -830,7 +887,12 @@ layout: section
 
 # Collaboration, CI/CD & Docker
 
-<!-- TODO(content): 15 min. See docs/explainers/collaboration.md for the outline. -->
+From works on my machine to works on the team's.
+
+<!--
+15 min. The written version is docs/explainers/collaboration.md.
+What changes when the workspace stops being yours: more platforms, a lockfile gate in CI, an image for the robot.
+-->
 
 ---
 section: Collaboration
@@ -838,23 +900,179 @@ section: Collaboration
 
 # Many platforms, one manifest
 
-<!-- TODO(content) -->
+```bash
+pixi workspace platform add linux-64 osx-arm64 win-64
+```
+
+- Pixi solves every platform and records all of them in one lockfile
+- A teammate: `git clone`, `pixi install`, done
+- Differences go in `[target.win-64]` or a `when = "__cuda"` condition
+
+<br>
+
+Solved means the packages exist and agree. It doesn't mean your node runs there. That's what CI is for.
+
+<div class="ref"><a href="https://pixi.prefix.dev/latest/workspace/multi_platform_configuration/" target="_blank">Multi-platform configuration</a></div>
+
+<!--
+Supporting a platform costs one line. The teammate gets what the lockfile pins for their platform, not whatever resolved on the day they joined.
+[target.<platform>] for per-OS dependencies, tasks and activation (the setup.sh / setup.bat split from Exercise 1). when = "__cuda" for per-machine capability (Exercise 1 too).
+-->
 
 ---
 section: Collaboration
 ---
 
-# Jetson and other robots
+# CI made easy
 
-<!-- TODO(content) -->
+```yaml
+- uses: prefix-dev/setup-pixi@v0.10.0
+- run: pixi run test
+```
+
+- Two lines: install Pixi and the environment, run your task
+- The same task names as on your laptop, no second setup in YAML
+- Caching comes for free
+
+<div class="ref"><a href="https://pixi.prefix.dev/latest/integration/ci/github_actions/" target="_blank">setup-pixi on GitHub Actions</a></div>
+
+<!--
+CI for a Pixi workspace is short because the hard question, what should be installed, is answered by the lockfile, not by CI configuration.
+A failing CI run reproduces locally far more often: CI installs what the lockfile pins, and so do you.
+More: `environments: default,kilted` to test two environments in one job, `global-dependencies: gcloud,awscli` for deploy tooling.
+-->
 
 ---
 section: Collaboration
 ---
 
-# CI/CD and Docker
+# What `setup-pixi` does for you
 
-<!-- TODO(content) -->
+1. Downloads the Pixi binary and puts it on `PATH`
+2. Logs in to your channels, if you gave it a token
+3. Restores the environment from cache, keyed on the hash of `pixi.lock`
+4. `pixi install`, per environment you ask for, `--locked` if you say so
+5. Saves the cache, runs `pixi list` so you can see what you got
+6. Optionally activates the environment for every next step
+
+```yaml
+- uses: prefix-dev/setup-pixi@v0.10.0
+  with:
+    environments: default kilted
+    activate-environment: default
+    auth-token: ${{ secrets.PREFIX_DEV_TOKEN }}
+```
+
+<div class="ref"><a href="https://github.com/prefix-dev/setup-pixi" target="_blank">setup-pixi source</a> · <a href="https://pixi.prefix.dev/latest/integration/ci/github_actions/" target="_blank">GitHub Actions docs</a></div>
+
+<!--
+That is the whole run() in src/main.ts: download, addPath, login, global install, pixi info, install (with cache restore and save around it), pixi list, activate, logout.
+Cache: a hit means no install at all, so a CI run on an unchanged lockfile is seconds. cache-write lets you only save on main so the 10 GB cache limit lasts.
+activate-environment writes pixi run's environment variables to GITHUB_ENV and its PATH changes to GITHUB_PATH, so later steps can call ros2 directly, no pixi run needed.
+The token is only used for the install step and logged out afterwards, so it doesn't leak into later steps.
+-->
+
+---
+section: Collaboration
+---
+
+# Docker
+
+One Dockerfile, two stages.
+
+```dockerfile
+FROM ghcr.io/prefix-dev/pixi:0.76.2-noble AS build
+COPY . /app
+RUN pixi install --locked
+RUN pixi shell-hook -s bash > /shell-hook.sh
+```
+
+- Start from the Pixi image, copy the workspace in
+- Install the environment from the lockfile
+- Write the activation to a script, for the next stage
+
+<div class="ref"><a href="https://pixi.prefix.dev/latest/deployment/container/" target="_blank">Pixi in containers</a></div>
+
+<!--
+Where there is a container runtime, the same lockfile becomes an image. The build stage is the only place Pixi exists.
+CUDA base images exist too: ghcr.io/prefix-dev/pixi:noble-cuda-13.0.0. A cache mount on /root/.cache/rattler makes rebuilds fast.
+-->
+
+---
+section: Collaboration
+---
+
+# The runtime stage
+
+```dockerfile
+FROM ubuntu:24.04 AS runtime
+COPY --from=build /app/.pixi/envs/default /app/.pixi/envs/default
+COPY --from=build /shell-hook.sh /shell-hook.sh
+ENTRYPOINT ["/bin/bash", "/shell-hook.sh"]
+```
+
+- A plain base image, no Pixi, no package manager
+- It receives the finished environment and the activation script, nothing else
+- `shell-hook.sh` is the `source setup.bash` of the container
+
+<div class="ref"><a href="https://pixi.prefix.dev/latest/deployment/container/" target="_blank">Pixi in containers</a></div>
+
+<!--
+Why two stages: the build stage carries Pixi, the package cache and the source tree. None of that belongs on the robot.
+The runtime stage copies out the environment directory and the one script, so the image is small and has nothing in it that could drift.
+Every command in the container runs through shell-hook.sh, activated, the same way pixi run does it on your laptop.
+-->
+
+---
+section: Collaboration
+---
+
+# Why `--locked`
+
+```dockerfile
+RUN pixi install --locked
+```
+
+- Without it, Pixi re-solves when `pixi.toml` and `pixi.lock` disagree, and the image gets something the team never tested
+- With it, the build fails instead
+- Same flag in CI, same answer: the lockfile is the only thing that decides what's installed
+
+<br>
+
+Laptop, CI and image all install from the same `pixi.lock`.
+"It works in the container but not on my machine" becomes a diff of one file.
+
+<!--
+Someone edits pixi.toml and forgets to commit the lockfile. Without --locked that silently goes through and you ship an environment nobody ran.
+With --locked the build tells you, right there, before anything is pushed.
+-->
+
+---
+section: Collaboration
+---
+
+# `pixi-pack`
+
+```bash
+pixi-pack --environment default --platform linux-aarch64 pixi.toml
+```
+
+```bash
+pixi-unpack environment.tar     # on the other machine
+source activate.sh
+```
+
+- One archive with the packages inside, no network or package manager needed to unpack
+- Pack for any platform from the machine you're on
+- `--create-executable` gives one self-extracting file
+
+<div class="ref"><a href="https://pixi.prefix.dev/latest/deployment/pixi_pack/" target="_blank">pixi-pack</a> · <a href="https://pixi.prefix.dev/latest/reference/cli/pixi/publish/" target="_blank">pixi publish</a></div>
+
+<!--
+Robots on 4G, or with internet blocked: you can't pixi install there. pixi-pack takes one environment for one platform out of the lockfile and packs the .conda files as a local channel.
+`pixi global install pixi-pack pixi-unpack`. --platform takes the conda subdir (linux-aarch64), not the name jetson.
+Your own packages: `pixi publish --target-channel` uploads them to a channel so a teammate can pixi add them. We demo that, it needs a token.
+-->
 
 ---
 section: Exercise 3
@@ -862,13 +1080,33 @@ layout: center
 class: text-center
 ---
 
-# Exercise 3
+# Now it's your turn
 
-## Ready for your team
+## Exercise 3: Ready for your team
 
-20 minutes · `exercises/03-collaboration/`
+20 minutes · `cd exercises/03-collaboration`
 
-<!-- TODO(content) -->
+<div class="text-left mx-auto" style="max-width: 34rem; margin: 1rem auto;">
+
+1. `pixi global install gh`, put the workspace on GitHub
+2. Add CI with `setup-pixi`, watch it go green
+3. Build the Docker image and run it: no Pixi inside
+4. We demo `pixi publish` and `pixi-pack`
+
+</div>
+
+<small>
+
+**prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/03-collaboration/**
+
+Your own workspace works here too. That's the point.
+
+</small>
+
+<!--
+3.1 needs a GitHub account and gh auth login, say so up front.
+The publish and pack steps are a demo from the front: both need a channel token, fifty people minting tokens is not a good use of twenty minutes.
+-->
 
 ---
 section: Wrap-up
