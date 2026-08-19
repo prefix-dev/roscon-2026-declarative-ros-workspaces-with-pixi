@@ -1,0 +1,22 @@
+version: 2
+updates:
+  # The slide deck is a Slidev project. Version updates keep the lockfile from
+  # drifting behind the ranges in package.json again, which is what produced the
+  # backlog of stale alerts this repo was carrying.
+  - package-ecosystem: npm
+    directory: /slides
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # Slidev releases move its whole transitive tree at once, so review them
+      # as a single PR rather than one per sub-package.
+      slidev:
+        patterns:
+          - "@slidev/*"
+          - slidev
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
