@@ -80,31 +80,90 @@ layout: section
 
 # Robotics for everyone
 
-<!-- TODO(content): 15 min. See docs/explainers/philosophy.md for the outline. -->
+Why the way we install ROS keeps people out.
+
+<!--
+15 min. The written version is docs/explainers/philosophy.md.
+This block is the why, the rest of the day is the how. It's allowed to persuade; the exercises are not.
+-->
 
 ---
 section: Philosophy
 ---
 
-# Reproducibility is the foundation
+# Getting into ROS depends on the machine you own
 
-<!-- TODO(content) -->
+| You have | Your route |
+| --- | --- |
+| Ubuntu 24.04 | `apt install`, the happy path |
+| Ubuntu 22.04 | Humble only. Want Jazzy? Reinstall your OS |
+| Arch or another Linux | Build from source, or a container |
+| macOS | No official path. VM or Docker |
+| Windows | Limited support, WSL2 or Docker |
+
+<!--
+Ask someone new to robotics to get a ROS project running and watch what happens.
+Before they touch a robot they first have to learn a lot about apt, bash and OS installation.
+Frameworks like lerobot and dora are much more cross-platform, and easier to start with. ROS doesn't have to lose those people.
+-->
 
 ---
 section: Philosophy
 ---
 
-# One project, many workflows
+# "Just use Docker" is the accepted answer
 
-<!-- TODO(content) -->
+And to be fair, it works.
+
+- The setup becomes doable, and the team shares one image
+- But your whole workflow now lives inside a box
+- Your editor, your debugger, your USB devices, your GUI tools: all harder
+- You're not developing on your machine anymore
+
+<!--
+This is the honest slide: Docker solved a real problem, that's why everybody does it.
+The cost is the development experience. You lose the flexibility of your own machine and every tool has to be wired through the container boundary.
+Using ROS forces an OS, a version and a workflow on you. Good default, but it shouldn't be the only option.
+-->
 
 ---
 section: Philosophy
 ---
 
-# Meeting people where they are
+# What we want instead
 
-<!-- TODO(content) -->
+```bash
+git clone <your-project>
+cd <your-project>
+pixi run application
+```
+
+Any machine, three commands, and the third one installs the full ROS environment and starts your launchfile.
+
+<!--
+This is the dream, and the goal of this workshop. Compare it with the install page on docs.ros.org.
+By Exercise 3 their own workspace does exactly this.
+-->
+
+---
+section: Philosophy
+---
+
+# How we get there
+
+- **All machines**, not just Ubuntu: Linux, macOS, Windows, x86 and arm64
+- **Distroless**: Jazzy on Ubuntu 22.04, Kilted on macOS, Humble on Windows
+- **Declarative**: the environment is a file in git, roll back to a known good state
+- **Reproducible**: a lockfile instead of a Docker image
+- **Fast**: minutes to a running project, not hours
+- **Simple**: if you can use `pip`, you can use Pixi
+
+<!--
+Distroless: to us a ROS distro is a release process, not an OS. There's no reason Humble should be tied to Ubuntu 22.04.
+Simple: no sysadmin knowledge needed. `pixi init`, `pixi add`, `pixi run`, that's the same mental model as pip, and it replaces apt, rosdep and the sourcing.
+Declarative: pixi.toml says what you want, the lockfile records what you got, git carries both.
+Flexible too: latest greatest or pinned, your call. Control back to the developer.
+-->
 
 ---
 section: Philosophy
@@ -112,7 +171,17 @@ section: Philosophy
 
 # Standing on conda-forge and RoboStack
 
-<!-- TODO(content) -->
+- **conda-forge**: tens of thousands of pre-built packages, community run
+  <br>`gcc`, `cmake`, `Python`, `OpenCV`, `PyTorch`, for every platform
+- **RoboStack**: the ROS distributions built on top of it
+  <br>Noetic to Lyrical, `ros-noetic-rqt` to `ros-lyrical-plotjuggler`
+- One environment, both channels: conda-forge for the stack, RoboStack for ROS
+
+<!--
+None of this works without the community effort underneath.
+RoboStack is maintained by people like Tobias Fischer, Silvio Traversaro and Daisuke Nishimatsu, and keeping ROS compiling on three operating systems is genuinely hard work.
+Credit them by name. This workshop stands on their shoulders.
+-->
 
 ---
 section: Pixi
@@ -137,7 +206,7 @@ section: Pixi
 - `apt` is for Debian packages
 - `brew` is for Homebrew packages
 - `pip` is for PyPI packages
-- **Pixi is for conda packages**
+- **Pixi is for conda packages** <span style="opacity: 0.55; font-weight: 400;">+ PyPI</span>
 
 <br>
 
@@ -160,7 +229,7 @@ section: Pixi
 - One distro per machine
 - `source /opt/ros/jazzy/setup.bash` in every terminal
 - A second project? Docker, or a second machine
-- macOS or Windows? Not supported
+- macOS? Not supported. Windows? Build from source
 
 <!--
 We've all done this. Just name it and move on.
@@ -170,35 +239,17 @@ We've all done this. Just name it and move on.
 section: Pixi
 ---
 
-# With Pixi and RoboStack
-
-- RoboStack: ROS 2 built as conda packages
-- One `pixi.toml` per project, nothing installed system wide
-- Linux, macOS and Windows, x86 and arm64
-- Jazzy and Kilted next to each other
-- The same lockfile on your laptop, in CI and on the robot
-- PyTorch, OpenCV and CUDA come from the same channels
-
-<!--
-RoboStack is the work of Tobias Fischer, Silvio Traversaro, Wolf and many others: ROS built as conda packages on the conda-forge infrastructure.
-Pixi is what makes it comfortable to use. Don't oversell it, they'll feel the difference in ten minutes.
--->
-
----
-section: Pixi
----
-
 # `pixi.toml`
 
 ```toml
-[workspace]       # channels, platforms
+[workspace]       # metadata, channels, platforms
 [dependencies]    # what you want installed
 [tasks]           # commands with a name
 ```
 
 <br>
 
-This is the whole file. It lives at the root of your project.
+Everything you need to know for now. It lives at the root of your project.
 
 <div class="ref"><a href="https://pixi.prefix.dev/latest/reference/pixi_manifest/" target="_blank">Manifest reference</a></div>
 
@@ -217,12 +268,14 @@ section: Pixi
 
 - A channel is like an apt source, but it's written in your `pixi.toml`
 - `conda-forge` for everything, `robostack-jazzy` for ROS 2 Jazzy
+  <br><span style="opacity: 0.55;">exactly like the Ubuntu repos plus the ROS repo you add to `sources.list`</span>
 - Package names are `ros-<distro>-<name>`, with hyphens
 - `pixi add` writes it in the manifest, solves and installs
 
 <div class="ref"><a href="https://robostack.github.io" target="_blank">RoboStack package list</a> · <a href="https://prefix.dev/channels" target="_blank">Search packages on prefix.dev</a></div>
 
 <!--
+The same two-repo setup everybody already has on Ubuntu: the OS repos plus packages.ros.org, except here it is declared in the manifest instead of /etc/apt/sources.list.d/.
 `pixi workspace channel add --prepend robostack-jazzy`, then `pixi add ros-jazzy-ros-base`.
 The RoboStack channel has to come before conda-forge, that's what --prepend does.
 A version like ">=0.11" is what you accept, the lockfile is what you got.
@@ -559,41 +612,8 @@ Every step has the commands folded away under "Solution" on the page. Ask them t
 People with their own workspace: do the same steps on your own project, that's more useful than the turtle.
 -->
 ---
-section: CUDA
-layout: section
----
-
-# CUDA
-
-<!-- TODO(content): 30 min. See docs/explainers/cuda.md for the outline. -->
-
----
-section: CUDA
----
-
-# Virtual packages
-
-<!-- TODO(content) -->
-
----
-section: CUDA
----
-
-# CUDA in practice
-
-<!-- TODO(content) -->
-
----
-section: CUDA
----
-
-# Jetson and other robots
-
-<!-- TODO(content) -->
-
----
 section: Packaging
-layout: section
+layout: center
 ---
 
 # Building ROS packages with Pixi
@@ -647,6 +667,34 @@ The package manifest lives next to `package.xml`, and `package.xml` doesn't chan
 <!--
 Until now every pixi.toml had a [workspace] table. A package manifest has [package] and no [workspace]: how to build one package.
 It's tiny, because the build backend does the reading. Next slide.
+-->
+
+---
+section: Packaging
+---
+
+# Build backends
+
+Pixi doesn't know how to compile your code. A **build backend** does.
+
+| Backend | Builds | Reads |
+| --- | --- | --- |
+| `pixi-build-cmake` | C and C++ | `CMakeLists.txt` |
+| `pixi-build-python` | Python | `pyproject.toml` |
+| `pixi-build-rust` | Rust | `Cargo.toml` |
+| `pixi-build-ros` | ROS packages | `package.xml` |
+
+- The package manifest names its backend, Pixi fetches and runs it
+- The backend is a conda package itself, versioned and pinned like the rest
+
+<div class="ref"><a href="https://pixi.prefix.dev/latest/build/backends/" target="_blank">Build backends overview</a></div>
+
+<!--
+Pixi's side of the deal: solve the dependencies, set up an isolated build environment, cache the result.
+The backend's side: know the build system, turn the source into a conda package.
+Separating them is what keeps the package manifest at two lines: all the build-system knowledge lives in the backend, not in your file.
+They come from conda-forge like everything else, and pinning them in [workspace.dependencies] is why your build is reproducible too.
+Today we only need pixi-build-ros: next slide.
 -->
 
 ---
