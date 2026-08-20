@@ -173,16 +173,14 @@ Building it needs a toolchain and the ROS libraries it includes, and those come 
 
     === "Unix (Linux, macOS)"
 
-        ```toml title="exercises/01-ros-workspace/pixi.toml"
-        [target.unix.activation]
-        scripts = ["install/setup.sh"]
+        ```bash
+        pixi workspace activation scripts add --target unix install/setup.sh
         ```
 
     === "Windows"
 
-        ```toml title="exercises/01-ros-workspace/pixi.toml"
-        [target.win-64.activation]
-        scripts = ["install/setup.bat"]
+        ```bash
+        pixi workspace activation scripts add --target win-64 install/setup.bat
         ```
 
     The script only exists after the first `colcon build`, so Pixi warns until then.
