@@ -53,19 +53,6 @@ Everything runs through Pixi tasks; `pixi task list` shows them all.
 The site deploys to GitHub Pages from `main`.
 The slides are built into `site/slides/`, which is what the "Slides" entry in the navigation points at.
 
-### Adding content
-
-- Explainers are `docs/explainers/*.md`, exercises are `docs/exercises/*.md`.
-  Add new pages to `nav` in `zensical.toml`.
-- Slides are one file, `slides/slides.md`.
-  Each agenda block is a `section:` in the frontmatter, which is what the footer displays.
-- `<!-- TODO(content) -->` markers show what still needs writing; `IMPLEMENTATION_PLAN.md` tracks the stages.
-
-## Credit
-
-Built by [prefix.dev](https://prefix.dev).
-Structure borrowed from the [DESY Pixi workshop](https://github.com/prefix-dev/desy-workshop) and Matthew Feickert's [reproducible CUDA workflows tutorial](https://github.com/matthewfeickert-talks/reproducible-cuda-workflows-with-pixi-scipy-2026).
-
 ## License
 
 BSD-3-Clause.
