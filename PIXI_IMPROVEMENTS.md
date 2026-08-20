@@ -373,6 +373,33 @@ Nothing in the workshop needs the index either: RoboStack channel names already 
 - Cache globally (`~/.cache/rattler` or the pixi cache dir) and treat a stale cached copy as good enough when the refresh fails (`stale-if-error`).
 - An escape hatch: `ROSDISTRO_INDEX_URL` or a `[package.build.config]` key pointing at a local file, so a workshop can ship the file in the repo.
 
+## 13. Windows MAX_PATH breaks source builds and colcon, with errors that never say "path too long"
+
+**Severity: high on Windows.** Found 2026-08-20 on `pixi 0.77.0`, GitHub Actions `windows-latest`.
+
+Windows still caps most file APIs at 260 characters, and a GitHub runner spends ~100 of them writing the repository name twice (`D:\a\<repo>\<repo>`).
+With this repo's name, that was enough to break two different things, neither of which mentioned path length:
+
+1. `pixi install --locked` of a workspace with a source package failed writing a conda-meta record 261 characters deep inside `.pixi\bld`:
+
+    ```
+    ├─▶ failed to write ros-jazzy-foonathan-memory-vendor-1.3.1-np2py312hf80f32c_18.json
+    ╰─▶ Failed to persist file ...\.pixi\bld\ros-jazzy-turtle-choreographer\dS_9L8FZIP4\host\conda-meta\...json:
+        failed to persist temporary file: The system cannot find the path specified. (os error 3)
+    ```
+
+2. `colcon build` inside the environment failed because `cl.exe` could not open a rosidl header 267 characters deep inside `.pixi\envs\default`, and even that error was invisible: MSVC prints errors to stdout, which colcon's default event handlers do not echo for failed packages.
+
+`detached-environments = 'C:\pix'` fixes both by moving `envs` and `bld` out of the workspace, and that is what our CI now does on Windows.
+
+**Suggested fixes:**
+
+- Detect a persist/rename failure on a path over 260 characters on Windows and say so, with the `detached-environments` hint. "os error 3" cost half a day.
+- `tempfile::persist` calls `MoveFileExW` with the raw path; a `\\?\` verbatim prefix (or Rust `std::fs::rename`, which adds it automatically) would make pixi itself immune to the limit.
+- pixi cannot fix `cl.exe`, so a doc note on Windows path length for source builds may be the honest answer for the rest.
+
+---
+
 ## Things that worked well, for balance
 
 Noted because they are load-bearing for the workshop and worth not regressing:

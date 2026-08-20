@@ -84,6 +84,21 @@ sed -i 's|^source /opt/ros|# &|' ~/.bashrc
 Then restart your terminal.
 Your system ROS is untouched, uncomment the line whenever you need it back.
 
+## Windows: `Cannot open include file` or `failed to persist temporary file`
+
+Windows caps most file paths at 260 characters, and a ROS environment nests deep.
+If your build stops with `error C1083: Cannot open include file` on a header that clearly exists, or an install fails with `failed to persist temporary file: The system cannot find the path specified`, your workspace folder sits too deep on the disk.
+
+Two ways out, either works:
+
+Move the workspace closer to the drive root, `C:\ws` beats `C:\Users\you\Documents\workshops\roscon-2026\...`.
+
+Or tell Pixi to keep its environments somewhere short, once, for every workspace:
+
+```powershell
+pixi config set --global detached-environments 'C:\pix'
+```
+
 ## Something is slow
 
 First check if it is an internet issue: the first download of a ROS environment is a few gigabytes, and conference Wi-Fi is shared with the whole room.

@@ -50,8 +50,19 @@ jobs:
           - 02-ros-package
           - 03-collaboration
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+
+      # Windows caps paths at 260 characters, and the runner spends ~100 of
+      # them writing the repository name twice. Source builds nest deep enough
+      # to cross the limit, so park the environments somewhere short.
+      - name: Keep pixi's paths short on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force "$env:USERPROFILE\.pixi" | Out-Null
+          Add-Content "$env:USERPROFILE\.pixi\config.toml" "detached-environments = 'C:\pix'"
 
       - uses: prefix-dev/setup-pixi@v0.9.4
         with:
@@ -91,17 +102,30 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+      # Same MAX_PATH story as in `solutions`: here it is cl.exe that cannot
+      # open a rosidl header 267 characters deep inside .pixi/envs.
+      - name: Keep pixi's paths short on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force "$env:USERPROFILE\.pixi" | Out-Null
+          Add-Content "$env:USERPROFILE\.pixi\config.toml" "detached-environments = 'C:\pix'"
       - uses: prefix-dev/setup-pixi@v0.9.4
         with:
           manifest-path: solutions/01-ros-workspace/pixi.toml
           locked: true
       - name: colcon build
-        run: pixi run --manifest-path solutions/01-ros-workspace/pixi.toml build
-      - name: The node is only findable after sourcing the overlay
-        run: pixi run --manifest-path solutions/01-ros-workspace/pixi.toml dance --help
-        continue-on-error: true
+        # console_direct+ because MSVC prints its errors to stdout, which
+        # colcon's default event handlers do not echo for failed packages.
+        run: pixi run --manifest-path solutions/01-ros-workspace/pixi.toml build --event-handlers console_direct+
+      # `ros2 pkg executables` only finds our node once the overlay is
+      # sourced, which the activation scripts do. Listing it instead of
+      # running it keeps CI from spinning a node forever.
+      - name: The node is findable because activation sources the overlay
+        run: pixi run --manifest-path solutions/01-ros-workspace/pixi.toml ros2 pkg executables turtle_dancer
 
   # Exercise 2 is built on the edit-run loop, so we watch it: edit a node's
   # source, `pixi run`, and the change must be there. Passes since pixi 0.76.2
