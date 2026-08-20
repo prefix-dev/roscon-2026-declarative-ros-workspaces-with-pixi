@@ -2,6 +2,15 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "docs",
+      "runtimeExecutable": "pixi",
+      "runtimeArgs": [
+        "run",
+        "docs"
+      ],
+      "port": 8000
+    },
+    {
       "name": "docs-static",
       "runtimeExecutable": "python3",
       "runtimeArgs": [

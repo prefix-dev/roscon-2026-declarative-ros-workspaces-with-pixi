@@ -6,7 +6,7 @@ icon: lucide/hammer
 
 !!! plain "30 minutes, hands-on"
 
-    **Work in:** `exercises/02-ros-package/` &middot; **Solution:** `solutions/02-ros-package/` &middot; **After:** [CUDA](../explainers/cuda.md)
+    **Work in:** `exercises/02-ros-package/` &middot; **Solution:** `solutions/02-ros-package/` &middot; **After:** [Building ROS packages with Pixi](https://pixi.prefix.dev/latest/build/ros/)
 
     **Goal:** hand the build to Pixi.
     The same C++ node from Exercise 1, plus a Python one, both built and installed from their `package.xml`: no `colcon build`, no `source install/setup.bash`, no `build/` directory.

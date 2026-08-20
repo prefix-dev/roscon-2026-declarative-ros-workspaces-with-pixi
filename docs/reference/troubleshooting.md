@@ -9,35 +9,86 @@ icon: lucide/life-buoy
 
 ## `pixi` is not found after installing
 
-<!-- TODO(content): shell restart, PATH, and the Windows specifics. -->
+The installer puts `pixi` in `~/.pixi/bin` and adds that directory to your `PATH`, but only new shells pick that up.
+Restart your terminal and check again:
+
+```bash
+pixi --version
+```
+
+Still not found?
+Make sure `~/.pixi/bin` is on the `PATH` yourself, in your `~/.bashrc` or `~/.zshrc`:
+
+```bash
+export PATH="$HOME/.pixi/bin:$PATH"
+```
+
+On Windows the installer updates the user `PATH` in the registry.
+Close Windows Terminal completely, all tabs, and open it again.
 
 ## The solver cannot find a ROS package
 
-<!-- TODO(content): missing channel, wrong distro prefix, package absent for the platform.
-     How to tell the three apart with pixi search. -->
+First make sure the `robostack-<distro>` channel is defined, before `conda-forge`:
 
-## A GUI window does not appear
+```bash
+pixi workspace channel add --prepend robostack-jazzy
+```
 
-<!-- TODO(content): macOS Qt specifics, Wayland vs X11, WSL, and Windows firewall prompts. -->
+Then check the name.
+RoboStack packages are `ros-<distro>-<name>` with hyphens, so `rclcpp` is `ros-jazzy-rclcpp`.
 
-## Nodes cannot see each other
+If both are right, the package may simply not be built for your platform.
+Search for it on [prefix.dev](https://prefix.dev/channels/robostack-jazzy) and check which platforms it is actually built for, or ask from the command line:
 
-<!-- TODO(content): ROS_DOMAIN_ID collisions in a room full of people on the same network. This
-     will happen. Have the fix ready as a task. -->
+```bash
+pixi search -c robostack-jazzy ros-jazzy-rclcpp
+```
 
 ## A CUDA environment refuses to solve
 
-<!-- TODO(content): `__cuda` not detected, system-requirements too strict or too loose, and how to
-     solve for a GPU machine from a laptop without one. -->
+A GPU build only resolves for a platform that has a CUDA version.
+Make sure you add `cuda = "12"` to the platform you have CUDA on, `linux-64` or `win-64` for example:
+
+```toml
+[workspace]
+platforms = [
+    "osx-arm64",
+    "win-64",
+    { name = "cuda-linux-64", platform = "linux-64", cuda = "12" },
+]
+```
+
+Or let Pixi write that for you:
+
+```bash
+pixi workspace platform add cuda-linux-64=linux-64 --cuda 12
+```
+
+Match the version to what `nvidia-smi` reports on the machine that has the GPU.
 
 ## An existing ROS installation interferes
 
-<!-- TODO(content): a sourced /opt/ros in .bashrc leaking into the Pixi environment. Show how to
-     detect it and what clean-env does. -->
+A `source /opt/ros/jazzy/setup.bash` in your `~/.bashrc` leaks `ROS_DISTRO`, `AMENT_PREFIX_PATH` and `PYTHONPATH` into every Pixi environment, and the two installations mix.
+Find the line:
+
+```bash
+grep -n "source /opt/ros" ~/.bashrc
+```
+
+Comment it out:
+
+```bash
+sed -i 's|^source /opt/ros|# &|' ~/.bashrc
+```
+
+Then restart your terminal.
+Your system ROS is untouched, uncomment the line whenever you need it back.
 
 ## Something is slow
 
-<!-- TODO(content): cold cache, conference Wi-Fi, and what to prefetch. -->
+First check if it is an internet issue: the first download of a ROS environment is a few gigabytes, and conference Wi-Fi is shared with the whole room.
+If nothing is moving anymore, cancel and restart the command.
+Pixi keeps everything it already downloaded in its cache, so it continues where it stopped.
 
 ---
 

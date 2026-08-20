@@ -60,9 +60,9 @@ section: Welcome
 | --- | --- | --- |
 | 15 min | Welcome and setup | together |
 | 15 min | Robotics for everyone | we talk |
-| 30 min | Pixi in 30 minutes | we talk |
+| 30 min | Pixi in 30 minutes, CUDA included | we talk |
 | 30 min | **Exercise 1:** your first ROS 2 workspace | you type |
-| 30 min | CUDA | we talk |
+| 15 min | Building ROS packages with Pixi | we talk |
 | 30 min | **Exercise 2:** build ROS packages with Pixi | you type |
 | 15 min | Collaboration, CI/CD & Docker | we talk |
 | 20 min | **Exercise 3:** ready for your team | you type |
@@ -83,6 +83,8 @@ layout: center
 **prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi**
 
 ```bash
+git clone https://github.com/...
+cd roscon-2026-declarative-ros-workspaces-with-pixi
 pixi run --manifest-path solutions/01-ros-workspace/pixi.toml sim
 ```
 
@@ -112,7 +114,7 @@ This block is the why, the rest of the day is the how. It's allowed to persuade;
 section: Philosophy
 ---
 
-# Getting into ROS depends on the machine you own
+# Getting into ROS is linked to an OS and a distro
 
 | You have | Your route |
 | --- | --- |
@@ -138,17 +140,22 @@ And to be fair, it works.
 
 - The setup becomes doable, and the team shares one image
 - But your whole workflow now lives inside a box
-- Your editor, your debugger, your USB devices, your GUI tools: all harder
+- Editor, debugger, USB/network devices, GPU, GUI tools: much harder
+- Setup once, never touch again
 - You're not developing on your machine anymore
 
+
+<img src="/docker-in-cloud.jpg" alt="Docker in Cloud: a container ship" style="position: absolute; right: 3rem; bottom: 3.2rem; height: 46%; z-index: 0; border-radius: 8px;">
+
 <!--
-This is the honest slide: Docker solved a real problem, that's why everybody does it.
+Docker solved a real problem, that's why everybody does it now.
 The cost is the development experience. You lose the flexibility of your own machine and every tool has to be wired through the container boundary.
 Using ROS forces an OS, a version and a workflow on you. Good default, but it shouldn't be the only option.
 -->
 
 ---
 section: Philosophy
+layout: cover
 ---
 
 # What we want instead
@@ -159,7 +166,7 @@ cd <your-project>
 pixi run application
 ```
 
-Any machine, three commands, and the third one installs the full ROS environment and starts your launchfile.
+Any machine, three commands, and your project runs.
 
 <!--
 This is the dream, and the goal of this workshop. Compare it with the install page on docs.ros.org.
@@ -168,22 +175,154 @@ By Exercise 3 their own workspace does exactly this.
 
 ---
 section: Philosophy
+layout: section
 ---
 
 # How we get there
 
-- **All machines**, not just Ubuntu: Linux, macOS, Windows, x86 and arm64
-- **Distroless**: Jazzy on Ubuntu 22.04, Kilted on macOS, Humble on Windows
-- **Declarative**: the environment is a file in git, roll back to a known good state
-- **Reproducible**: a lockfile instead of a Docker image
-- **Fast**: minutes to a running project, not hours
-- **Simple**: if you can use `pip`, you can use Pixi
+All machines · Distroless · Declarative · Reproducible · Fast · Simple
 
 <!--
-Distroless: to us a ROS distro is a release process, not an OS. There's no reason Humble should be tied to Ubuntu 22.04.
-Simple: no sysadmin knowledge needed. `pixi init`, `pixi add`, `pixi run`, that's the same mental model as pip, and it replaces apt, rosdep and the sourcing.
-Declarative: pixi.toml says what you want, the lockfile records what you got, git carries both.
-Flexible too: latest greatest or pinned, your call. Control back to the developer.
+The overview, then one beat per item. Keep the pace up: 30 to 40 seconds each.
+-->
+
+---
+section: Philosophy
+---
+
+<div class="kicker">How we get there · 1/6</div>
+
+# All machines
+
+Linux, macOS, Windows. x86 and arm64.
+
+- Not just Ubuntu, and not just the one Ubuntu that matches your distro
+- Your laptop, the CI runner and the robot can all be different machines
+- Pick the hardware you need, and the OS you like!
+
+<!--
+This is the routes table from earlier, solved. The person on a MacBook and the person on Arch work on the same project, today.
+-->
+
+---
+section: Philosophy
+---
+
+<div class="kicker">How we get there · 2/6</div>
+
+# Distroless
+
+Jazzy on Ubuntu 22.04. Kilted on macOS. Humble on Windows.
+
+- A ROS distro is a release process, not an operating system
+- There's no reason Humble should be tied to Ubuntu 22.04
+- Any distro on any machine, and two of them side by side
+
+<!--
+RoboStack packages every distro for every platform, so the coupling between ROS release and OS release is just gone.
+Side by side matters for migrations: you test Kilted next to Jazzy in the same repo, no second machine.
+-->
+
+---
+section: Philosophy
+---
+
+<div class="kicker">How we get there · 3/6</div>
+
+# Declarative
+
+Your environment is a file in git.
+
+- `pixi.toml` says what you want
+- Update your environment when you want
+- Roll back to a known good state like you roll back code
+
+<!--
+Contrast with imperative setup: a README of steps run once, in an order nobody remembers, on a machine nobody can recreate.
+The file is reviewable too: an environment change is a pull request, not a Slack message saying "reinstall".
+-->
+
+---
+section: Philosophy
+---
+
+<div class="kicker">How we get there · 4/6</div>
+
+# Reproducible
+
+A lockfile (pixi.lock) instead of a Docker image.
+
+- Every package, version and hash, recorded when you change something
+- The same environment on your laptop, in CI, on the robot
+- Use `git` to manage your versions, not a container registry
+
+<!--
+The Docker image also gives reproducibility, but at the cost of the whole workflow moving into the container.
+The lockfile gives the same guarantee as a text file in git, diffs included.
+-->
+
+---
+section: Philosophy
+---
+
+<div class="kicker">How we get there · 5/6</div>
+
+# Fast
+
+Minutes to a running project, not hours.
+
+- Manage everything with one tool, no apt, no rosdep, no sourcing
+- Let the internet connection be the only slow part, not the setup.
+- Getting started: `git clone`, `pixi run sim`
+
+<!--
+Say the numbers out loud: a cold solve of 391 packages is about a second, an install from cache is seconds.
+The first download is the only slow part, which is why the homework was warming the cache.
+-->
+
+---
+section: Philosophy
+---
+
+<div class="kicker">How we get there · 6/6</div>
+
+# Simple
+
+If you can use `pip`, you can use Pixi.
+
+- `pixi init`, `pixi add`, `pixi run`: the whole daily flow
+- No apt, no rosdep, no sourcing, no `sudo`, no sysadmin knowledge
+- Manage everything in one place, and reuse it across all your projects and devices.
+
+<!--
+The mental model is the same as pip or npm: a manifest, add things, run things.
+What disappears is everything around it: apt for system deps, rosdep to glue them, the sourcing ritual. That's the "for everyone" of this block: the barrier to entry drops to knowing one tool.
+-->
+
+---
+section: Philosophy
+---
+
+# What is a conda package
+
+`ros-jazzy-rclcpp-28.1.18-np2py312hd441986_18.conda`
+
+- An archive with **pre-built binaries** and metadata: name, version, dependencies
+- Any language: C++ libraries, Python, compilers, CMake, `ros2` itself
+- Installing means downloading and extracting into an environment, no compilation
+- The same package format on Linux, macOS and Windows, built per platform
+- Born in the scientific Python world in 2012, so this has been battle-tested for 14 years
+
+<div class="ref"><a href="https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/explainers/cuda/" target="_blank">More in the CUDA explainer: what's inside a conda package</a></div>
+
+<!--
+Not a container, not a virtualenv: a zip with compiled files plus a metadata file that says what it needs.
+The dependency metadata is what a solver uses: rclcpp says it needs rcl, rcl says it needs rmw, and so on down to libc.
+apt packages are the closest cousin, but apt installs into the system and one version per machine. Conda packages install into as many environments as you like.
+
+The history: 2012, the scientific Python community. pip couldn't ship compiled code back then, and NumPy or SciPy needed C and Fortran compilers on every user's machine. Conda was the answer: ship the binaries, per platform. It has carried the compiled half of data science ever since, and conda-forge (2016) made it fully community run.
+So this is not a new format we invented for robotics: Pixi and RoboStack reuse an ecosystem that has been shipping GPU and compiler stacks for over a decade.
+That's the unit everything today is made of. conda-forge and RoboStack, next slide, are collections of these.
 -->
 
 ---
@@ -209,7 +348,7 @@ section: Pixi
 layout: section
 ---
 
-# Pixi in 30 minutes
+# Pixi introduction
 
 The basics you need for Exercise 1.
 
@@ -270,7 +409,7 @@ section: Pixi
 
 <br>
 
-Everything you need to know for now. It lives at the root of your project.
+Everything you need to know for now. It lives at the **root** of your project.
 
 <div class="ref"><a href="https://pixi.prefix.dev/latest/reference/pixi_manifest/" target="_blank">Manifest reference</a></div>
 
@@ -334,36 +473,6 @@ The everyday flow is init, add, run. That's it for most days.
 pixi install is what CI and a fresh clone do: no solving, it installs exactly what the lockfile says.
 Every command has --help, and tab completion is one line: `pixi completion --shell zsh >> ~/.zshrc` (bash, fish, powershell too).
 `pixi list` shows what is installed, `pixi search` finds packages, `pixi info` tells you about the workspace and the machine.
--->
-
----
-section: Pixi
----
-
-# The README everybody copies from
-
-```md
-## How to run
-1. source /opt/ros/jazzy/setup.bash
-2. rosdep install --from-paths src -y
-3. colcon build --symlink-install
-4. source install/setup.bash
-5. ros2 launch my_robot bringup.launch.py
-```
-
-- Skip step 1: `rosdep: command not found`
-- Skip step 4: `Package 'my_robot' not found`
-- Forget step 2 on a fresh machine and you debug the wrong thing for an hour
-
-<br>
-
-Five steps you have to get right, in order, every time. That's the setup we skip: `pixi run bringup`.
-
-<!--
-Every repo has this section. It is the real interface of the project, and it only works when you follow it exactly.
-Miss one line and the workspace does not do what it is for, and the error rarely points at the line you missed.
-Tasks move these steps into pixi.toml: named, in the right order, run inside the right environment on every platform.
-The README then says: `pixi run bringup`.
 -->
 
 ---
@@ -582,7 +691,7 @@ Install the NVIDIA driver with apt (or JetPack on a Jetson), check with nvidia-s
 The CUDA toolkit, cuDNN, PyTorch's GPU build: all conda packages, pinned in the lockfile like everything else.
 A Jetson is the same idea: `pixi workspace platform add jetson=linux-aarch64 --cuda 13`.
 `[target."cuda-*"]` gives you tasks and dependencies only for the CUDA platforms.
-The CUDA block after the exercise goes deeper. This is what 1.7 and 1.8 need.
+The CUDA explainer on the site goes deeper. This is what 1.7 and 1.8 need.
 -->
 
 ---

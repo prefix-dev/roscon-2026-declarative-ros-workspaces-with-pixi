@@ -45,7 +45,7 @@ nav = [
     { "Collaboration, CI/CD & Docker" = "explainers/collaboration.md" },
   ] },
   { "Exercises" = [
-    { "How the exercises work" = "exercises/index.md" },
+    { "How the exercises work" = "exercises/intro.md" },
     { "1. Your first ROS 2 workspace" = "exercises/01-ros-workspace.md" },
     { "2. Build ROS packages with Pixi" = "exercises/02-ros-package.md" },
     { "3. Ready for your team" = "exercises/03-collaboration.md" },
@@ -53,7 +53,7 @@ nav = [
   { "Reference" = [
     { "Command cheat sheet" = "reference/cheatsheet.md" },
     { "Troubleshooting" = "reference/troubleshooting.md" },
-    { "Migrating from rosdep & colcon" = "reference/migration.md" },
+    { "Cleaning up" = "reference/cleaning.md" },
   ] },
   { "Elsewhere" = [
     { "Pixi documentation" = "https://pixi.prefix.dev" },

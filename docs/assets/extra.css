@@ -373,8 +373,13 @@
   font-size: 0.85rem;
 }
 
-.md-nav__item--section > .md-nav__link > .md-ellipsis {
-  margin-top: 1rem;
+/* Desktop sidebar only: in the mobile drawer these labels are tappable rows
+   with a chevron on the same line, and pushing the text down detaches it
+   from its icon. */
+@media screen and (min-width: 76.25em) {
+  .md-nav__item--section > .md-nav__link > .md-ellipsis {
+    margin-top: 1rem;
+  }
 }
 
 /* The default scrollbar is a hard grey bar down the sidebar; make it a navy

@@ -134,3 +134,16 @@ html.dark {
   padding-bottom: 0.35rem;
   font-size: 0.95rem;
 }
+
+/* Kicker above the title on the "How we get there" item slides */
+.slidev-layout .kicker {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--prefix-blue);
+}
+
+.slidev-layout .kicker + h1 {
+  margin-top: 0.2rem;
+}
