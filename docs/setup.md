@@ -60,7 +60,7 @@ A window with a turtle should appear.
 Close it, then check the second distro too:
 
 ```bash
-pixi run --manifest-path solutions/01-ros-workspace/pixi.toml -e kilted test
+pixi run --manifest-path solutions/01-ros-workspace/pixi.toml -e kilted sim
 ```
 
 If both worked, you are ready.
