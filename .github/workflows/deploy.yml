@@ -29,7 +29,7 @@ jobs:
       - run: pixi run build-docs
       - run: pixi run build-slides
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: site/
 
