@@ -6,7 +6,7 @@
 # The build stage has Pixi; the final stage does not. It only carries the
 # resolved environment, so nothing in the image can drift from pixi.lock.
 
-FROM ghcr.io/prefix-dev/pixi:0.76.2-noble AS build
+FROM ghcr.io/prefix-dev/pixi:0.77.0-noble AS build
 
 WORKDIR /app
 COPY . .
