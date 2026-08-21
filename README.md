@@ -6,6 +6,10 @@ A hands-on workshop for reproducible ROS development.
 
 📖 **[prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi](https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/)**
 
+> [!NOTE]
+> This material is under active development until the workshop.
+> Expect the exercises, the solutions and the site to change, and pull again before you come.
+
 [Pixi](https://pixi.prefix.dev) is a fast, cross-platform package manager built on the conda ecosystem.
 [RoboStack](https://robostack.github.io) provides the ROS 2 distribution as conda packages.
 Together they let you declare an entire ROS environment (system libraries, Python packages and ROS nodes) in a single `pixi.toml`, with a lockfile that guarantees reproducibility.
