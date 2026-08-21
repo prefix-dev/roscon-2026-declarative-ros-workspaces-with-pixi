@@ -28,3 +28,6 @@ output/
 
 # OS
 .DS_Store
+
+# Local agent and editor tooling
+.claude/

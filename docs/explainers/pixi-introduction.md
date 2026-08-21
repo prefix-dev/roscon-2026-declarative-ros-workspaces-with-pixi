@@ -99,7 +99,6 @@ The commands you write for a task are run in the workspace environment.
 
     More details can be found in the [Pixi documentation](https://pixi.prefix.dev/latest/workspace/advanced_tasks/#our-task-runner-deno_task_shell).
 
-
 Tasks support a graph style dependency system, so you can define a task that depends on another task.
 
 ```toml title="pixi.toml"
@@ -223,7 +222,6 @@ This allows you to create the right environment for the job, whether it's for de
 ## Command line interface
 
 With the `pixi` command you can manage your workspace, install dependencies, and run tasks.
-
 
 | Command | Description |
 | --- | --- |

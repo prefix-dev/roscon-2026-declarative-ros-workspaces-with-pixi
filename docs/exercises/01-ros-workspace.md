@@ -265,11 +265,6 @@ Those distro-specific pieces go into an environment of their own, declared inlin
     --8<-- "solutions/01-ros-workspace/pixi.toml"
     ```
 
-<!-- TODO(content): the GPU solution blocks below are hand-written and CLI-verified against
-     pixi 0.76.2, but not yet snippet-included. Once solutions/01 gains the CUDA/PyTorch/Jetson
-     content, replace them with `--8<--` section includes and confirm the `when = "__cuda"`
-     conditional solves alongside the jazzy/kilted inline environments. -->
-
 ## 1.6 Give the turtle a PyTorch brain
 
 `src/turtle_brain/` is a second node, provided pre-written.
@@ -364,12 +359,6 @@ That is just another platform, so you add it the same way, with its own CUDA ver
     You solve on your laptop and install on the Jetson.
 
 ## 1.9 Run it on a real GPU
-
-<!-- TODO(content): the GPU payoff on a cloud instance (Brev launchable, link TBD; see
-     IMPLEMENTATION_PLAN.md Stage 5). Two paths, both written and tested:
-       * GPU box: install the environment, `pixi run brain` logs "thinking on: cuda".
-       * Laptop only: solve and inspect, as in 1.7 and 1.8. Nobody is blocked.
-     Kick off the instance at the START of the session so provisioning is not on the clock. -->
 
 ## Check your work
 

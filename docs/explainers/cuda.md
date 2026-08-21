@@ -14,7 +14,6 @@ GPU's are notoriously difficult to get working, doing this in combination with R
 You need a specific CUDA version, matching drivers, and a toolkit that agrees with your ROS packages.
 Pixi comes with some features to help you manage CUDA dependencies.
 
-
 Pixi can't control every CUDA related dependency, it needs the NVIDIA driver to be installed on the machine.
 On Ubuntu, you can install the NVIDIA driver with:
 
@@ -81,14 +80,4 @@ start = "echo 'Starting on a CUDA machine'"
 start = "echo 'Starting on a non-CUDA machine'"
 ```
 
-
 ## Jetson and other robots
-
-<!-- TODO(content):
-     - linux-aarch64 vs. the Jetson's CUDA and L4T reality.
-     - `[system-requirements]` for the robot, not for the laptop.
-     - Cross-solving on your laptop for hardware you do not have in front of you.
-     - Shipping to the robot: pixi on device, or `pixi-pack`.
-       NOTE: pixi-pack --platform takes the conda subdir, so `pixi-pack --platform linux-aarch64`,
-       NOT the named platform `jetson` (verified pixi-pack 0.7.10; see pixi-pack-named-platforms memory).
--->

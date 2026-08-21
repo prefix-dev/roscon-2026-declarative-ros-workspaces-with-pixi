@@ -4,9 +4,6 @@ icon: lucide/life-buoy
 
 # Troubleshooting
 
-<!-- TODO(content): fill this in from the dry runs. Every error we hit while rehearsing on Linux,
-     macOS and Windows belongs here, with the exact message people will search for. -->
-
 ## `pixi` is not found after installing
 
 The installer puts `pixi` in `~/.pixi/bin` and adds that directory to your `PATH`, but only new shells pick that up.
