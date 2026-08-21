@@ -14,7 +14,7 @@ version = "0.1.0"
 # The ROS workspaces the participants work in live in `exercises/` and
 # `solutions/`, each with their own `pixi.toml`.
 [dependencies]
-zensical = ">=0.0.51,<0.0.52"
+zensical = ">=0.0.56,<0.0.57"
 nodejs = ">=22"
 
 [feature.lint.dependencies]

@@ -53,7 +53,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/readline-8.3-h853b02a_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/tk-8.6.13-noxft_hd70dff1_3.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/yaml-0.2.5-h280c20c_3.conda
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/zensical-0.0.51-py310h1570de5_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/zensical-0.0.56-py310haab479f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.7-hb78ec9c_6.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/_python_abi3_support-1.0-hd8ed1ab_3.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2026.7.22-hbd8a1cb_0.conda
@@ -116,7 +116,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/readline-8.3-h46df422_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tk-8.6.13-hd3d0363_3.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/yaml-0.2.5-h925e9cb_3.conda
-      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zensical-0.0.51-py310hf7b50e3_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zensical-0.0.56-py310h8dbfc9c_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.7-hbf9d68e_6.conda
       win-64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/_python_abi3_support-1.0-hd8ed1ab_3.conda
@@ -155,7 +155,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/win-64/vc14_runtime-14.51.36231-h1b9f54f_39.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/vcomp14-14.51.36231-h1b9f54f_39.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/yaml-0.2.5-h6a83c73_3.conda
-      - conda: https://conda.anaconda.org/conda-forge/win-64/zensical-0.0.51-py310hdba2031_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/win-64/zensical-0.0.56-py310hdba2031_0.conda
       - conda: https://conda.anaconda.org/conda-forge/win-64/zstd-1.5.7-h534d264_6.conda
   lint:
     channels:
@@ -780,21 +780,21 @@ packages:
     - yaml >=0.2.5,<0.3.0a0
   size: 85189
   timestamp: 1753484064210
-- conda: https://conda.anaconda.org/conda-forge/linux-64/zensical-0.0.51-py310h1570de5_0.conda
+- conda: https://conda.anaconda.org/conda-forge/linux-64/zensical-0.0.56-py310haab479f_0.conda
   noarch: python
-  sha256: e7294e8353d470bb3728ec7d3ffcff9552806d8668d2174315985c692942c16b
-  md5: f829af948bc8d508a4eb2a1405c786f0
+  sha256: e3aef72afdbb071f4cd968a72f017e2d47fc31cb336f854afbdf0ef67ee98910
+  md5: 7ebc7532fbbe826cb7ea8d3ef2d5e0eb
   depends:
   - python
   - click >=8.1.8
   - deepmerge >=2.0
   - markdown >=3.7
   - pygments >=2.20
-  - pymdown-extensions >=10.21.3
+  - pymdown-extensions >=11.0
   - pyyaml >=6.0.2
   - tomli >=2.4.0
   - jinja2 >=3.1
-  - libgcc >=14
+  - libgcc >=15
   - __glibc >=2.17,<3.0.a0
   - _python_abi3_support 1.*
   - cpython >=3.10
@@ -803,8 +803,8 @@ packages:
   license: MIT
   license_family: MIT
   run_exports: {}
-  size: 6905096
-  timestamp: 1784341093483
+  size: 6940592
+  timestamp: 1787076611373
 - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.7-hb78ec9c_6.conda
   sha256: 68f0206ca6e98fea941e5717cec780ed2873ffabc0e1ed34428c061e2c6268c7
   md5: 4a13eeac0b5c8e5b8ab496e6c4ddd829
@@ -1552,17 +1552,17 @@ packages:
     - yaml >=0.2.5,<0.3.0a0
   size: 83386
   timestamp: 1753484079473
-- conda: https://conda.anaconda.org/conda-forge/osx-arm64/zensical-0.0.51-py310hf7b50e3_0.conda
+- conda: https://conda.anaconda.org/conda-forge/osx-arm64/zensical-0.0.56-py310h8dbfc9c_0.conda
   noarch: python
-  sha256: adc1b735a614252965501aabb0f8da0f28993e7138c23235219f9879761d3337
-  md5: 04be853d0ba60cdcf044883b0d559131
+  sha256: af79e809c1ae29aeaf3f8a41868e1209d06ed0d8a0e0e24007d512a144268dbc
+  md5: 6447f95c514f57fd2c09ea8c88665962
   depends:
   - python
   - click >=8.1.8
   - deepmerge >=2.0
   - markdown >=3.7
   - pygments >=2.20
-  - pymdown-extensions >=10.21.3
+  - pymdown-extensions >=11.0
   - pyyaml >=6.0.2
   - tomli >=2.4.0
   - jinja2 >=3.1
@@ -1574,8 +1574,8 @@ packages:
   license: MIT
   license_family: MIT
   run_exports: {}
-  size: 6633934
-  timestamp: 1784341237426
+  size: 6672400
+  timestamp: 1787076704369
 - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.7-hbf9d68e_6.conda
   sha256: 9485ba49e8f47d2b597dd399e88f4802e100851b27c21d7525625b0b4025a5d9
   md5: ab136e4c34e97f34fb621d2592a393d8
@@ -1881,17 +1881,17 @@ packages:
     - yaml >=0.2.5,<0.3.0a0
   size: 63944
   timestamp: 1753484092156
-- conda: https://conda.anaconda.org/conda-forge/win-64/zensical-0.0.51-py310hdba2031_0.conda
+- conda: https://conda.anaconda.org/conda-forge/win-64/zensical-0.0.56-py310hdba2031_0.conda
   noarch: python
-  sha256: 4c2d827e8ab49151e2914a7c54b18af28ef5036b04860d585c978ed578fb74f3
-  md5: 1d183fa4bc2d62306d305d4ef96ccd39
+  sha256: 1f35cf402f6ad756a3e8e07aa3de7ca78b556654b628e3ed29363e41075e899a
+  md5: 17c0d625daadc4222d1b487e3d302463
   depends:
   - python
   - click >=8.1.8
   - deepmerge >=2.0
   - markdown >=3.7
   - pygments >=2.20
-  - pymdown-extensions >=10.21.3
+  - pymdown-extensions >=11.0
   - pyyaml >=6.0.2
   - tomli >=2.4.0
   - jinja2 >=3.1
@@ -1903,8 +1903,8 @@ packages:
   license: MIT
   license_family: MIT
   run_exports: {}
-  size: 6900249
-  timestamp: 1784341108461
+  size: 6941355
+  timestamp: 1787076602366
 - conda: https://conda.anaconda.org/conda-forge/win-64/zstd-1.5.7-h534d264_6.conda
   sha256: 368d8628424966fd8f9c8018326a9c779e06913dd39e646cf331226acc90e5b2
   md5: 053b84beec00b71ea8ff7a4f84b55207
