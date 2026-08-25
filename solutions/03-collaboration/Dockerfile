@@ -19,7 +19,7 @@ RUN pixi install --locked --environment robot
 RUN pixi shell-hook --environment robot -s bash > /shell-hook.sh \
     && echo 'exec "$@"' >> /shell-hook.sh
 
-FROM ubuntu:24.04 AS runtime
+FROM ubuntu:26.04 AS runtime
 
 COPY --from=build /app/.pixi/envs/robot /app/.pixi/envs/robot
 COPY --from=build /shell-hook.sh /shell-hook.sh
