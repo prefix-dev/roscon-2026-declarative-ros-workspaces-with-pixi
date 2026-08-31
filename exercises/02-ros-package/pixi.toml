@@ -1,6 +1,6 @@
 # Exercise 2: starting point.
 #
-# This is where Exercise 1 left off, trimmed to Jazzy: ROS 2 from RoboStack,
+# This is where Exercise 1 left off, trimmed to Lyrical: ROS 2 from RoboStack,
 # and our own C++ node in src/turtle_dancer built by colcon. Running it means
 # `colcon build` first and sourcing the overlay after, which is what the
 # activation scripts below do for you.
@@ -11,14 +11,19 @@
 
 [workspace]
 name = "02-ros-package"
-channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
+channels = ["https://prefix.dev/robostack-lyrical", "conda-forge"]
 platforms = ["linux-64", "osx-arm64", "win-64"]
 version = "0.1.0"
+preview = ["pixi-build"]
+
+[workspace.dependencies]
+pixi-build-ros = ">=0.7.2"
 
 [dependencies]
-ros-jazzy-ros-base = ">=0.11"
-ros-jazzy-turtlesim = ">=1.8"
+ros-lyrical-ros-base = ">=0.11"
+ros-lyrical-turtlesim = ">=1.8"
 ros-dev-tools = ">=1.0"       # the colcon toolchain: colcon, CMake and the compilers
+ros-lyrical-turtle-dancer = { path = "src/turtle_dancer" }
 
 [tasks]
 sim = "ros2 run turtlesim turtlesim_node"

@@ -12,7 +12,7 @@
 # and `pixi run` again: Pixi rebuilds what changed before it runs.
 
 [workspace]
-channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
+channels = ["https://prefix.dev/robostack-lyrical", "conda-forge"]
 platforms = ["linux-64", "osx-arm64", "win-64"]
 # Building packages from source is a preview feature, so it is opt-in.
 preview = ["pixi-build"]
@@ -25,12 +25,12 @@ pixi-build-ros = ">=0.7.2"
 [dependencies]
 # Our own packages, built from source. The names are the package.xml names with
 # the ROS distro prefix that RoboStack uses, hyphens instead of underscores.
-ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }
-ros-jazzy-turtle-choreographer = { path = "src/turtle_choreographer" }
+ros-lyrical-turtle-dancer = { path = "src/turtle_dancer" }
+ros-lyrical-turtle-choreographer = { path = "src/turtle_choreographer" }
 # What we need to run them. The libraries the packages themselves need come
 # from their package.xml.
-ros-jazzy-ros-base = ">=0.11"
-ros-jazzy-turtlesim = ">=1.8"
+ros-lyrical-ros-base = ">=0.11"
+ros-lyrical-turtlesim = ">=1.8"
 # --8<-- [end:dependencies]
 
 [tasks.sim]

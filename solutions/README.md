@@ -5,7 +5,7 @@ Every one is a standalone Pixi workspace, installed and smoke-tested on Linux, m
 
 | Directory | Shows |
 | --- | --- |
-| `01-ros-workspace/` | ROS 2 from RoboStack on five platforms, tasks, a colcon-built C++ package, and Jazzy plus Kilted as two environments in one workspace |
+| `01-ros-workspace/` | ROS 2 from RoboStack on five platforms, tasks, a colcon-built C++ package, and Lyrical plus Kilted as two environments in one workspace |
 | `02-ros-package/` | The same C++ package and a Python one, both built by the `pixi-build-ros` backend: no colcon, no sourcing, and a rebuild whenever a source file changes |
 | `03-collaboration/` | Every platform, named `jetson` and `workstation-gpu` targets solved from a laptop, a lockfile gate, Docker and publishing |
 

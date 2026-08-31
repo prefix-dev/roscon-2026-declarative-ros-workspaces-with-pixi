@@ -23,13 +23,13 @@ Same format as before: each step says what to do, the commands are folded away u
     cd exercises/02-ros-package
     ```
 
-    This is where Exercise 1 left off, trimmed to Jazzy only: `pixi.toml` builds `src/turtle_dancer/` with `colcon` and sources the overlay on activation.
+    This is where Exercise 1 left off, trimmed to Lyrical only: `pixi.toml` builds `src/turtle_dancer/` with `colcon` and sources the overlay on activation.
     The Kilted environment and the PyTorch node are left out so the diff in this exercise stays about the build.
 
     Run the colcon way once, so you have the before in front of you:
 
     ```bash
-    pixi run dance      # colcon builds, then the node starts; Ctrl-C to stop
+    pixi run build      # colcon builds the workspace
     ls                  # build/ install/ log/ appeared next to src/
     ```
 
@@ -43,14 +43,20 @@ For ROS that is [`pixi-build-ros`](https://pixi.prefix.dev/latest/build/backends
 
     1. Enable the `pixi-build` preview in the `[workspace]` table.
     2. Add `pixi-build-ros = ">=0.7.2"` to `[workspace.dependencies]`.
-       There is no CLI command for either, edit `pixi.toml`.
 
 ??? success "Solution"
+
+    ```bash
+    # 1. add the preview
+    pixi workspace preview add pixi-build
+    # 2. add the backend to the pool
+    pixi workspace dependencies add "pixi-build-ros >=0.7.2"
+    ```
 
     ```toml title="exercises/02-ros-package/pixi.toml" hl_lines="6 8 9"
     [workspace]
     name = "02-ros-package"
-    channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
+    channels = ["https://prefix.dev/robostack-lyrical", "conda-forge"]
     platforms = ["linux-64", "osx-arm64", "win-64"]
     version = "0.1.0"
     preview = ["pixi-build"]
@@ -92,7 +98,7 @@ So the package manifest has very little to say.
     ```
 
     Two lines: which backend, and "the version is in the workspace pool".
-    The ROS distro comes from the `robostack-jazzy` channel of the workspace, and everything else comes from `package.xml`.
+    The ROS distro comes from the `robostack-lyrical` channel of the workspace, and everything else comes from `package.xml`.
 
     From `package.xml` the backend takes `<name>`, `<version>`, `<depend>` and `<build_type>`.
     From `CMakeLists.txt` the line that matters is `install(TARGETS dance DESTINATION lib/${PROJECT_NAME})`: `ros2 run` looks in `lib/<package>/`, and that is where the backend installs whatever your CMake installs.
@@ -101,22 +107,25 @@ So the package manifest has very little to say.
 ## 2.3 Depend on your own package
 
 A workspace depends on a local package like on anything else, except the specifier is a `path` to the package directory.
-The dependency name is the `package.xml` name with the distro prefix and hyphens: `ros-jazzy-turtle-dancer`, the name RoboStack would give it if it were published there.
+The dependency name is the `package.xml` name with the distro prefix and hyphens: `ros-lyrical-turtle-dancer`, the name RoboStack would give it if it were published there.
 
 !!! exercise "Your turn"
 
-    1. Add `ros-jazzy-turtle-dancer` as a path dependency on `src/turtle_dancer`.
-       `pixi add` does not write path dependencies, edit `[dependencies]` by hand.
+    1. Add `ros-lyrical-turtle-dancer` as a path dependency on `src/turtle_dancer`.
     2. Install, and watch what happens.
     3. Find your package in `pixi list`.
 
 ??? success "Solution"
 
+    ```bash
+    pixi add --path src/turtle_dancer ros-lyrical-turtle-dancer
+    ```
+
     ```toml title="exercises/02-ros-package/pixi.toml" hl_lines="2"
     [dependencies]
-    ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }
-    ros-jazzy-ros-base = ">=0.11"
-    ros-jazzy-turtlesim = ">=1.8"
+    ros-lyrical-turtle-dancer = { path = "src/turtle_dancer" }
+    ros-lyrical-ros-base = ">=0.11"
+    ros-lyrical-turtlesim = ">=1.8"
     ros-dev-tools = ">=1.0"
     ```
 
@@ -125,14 +134,14 @@ The dependency name is the `package.xml` name with the distro prefix and hyphens
     pixi install
     ```
 
-    A `Running build for recipe: ros-jazzy-turtle-dancer-0.1.0-...` block scrolls by.
+    A `Running build for recipe: ros-lyrical-turtle-dancer-0.1.0-...` block scrolls by.
     The first install fetches the backend and a build environment (CMake, the compilers, the ROS libraries from `package.xml`) into `.pixi/bld/`, compiles the node and installs the result into the environment as a conda package.
     Later builds are incremental.
 
     ```console
     $ pixi list | grep turtle          # 3
-    ros-jazzy-turtle-dancer                                       conda  src/turtle_dancer
-    ros-jazzy-turtlesim   1.8.3   np2py312hd441986_18   669.96 KiB   conda  https://prefix.dev/robostack-jazzy
+    ros-lyrical-turtle-dancer                                       conda  src/turtle_dancer
+    ros-lyrical-turtlesim   1.10.9   np2py314h1e5664e_22   417.69 KiB   conda  https://prefix.dev/robostack-lyrical
     ```
 
     Where other packages show a channel, yours shows the path it was built from.
@@ -169,7 +178,7 @@ Everything colcon needed can go.
     ```toml title="exercises/02-ros-package/pixi.toml"
     [workspace]
     name = "02-ros-package"
-    channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
+    channels = ["https://prefix.dev/robostack-lyrical", "conda-forge"]
     platforms = ["linux-64", "osx-arm64", "win-64"]
     version = "0.1.0"
     preview = ["pixi-build"]
@@ -178,9 +187,9 @@ Everything colcon needed can go.
     pixi-build-ros = ">=0.7.2"
 
     [dependencies]
-    ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }
-    ros-jazzy-ros-base = ">=0.11"
-    ros-jazzy-turtlesim = ">=1.8"
+    ros-lyrical-turtle-dancer = { path = "src/turtle_dancer" }
+    ros-lyrical-ros-base = ">=0.11"
+    ros-lyrical-turtlesim = ">=1.8"
 
     [tasks]
     sim = "ros2 run turtlesim turtlesim_node"
@@ -232,7 +241,7 @@ It gets the same treatment: a package manifest, a path dependency, a task.
 !!! exercise "Your turn"
 
     1. Create `src/turtle_choreographer/pixi.toml`: the same two lines as the C++ one.
-    2. Add `ros-jazzy-turtle-choreographer` as a path dependency.
+    2. Add `ros-lyrical-turtle-choreographer` as a path dependency.
     3. Add a `choreograph` task that runs `ros2 run turtle_choreographer choreograph`.
     4. Run it, with the simulator open.
 
@@ -302,7 +311,7 @@ Finished early? Try these.
 - Compare what you started with against what you have: `git diff --stat exercises/02-ros-package/pixi.toml`.
 - Build a real package: `pixi publish --path src/turtle_dancer --target-dir output` leaves a `.conda` file in `output/`.
   That is the same kind of file RoboStack serves; another workspace can `pixi add` it, and Exercise 3 shows what uploading it to a channel looks like.
-- Trim the workspace: replace `ros-jazzy-ros-base` with `ros-jazzy-ros2run`.
+- Trim the workspace: replace `ros-lyrical-ros-base` with `ros-lyrical-ros2run`.
   Everything the nodes need comes through their `package.xml` now, so `pixi list` gets a lot shorter.
 - Add a third package with a custom `.msg`, and use it from both nodes.
   Interface generation works through this backend.
