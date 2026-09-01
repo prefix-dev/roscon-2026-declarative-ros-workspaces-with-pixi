@@ -4,7 +4,10 @@
 # Name, version, description, maintainer and dependencies all come out of
 # package.xml, which stays the single source of truth. CMakeLists.txt is
 # untouched too: the backend runs the ament_cmake build you already have.
+[package]
+publish = true
 
 [package.build.backend]
 name = "pixi-build-ros"
 workspace = true
+

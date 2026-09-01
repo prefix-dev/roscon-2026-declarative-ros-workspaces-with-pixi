@@ -210,8 +210,6 @@ See what it means now.
 
     1. Open `src/turtle_dancer/src/dance.cpp` and change the default angular speed from `0.8` to `3.0`.
     2. Run the node again, with the simulator still open.
-    3. There was no build command in between.
-       How did the new speed get in?
 
 ??? success "Solution"
 
@@ -224,7 +222,7 @@ See what it means now.
     pixi run dance      # the build output scrolls by, then the turtle turns in tight circles
     ```
 
-    3: `pixi run` checks the inputs of every source dependency before it runs anything: `package.xml`, `CMakeLists.txt`, the source files.
+    `pixi run` checks the inputs of every source dependency before it runs anything: `package.xml`, `CMakeLists.txt`, the source files.
     One of them changed, so the package was rebuilt and reinstalled first.
     Change it back to `0.8` and run again: same thing, the other way.
 
@@ -281,10 +279,80 @@ It gets the same treatment: a package manifest, a path dependency, a task.
         `ros2 pkg create --build-type ament_python` generates this file for you.
         Hand-written packages sometimes lack it; the backend then fills in the same default, but it is better to have the file.
 
+## 2.7 Publish the packages locally
+
+So far the packages are source dependencies: every workspace that wants them needs the source tree.
+Publishing turns the build result into normal `.conda` packages.
+For the workshop we publish to a local folder, not to Prefix.dev, so you can see exactly what would be uploaded.
+
+Pixi only publishes packages that opt in, to avoid accidentally publishing every package it finds in a workspace.
+That opt-in lives in each package manifest.
+
+!!! exercise "Your turn"
+
+    1. Add `publish = true` to the `[package]` table in both package manifests:
+       `src/turtle_dancer/pixi.toml` and `src/turtle_choreographer/pixi.toml`.
+    2. Publish the workspace packages to a local folder.
+    3. Inspect the packages Pixi wrote.
+
+??? success "Solution"
+
+    ```toml title="src/turtle_dancer/pixi.toml" hl_lines="1 2"
+    [package]
+    publish = true
+
+    [package.build.backend]
+    name = "pixi-build-ros"
+    workspace = true
+    ```
+
+    ```toml title="src/turtle_choreographer/pixi.toml" hl_lines="1 2"
+    [package]
+    publish = true
+
+    [package.build.backend]
+    name = "pixi-build-ros"
+    workspace = true
+    ```
+
+    ```bash
+    # 2. build both opted-in packages and publish them to a local channel
+    pixi publish --target-channel output
+
+    # 3. inspect what was created
+    find output -name "*.conda" -print
+    ```
+
+    You should see one package for each node, under a platform subdirectory such as `linux-64/`, `osx-arm64/` or `win-64/`:
+
+    ```text
+    output/<platform>/ros-lyrical-turtle-dancer-0.1.0-<build>.conda
+    output/<platform>/ros-lyrical-turtle-choreographer-0.1.0-<build>.conda
+    ```
+
+    That `output/` directory is a real local conda channel, including the channel metadata Pixi needs.
+    Another workspace could install from it with a file channel.
+    By using `./output` as the channel URL, you can install from the local channel without publishing to Prefix.dev.
+
+    The same command can publish to a Prefix.dev channel too:
+
+    ```bash
+    pixi auth login prefix.dev
+    pixi publish --target-channel https://prefix.dev/<your-channel>
+    ```
+
+    You need to be logged in, and you need permission to publish to that channel.
+
 ??? "The full `pixi.toml`"
 
     ```toml title="solutions/02-ros-package/pixi.toml"
     --8<-- "solutions/02-ros-package/pixi.toml"
+    ```
+    ```toml title="solutions/02-ros-package/src/turtle_dancer/pixi.toml"
+    --8<-- "solutions/02-ros-package/src/turtle_dancer/pixi.toml"
+    ```
+    ```toml title="solutions/02-ros-package/src/turtle_choreographer/pixi.toml"
+    --8<-- "solutions/02-ros-package/src/turtle_choreographer/pixi.toml"
     ```
 
 ## Check your work
@@ -293,7 +361,7 @@ It gets the same treatment: a package manifest, a path dependency, a task.
 pixi run dance          # C++ node, no sourcing
 pixi run choreograph    # Python node
 pixi run executables    # ros2 sees both nodes, exactly as after a colcon build
-ls                      # src/ and pixi.toml, no build/ install/ log/
+ls                      # src/, pixi.toml and output/, no build/ install/ log/
 ```
 
 `executables` is one more task to add: `ros2 pkg executables turtle_dancer && ros2 pkg executables turtle_choreographer`.
@@ -309,8 +377,8 @@ turtle_choreographer choreograph
 Finished early? Try these.
 
 - Compare what you started with against what you have: `git diff --stat exercises/02-ros-package/pixi.toml`.
-- Build a real package: `pixi publish --path src/turtle_dancer --target-dir output` leaves a `.conda` file in `output/`.
-  That is the same kind of file RoboStack serves; another workspace can `pixi add` it, and Exercise 3 shows what uploading it to a channel looks like.
+- Install one of your locally published packages from `output/` in a fresh scratch workspace.
+  That is the same kind of channel RoboStack serves, just on your disk.
 - Trim the workspace: replace `ros-lyrical-ros-base` with `ros-lyrical-ros2run`.
   Everything the nodes need comes through their `package.xml` now, so `pixi list` gets a lot shorter.
 - Add a third package with a custom `.msg`, and use it from both nodes.
