@@ -1,3 +1,0 @@
-[package.build.backend]
-name = "pixi-build-ros"
-workspace = true
