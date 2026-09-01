@@ -734,6 +734,7 @@ class: text-center
 4. Delete the colcon parts, `pixi run dance`
 5. Change `dance.cpp`, run again
 6. Do the same for `src/turtle_choreographer`
+7. publish both packages locally
 
 </div>
 

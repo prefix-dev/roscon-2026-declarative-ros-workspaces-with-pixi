@@ -2,6 +2,9 @@
 # C++ one: the build type (ament_python) is read from package.xml, and setup.py
 # and setup.cfg are used as they are.
 
+[package]
+publish = true
+
 [package.build.backend]
 name = "pixi-build-ros"
 workspace = true

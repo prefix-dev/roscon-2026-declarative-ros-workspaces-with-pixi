@@ -3,7 +3,7 @@
 # A complete ROS 2 environment with no ROS installed on the machine, and the
 # same workspace targeting two ROS distributions at once:
 #
-#     pixi run sim              # turtlesim on Jazzy
+#     pixi run sim              # turtlesim on Lyrical
 #     pixi run teleop           # drive it with the arrow keys
 #     pixi run -e kilted sim    # the same workspace, on Kilted
 #
@@ -62,19 +62,19 @@ scripts = ["install/setup.sh"]
 scripts = ["install/setup.bat"]
 
 # ---------------------------------------------------------------------------
-# ROS 2 Jazzy: the 2024 LTS, and what most teams run today. The default
+# ROS 2 Lyrical: the main workshop distro. The default
 # environment, declared inline: its own channel and its own packages, on top
 # of everything shared above. The rclcpp and geometry-msgs libraries the node
 # uses come with ros-base.
 # ---------------------------------------------------------------------------
-# --8<-- [start:jazzy]
+# --8<-- [start:lyrical]
 [environments.default]
-channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
+channels = ["https://prefix.dev/robostack-lyrical", "conda-forge"]
 
 [environments.default.dependencies]
-ros-jazzy-ros-base = ">=0.11"
-ros-jazzy-turtlesim = ">=1.8"
-# --8<-- [end:jazzy]
+ros-lyrical-ros-base = ">=0.13"
+ros-lyrical-turtlesim = ">=1.10"
+# --8<-- [end:lyrical]
 
 # ---------------------------------------------------------------------------
 # ROS 2 Kilted: a different distribution, same workspace. A different channel

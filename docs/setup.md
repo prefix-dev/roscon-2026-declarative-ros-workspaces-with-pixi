@@ -48,7 +48,7 @@ cd roscon-2026-declarative-ros-workspaces-with-pixi
 pixi install --all --manifest-path solutions/01-ros-workspace/pixi.toml
 ```
 
-`--all` is what fetches both the Jazzy and the Kilted environments.
+`--all` is what fetches both the Lyrical and the Kilted environments.
 
 ## 4. Check that it works
 

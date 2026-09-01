@@ -85,7 +85,7 @@ jobs:
           manifest-path: solutions/01-ros-workspace/pixi.toml
           environments: default kilted
           locked: true
-      - name: Jazzy in the default environment
+      - name: Lyrical in the default environment
         run: pixi run --manifest-path solutions/01-ros-workspace/pixi.toml test
       - name: Kilted in the same workspace
         run: pixi run --manifest-path solutions/01-ros-workspace/pixi.toml -e kilted test

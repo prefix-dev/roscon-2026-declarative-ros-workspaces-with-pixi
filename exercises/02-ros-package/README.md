@@ -1,6 +1,6 @@
 # Exercise 2: Build ROS packages with Pixi
 
-This is where Exercise 1 left off, trimmed to Jazzy: colcon builds `src/turtle_dancer/`, and the overlay is sourced through an activation script.
+This is where Exercise 1 left off, trimmed to Lyrical: colcon builds `src/turtle_dancer/`, and the overlay is sourced through an activation script.
 The Kilted environment and the PyTorch node are left out on purpose, so the changes in this exercise are only about the build.
 
 `src/turtle_choreographer/` is a Python node, provided pre-written.

@@ -62,9 +62,9 @@ A channel works like an apt source, except it is written down in your manifest.
 
 !!! exercise "Your turn"
 
-    1. Add the `https://prefix.dev/robostack-jazzy` channel, at a higher priority than `conda-forge`.
+    1. Add the `https://prefix.dev/robostack-lyrical` channel, at a higher priority than `conda-forge`.
        Hint: `pixi workspace channel add --help`.
-    2. Add `ros-jazzy-ros-base` and `ros-jazzy-turtlesim` as dependencies.
+    2. Add `ros-lyrical-ros-base` and `ros-lyrical-turtlesim` as dependencies.
     3. Check what actually landed in the environment.
     4. Prove ROS runs by listing its topics.
        Hint: any command runs inside the environment with `pixi run <command>`, or open a shell inside it with `pixi shell`.
@@ -73,9 +73,9 @@ A channel works like an apt source, except it is written down in your manifest.
 
     ```bash
     # 1
-    pixi workspace channel add --prepend https://prefix.dev/robostack-jazzy
+    pixi workspace channel add --prepend https://prefix.dev/robostack-lyrical
     # 2
-    pixi add ros-jazzy-ros-base ros-jazzy-turtlesim
+    pixi add ros-lyrical-ros-base ros-lyrical-turtlesim
     # 3
     pixi list
     # 4
@@ -93,7 +93,7 @@ A channel works like an apt source, except it is written down in your manifest.
     ```toml title="exercises/01-ros-workspace/pixi.toml" hl_lines="3 11 12"
     [workspace]
     authors = ["Jane Doe <jane.doe@example.com>"]
-    channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
+    channels = ["https://prefix.dev/robostack-lyrical", "conda-forge"]
     name = "01-ros-workspace"
     platforms = ["osx-arm64"]
     version = "0.1.0"
@@ -101,8 +101,8 @@ A channel works like an apt source, except it is written down in your manifest.
     [tasks]
 
     [dependencies]
-    ros-jazzy-ros-base = ">=0.11.0,<0.12"
-    ros-jazzy-turtlesim = ">=1.8.3,<2"
+    ros-lyrical-ros-base = ">=0.13.0,<0.14"
+    ros-lyrical-turtlesim = ">=1.10.9,<2"
     ```
 
 ## 1.3 Turn the commands into tasks
@@ -145,7 +145,7 @@ Building it needs a toolchain and the ROS libraries it includes, and those come 
 !!! exercise "Your turn"
 
     1. Add `ros-dev-tools`: one package that brings colcon, CMake and the compilers.
-       The ROS libraries the node uses are already there, `ros-jazzy-ros-base` includes them.
+       The ROS libraries the node uses are already there, `ros-lyrical-ros-base` includes them.
     2. Build the workspace with colcon.
     3. Try to run your node with `ros2 run turtle_dancer dance` and read the error.
     4. Fix it: make Pixi source the colcon overlay in `install/` whenever the environment activates.
@@ -199,7 +199,7 @@ Building it needs a toolchain and the ROS libraries it includes, and those come 
     ```toml title="exercises/01-ros-workspace/pixi.toml" hl_lines="12 13 18 20 21"
     [workspace]
     authors = ["Jane Doe <jane.doe@example.com>"]
-    channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
+    channels = ["https://prefix.dev/robostack-lyrical", "conda-forge"]
     name = "01-ros-workspace"
     platforms = ["osx-arm64"]
     version = "0.1.0"
@@ -212,8 +212,8 @@ Building it needs a toolchain and the ROS libraries it includes, and those come 
     dance = { cmd = "ros2 run turtle_dancer dance", depends-on = ["build"] }
 
     [dependencies]
-    ros-jazzy-ros-base = ">=0.11.0,<0.12"
-    ros-jazzy-turtlesim = ">=1.8.3,<2"
+    ros-lyrical-ros-base = ">=0.13.0,<0.14"
+    ros-lyrical-turtlesim = ">=1.10.9,<2"
     ros-dev-tools = ">=1.0.2,<2"
 
     [target.unix.activation]
@@ -230,7 +230,7 @@ Those distro-specific pieces go into an environment of their own, declared inlin
 
 !!! exercise "Your turn"
 
-    1. Move the Jazzy pieces into their own environment: declare `[environments.default]` inline, holding the RoboStack channel and the `ros-jazzy` packages.
+    1. Move the Lyrical pieces into their own environment: declare `[environments.default]` inline, holding the RoboStack channel and the `ros-lyrical` packages.
        The tasks, `ros-dev-tools` and the activation stay at workspace level.
     2. Add a `kilted` environment the same way, with the `robostack-kilted` channel and the `ros-kilted` variants of the packages.
     3. Run turtlesim from each distribution.
@@ -238,10 +238,10 @@ Those distro-specific pieces go into an environment of their own, declared inlin
 
 ??? success "Solution"
 
-    1: the workspace channel list goes back to `conda-forge` only, and the Jazzy channel and packages become the inline `default` environment:
+    1: the workspace channel list goes back to `conda-forge` only, and the Lyrical channel and packages become the inline `default` environment:
 
     ```toml title="exercises/01-ros-workspace/pixi.toml"
-    --8<-- "solutions/01-ros-workspace/pixi.toml:jazzy"
+    --8<-- "solutions/01-ros-workspace/pixi.toml:lyrical"
     ```
 
     2: the new environment is the same shape, with a different channel and package prefix:
@@ -252,7 +252,7 @@ Those distro-specific pieces go into an environment of their own, declared inlin
 
     ```bash
     # 3
-    pixi run sim               # turtlesim on Jazzy
+    pixi run sim               # turtlesim on Lyrical
     pixi run -e kilted sim     # the same task, on Kilted
     ```
 
@@ -376,7 +376,7 @@ You should see a list of `/turtle1/...` topics, a dancing turtle, the brain logg
 
 Finished early? Try these.
 
-- Add a viewer with `pixi add ros-jazzy-rviz2`, then `pixi run rviz2`.
+- Add a viewer with `pixi add ros-lyrical-rviz2`, then `pixi run rviz2`.
 - Delete the `.pixi/` folder, run `pixi install`, and watch the environment rebuild from the lockfile.
 
 !!! note "With your own workspace"
