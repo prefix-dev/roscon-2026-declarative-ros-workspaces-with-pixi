@@ -81,6 +81,50 @@ sed -i 's|^source /opt/ros|# &|' ~/.bashrc
 Then restart your terminal.
 Your system ROS is untouched, uncomment the line whenever you need it back.
 
+## Linux: the turtlesim window does not appear
+
+On modern desktop environments (GNOME, KDE, ...) a Qt GUI like `turtlesim` renders through Wayland. The conda-forge build of Qt needs its Wayland platform plugin as a separate package, so on `linux-64` add the `qt-wayland` dependency to your workspace:
+
+You will notice the problem because `ros2 run turtlesim turtlesim_node` aborts with this warning:
+
+```
+qt.qpa.xcb: could not connect to display :0
+qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found.
+This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.
+
+Available platform plugins are: eglfs, minimal, minimalegl, offscreen, vnc, webgl, xcb.
+
+[ros2run]: Aborted
+```
+
+You can add the dependency from the command line:
+
+```bash
+pixi add --platform linux-64 qt-wayland
+```
+
+Resulting in a `pixi.toml` like this:
+
+```toml
+# turtlesim's Qt window needs a platform plugin
+[target.linux-64.dependencies]
+qt-wayland = "*"
+```
+
+Then tell Qt to actually use that Wayland support by setting the platform environment variable in your workspace:
+
+```bash
+pixi workspace activation env set --target linux-64 QT_QPA_PLATFORM=wayland-egl
+```
+
+Resulting in a `pixi.toml` like this:
+
+```toml
+[target.linux-64.activation.env]
+QT_QPA_PLATFORM = "wayland-egl"
+```
+
+
 ## Windows: `Cannot open include file` or `failed to persist temporary file`
 
 Windows caps most file paths at 260 characters, and a ROS environment nests deep.
