@@ -22,6 +22,7 @@ Together they let you declare your entire ROS environment (system libraries, Pyt
     ROS is big and conference Wi-Fi is not.
     Follow [Before you start](setup.md) at home to install Pixi and warm up your package cache.
     It takes five minutes and saves you thirty.
+    If your laptop or the room network cannot keep up, we have a separate [Brev fallback setup](brev.md).
 
 ## What you will do
 
