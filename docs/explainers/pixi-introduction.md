@@ -90,7 +90,7 @@ sim = "ros2 run turtlesim turtlesim_node"
 pixi run sim
 ```
 
-The commands you write for a task are run in the workspace environment.
+The commands you write for a task are run in the Pixi installed environment, so they always have access to all the dependencies you defined in the manifest.
 
 ??? "How does this work on all platforms?"
     The commands you write are not run with `bash` or `cmd`, they are run in a custom built-in shell that works on all platforms.
