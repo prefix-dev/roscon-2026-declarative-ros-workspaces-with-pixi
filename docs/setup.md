@@ -74,6 +74,7 @@ If both worked, you are ready.
 - No `sudo`, no Docker, no virtual machine.
 - No GPU.
   The CUDA parts of the workshop are declared and built without one; only running the result needs the hardware.
+  If we need real GPU access, or if the room network is too slow, we will use the separate [Brev fallback setup](brev.md).
 
 ## Bringing your own project
 

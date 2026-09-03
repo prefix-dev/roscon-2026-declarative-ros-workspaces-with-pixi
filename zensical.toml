@@ -37,6 +37,7 @@ extra_css = ["assets/extra.css"]
 nav = [
   { "Welcome" = "index.md" },
   { "Before you start" = "setup.md" },
+  { "Brev setup" = "brev.md" },
   { "Slides" = "slides/" },
   { "Explainers" = [
     { "Philosophy" = "explainers/philosophy.md" },
