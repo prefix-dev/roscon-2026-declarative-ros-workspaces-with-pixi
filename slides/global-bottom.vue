@@ -13,6 +13,12 @@
       </span>
     </div>
     <div class="footer-right">
+      <a
+        href="https://github.com/prefix-dev/roscon-2026-declarative-ros-workspaces-with-pixi"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="footer-repo"
+      >Workshop on GitHub</a>
       <span class="footer-page">{{ $nav.currentPage }} / {{ $nav.total }}</span>
     </div>
   </div>
@@ -49,6 +55,8 @@
   flex: 1;
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
 }
 
 .footer-logo {
@@ -57,11 +65,17 @@
 }
 
 .footer-title,
+.footer-repo,
 .footer-page {
   font-family: 'Inter', sans-serif;
   font-size: 11px;
   font-weight: 500;
   color: currentColor;
+}
+
+.footer-repo {
+  pointer-events: auto;
+  text-decoration: underline;
 }
 
 .footer-section {

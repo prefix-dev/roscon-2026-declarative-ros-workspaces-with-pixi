@@ -39,6 +39,7 @@ nav = [
   { "Before you start" = "setup.md" },
   { "Brev setup" = "brev.md" },
   { "Slides" = "slides/" },
+  { "Workshop on GitHub" = "https://github.com/prefix-dev/roscon-2026-declarative-ros-workspaces-with-pixi" },
   { "Explainers" = [
     { "Philosophy" = "explainers/philosophy.md" },
     { "Pixi in 30 minutes" = "explainers/pixi-introduction.md" },
