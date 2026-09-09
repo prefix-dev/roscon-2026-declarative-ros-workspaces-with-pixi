@@ -66,8 +66,8 @@ From the root of this workshop repository, run:
 
 ```bash
 brev create "$(whoami)-roscon-pixi" \
-  --type <instance-type-from-instructors> \
-  --startup-script @docs/code/brev/setup_brev.sh
+  --startup-script @docs/code/brev/setup_brev.sh \
+  --type massedcompute_L40S
 ```
 
 The startup script installs Pixi, clones this repository onto the instance, and pre-downloads the main ROS exercise environment.
@@ -78,8 +78,8 @@ If you are not inside a fresh clone of the workshop repository, download the scr
 ```bash
 curl -sLO https://raw.githubusercontent.com/prefix-dev/roscon-2026-declarative-ros-workspaces-with-pixi/main/docs/code/brev/setup_brev.sh
 brev create "$(whoami)-roscon-pixi" \
-  --type <instance-type-from-instructors> \
   --startup-script @./setup_brev.sh
+  --type massedcompute_L40S \
 ```
 
 !!! tip "Choosing the instance type"
