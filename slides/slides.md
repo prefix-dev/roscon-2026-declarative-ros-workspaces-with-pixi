@@ -22,7 +22,7 @@ A hands-on workshop for reproducible ROS development
 ROSCon 2026 · Ruben Arts, Wolf Vollprecht, Bas Zalmstra · prefix.dev
 
 ---
-layout: intro
+layout: default
 section: Welcome
 ---
 
@@ -32,9 +32,9 @@ section: Welcome
 - **Wolf Vollprecht**, prefix.dev: RoboStack, mamba, conda-forge
 - **Bas Zalmstra**, prefix.dev: rattler, the Rust conda libraries under Pixi
 
-<br>
-
 Three of us in the room. Raise your hand, we come to you.
+
+<img src="/bas-wolf-ruben-prefix.png" alt="Bas, Wolf, and Ruben from prefix.dev" class="absolute bottom-10 left-1/2 -translate-x-1/2 h-48 w-auto" />
 
 ---
 section: Welcome
@@ -66,9 +66,11 @@ layout: center
 
 # Before we start
 
-<img src="/site-qr.svg" alt="QR code to the workshop site" style="height: 11rem; margin: 0 auto 1rem;" />
+<a href="https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/setup/" target="_blank" rel="noopener noreferrer">
+  <img src="/site-qr.svg" alt="QR code to Before you start, the workshop setup page" style="height: 11rem; margin: 0 auto 1rem;" />
+</a>
 
-**prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi**
+[**Before you start: workshop setup**](https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/setup/)
 
 ```bash
 git clone https://github.com/...
@@ -107,13 +109,10 @@ section: Philosophy
 
 # "Just use Docker" is the accepted answer
 
-And to be fair, it works.
-
 - The setup becomes doable, and the team shares one image
-- But your whole workflow now lives inside a box
+- Your workflow now lives inside a box
 - Editor, debugger, USB/network devices, GPU, GUI tools: much harder
-- Setup once, never touch again
-- You're not developing on your machine anymore
+- Setup once, rebuilding is slow, never touch again
 
 <img src="/docker-in-cloud.jpg" alt="Docker in Cloud: a container ship" style="position: absolute; right: 3rem; bottom: 3.2rem; height: 46%; z-index: 0; border-radius: 8px;">
 
@@ -125,19 +124,19 @@ layout: cover
 # What we want instead
 
 ```bash
-git clone <your-project>
-cd <your-project>
+git clone your-project
+cd your-project
 pixi run application
 ```
 
-Any machine, three commands, and your project runs.
+Any machine, three commands, and your robotics project runs.
 
 ---
 section: Philosophy
 layout: section
 ---
 
-# How we get there
+# What we want for ROS
 
 All machines · Distroless · Declarative · Reproducible · Fast · Simple
 
@@ -151,9 +150,16 @@ section: Philosophy
 
 Linux, macOS, Windows. x86 and arm64.
 
-- Not just Ubuntu, and not just the one Ubuntu that matches your distro
+- Not just Ubuntu
 - Your laptop, the CI runner and the robot can all be different machines
 - Pick the hardware you need, and the OS you like!
+
+<div class="absolute bottom-16 left-0 right-0 flex items-center justify-center gap-16">
+  <img src="/ubuntu.svg" alt="Ubuntu Linux" class="h-18 w-auto" />
+  <img src="/fedora.svg" alt="Fedora Linux" class="h-18 w-auto" />
+  <img src="/windows.svg" alt="Windows" class="h-18 w-auto" />
+  <img src="/apple.svg" alt="Apple" class="h-18 w-auto" />
+</div>
 
 ---
 section: Philosophy
@@ -166,8 +172,8 @@ section: Philosophy
 Jazzy on Ubuntu 22.04. Kilted on macOS. Humble on Windows.
 
 - A ROS distro is a release process, not an operating system
-- There's no reason Humble should be tied to Ubuntu 22.04
 - Any distro on any machine, and two of them side by side
+- Move towards a rolling release model
 
 ---
 section: Philosophy
@@ -191,11 +197,11 @@ section: Philosophy
 
 # Reproducible
 
-A lockfile (pixi.lock) instead of a Docker image.
+A lockfile (`pixi.lock`) instead of a Docker image.
 
 - Every package, version and hash, recorded when you change something
 - The same environment on your laptop, in CI, on the robot
-- Use `git` to manage your versions, not a container registry
+- Use `git` to manage your versions, instead of a container registry
 
 ---
 section: Philosophy
@@ -207,9 +213,9 @@ section: Philosophy
 
 Minutes to a running project, not hours.
 
-- Manage everything with one tool, no apt, no rosdep, no sourcing
-- Let the internet connection be the only slow part, not the setup.
-- Getting started: `git clone`, `pixi run sim`
+- Manage the whole environment setup with one tool.
+- Let the internet connection be the only slow part.
+- Low effortcommand setup: `git clone`, `pixi run sim`
 
 ---
 section: Philosophy
