@@ -8,6 +8,8 @@ A hands-on workshop for reproducible ROS development.
 
 **ROSCon 2026, Tuesday, September 22nd, 08:00 &ndash; 12:00**
 
+[Workshop on GitHub](https://github.com/prefix-dev/roscon-2026-declarative-ros-workspaces-with-pixi)
+
 !!! note "Work in progress"
 
     This material is under active development until the workshop.
