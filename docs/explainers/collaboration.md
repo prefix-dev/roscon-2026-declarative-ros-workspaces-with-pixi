@@ -38,64 +38,29 @@ Platforms differ, and the manifest has two tools for that:
 
 ### Target configuration for different machines
 
-A selector can match an OS family (`unix`, `linux`, `osx`, `win`), an exact platform (`osx-arm64`), or a platform name you define yourself.
-Here is a standalone example with shared Python dependencies, OS-specific tools, and a named GPU machine:
+Use `unix` for Linux and macOS, `win` for Windows, or a declared platform name for a specific machine configuration:
 
 ```toml title="pixi.toml"
 [workspace]
-name = "team-workspace"
 channels = ["conda-forge"]
 platforms = [
     { name = "robot-gpu", platform = "linux-64", cuda = "12" },
-    "linux-64",
-    "osx-arm64",
-    "win-64",
+    "linux-64", "osx-arm64", "win-64",
 ]
 
-[dependencies]
-python = "3.12.*"
-
-# Linux and macOS, including the Linux-based robot-gpu platform.
 [target.unix.dependencies]
-htop = "*"
+htop = "*" # Linux and macOS
 
-[target.unix.tasks]
-platform-info = "echo 'Using a Unix machine'"
-
-# All Windows platforms in this workspace.
 [target.win.dependencies]
-pywin32 = "*"
+pywin32 = "*" # Windows only
 
-[target.win.tasks]
-platform-info = "echo 'Using Windows'"
-
-# Only Apple Silicon macOS.
-[target.osx-arm64.tasks]
-platform-info = "echo 'Using an Apple Silicon Mac'"
-
-# Only the platform named robot-gpu above.
 [target.robot-gpu.dependencies]
-pytorch-gpu = "*"
-
-[target.robot-gpu.tasks]
-platform-info = "echo 'Using the GPU robot'"
+pytorch-gpu = "*" # Only the named GPU platform
 ```
 
-Run `pixi run platform-info` on each machine:
-
-| Selected platform | Extra packages | Task output |
-| --- | --- | --- |
-| `linux-64` | `htop` | `Using a Unix machine` |
-| `osx-arm64` | `htop` | `Using an Apple Silicon Mac` |
-| `win-64` | `pywin32` | `Using Windows` |
-| `robot-gpu` | `htop`, `pytorch-gpu` | `Using the GPU robot` |
-
-All four keep the shared Python dependency.
-Matching targets combine; when they define the same task, the later definition wins, so place specific overrides after broader ones.
-The name `robot-gpu` refers to a declared platform, not a hostname or a separate environment.
-Pixi selects the first compatible platform in the list, so `robot-gpu` comes before the plain `linux-64` fallback.
-A Linux machine with compatible CUDA driver support selects `robot-gpu`; a Linux machine without it falls back to `linux-64`.
-See the [target reference](https://pixi.prefix.dev/latest/reference/pixi_manifest/#the-target-table) and [platform selection documentation](https://pixi.prefix.dev/latest/workspace/multi_platform_configuration/) for details.
+Matching targets combine: `robot-gpu` gets both `htop` and `pytorch-gpu`.
+Exact platforms such as `[target.osx-arm64.dependencies]` work too.
+See the [target reference](https://pixi.prefix.dev/latest/reference/pixi_manifest/#the-target-table) for more options.
 
 One honest caveat: "it solved" proves the packages exist and agree with each other on every platform.
 It does not prove your node runs there.
