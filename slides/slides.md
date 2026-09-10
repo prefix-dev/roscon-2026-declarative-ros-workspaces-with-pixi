@@ -754,50 +754,14 @@ section: Packaging
 <div>
 
 - **Metadata:** `index.json` has the name, version and dependencies; `paths.json` lists files and hashes.
-- **Payload:** pre-built libraries, headers and ROS resources. Not just Python.
-- **Installation:** put the payload into an environment, no compilation.
-- Same package format across platforms, with platform-specific binaries.
+- **Payload:** pre-built libraries, headers and ROS resources.
+- **Installation:** put the payload into an environment.
 
 </div>
 </div>
 
 <div class="ref">Selected files after extraction. <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/concepts/packages.html" target="_blank">Conda package format</a></div>
 
-
----
-section: Packaging
----
-
-# `pixi run dance`
-
-1. Pixi checks if the sources, `package.xml` or `CMakeLists.txt` changed
-2. If so, it builds and installs the package into the environment
-3. It runs the task
-
-<br>
-
-Your node is now a normal package in the environment, next to `turtlesim`. No sourcing.
-
-<div class="text-2xl" style="margin-top: 1.5rem;">
-
-edit → `pixi run dance`
-
-</div>
-
----
-section: Packaging
----
-
-# What you can delete
-
-- `build = "colcon build"`
-- `ros-dev-tools`
-- `[target.*.activation]`
-- `build/ install/ log/`
-
-<br>
-
-What's left is a small workspace `pixi.toml` and a two line package manifest.
 
 ---
 section: Exercise 2
@@ -844,36 +808,12 @@ From works on my machine to works on the team's.
 section: Collaboration
 ---
 
-# Many platforms, one manifest
-
-<CodeWindow title="bash" terminal>
-
-```bash
-pixi workspace platform add linux-64 osx-arm64 win-64
-```
-
-</CodeWindow>
-
-- Pixi solves every platform and records all of them in one lockfile
-- A teammate: `git clone`, `pixi install`, done
-- Differences go in `[target.win-64]` or a `when = "__cuda"` condition
-
-<br>
-
-Solved means the packages exist and agree. It doesn't mean your node runs there. That's what CI is for.
-
-<div class="ref"><a href="https://pixi.prefix.dev/latest/workspace/multi_platform_configuration/" target="_blank">Multi-platform configuration</a></div>
-
----
-section: Collaboration
----
-
 # CI made easy
 
 <CodeWindow title="GitHub Actions (steps)">
 
 ```yaml
-- uses: prefix-dev/setup-pixi@v0.10.0
+- uses: prefix-dev/setup-pixi@v0.10.2
 - run: pixi run test
 ```
 
@@ -925,12 +865,10 @@ section: Collaboration
 
 # Docker
 
-One Dockerfile, two stages.
-
 <CodeWindow title="Dockerfile">
 
 ```dockerfile
-FROM ghcr.io/prefix-dev/pixi:0.76.2-noble AS build
+FROM ghcr.io/prefix-dev/pixi:0.80.0-noble AS build
 COPY . /app
 RUN pixi install --locked
 RUN pixi shell-hook -s bash > /shell-hook.sh
