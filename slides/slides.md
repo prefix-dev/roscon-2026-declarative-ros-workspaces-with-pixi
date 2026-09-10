@@ -67,16 +67,20 @@ layout: center
 # Before we start
 
 <a href="https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/setup/" target="_blank" rel="noopener noreferrer">
-  <img src="/site-qr.svg" alt="QR code to Before you start, the workshop setup page" style="height: 11rem; margin: 0 auto 1rem;" />
+  <img src="/site-qr.svg" alt="QR code to Before you start, the workshop setup page" style="height: 9rem; margin: 0 auto 1rem;" />
 </a>
 
 [**Before you start: workshop setup**](https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/setup/)
+
+<CodeWindow title="bash" terminal>
 
 ```bash
 git clone https://github.com/...
 cd roscon-2026-declarative-ros-workspaces-with-pixi
 pixi run --manifest-path solutions/01-ros-workspace/pixi.toml sim
 ```
+
+</CodeWindow>
 
 A turtle appears? You're ready.
 
@@ -123,11 +127,15 @@ layout: cover
 
 # What we want instead
 
+<CodeWindow title="bash" terminal>
+
 ```bash
 git clone your-project
 cd your-project
 pixi run application
 ```
+
+</CodeWindow>
 
 Any machine, three commands, and your robotics project runs.
 
@@ -136,7 +144,7 @@ section: Philosophy
 layout: section
 ---
 
-# What we want for ROS
+# How to do that
 
 All machines · Distroless · Declarative · Reproducible · Fast · Simple
 
@@ -233,19 +241,13 @@ If you can use `pip`, you can use Pixi.
 
 ---
 section: Philosophy
+layout: section
 ---
 
-# What is a conda package
+# Why is setup this simple?
 
-`ros-jazzy-rclcpp-28.1.18-np2py312hd441986_18.conda`
+You don't have to build the whole ROS stack yourself.
 
-- An archive with **pre-built binaries** and metadata: name, version, dependencies
-- Any language: C++ libraries, Python, compilers, CMake, `ros2` itself
-- Installing means downloading and extracting into an environment, no compilation
-- The same package format on Linux, macOS and Windows, built per platform
-- Born in the scientific Python world in 2012, so this has been battle-tested for 14 years
-
-<div class="ref"><a href="https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/explainers/cuda/" target="_blank">More in the CUDA explainer: what's inside a conda package</a></div>
 
 ---
 section: Philosophy
@@ -253,11 +255,9 @@ section: Philosophy
 
 # Standing on conda-forge and RoboStack
 
-- **conda-forge**: tens of thousands of pre-built packages, community run
-  <br>`gcc`, `cmake`, `Python`, `OpenCV`, `PyTorch`, for every platform
-- **RoboStack**: the ROS distributions built on top of it
-  <br>Noetic to Lyrical, `ros-noetic-rqt` to `ros-lyrical-plotjuggler`
-- One environment, both channels: conda-forge for the stack, RoboStack for ROS
+<img src="/package-pipeline.svg" alt="Open-source projects are built into conda-forge packages, which supply the RoboStack build environment. ROS sources from ROS Index and rosdistro are built and published to RoboStack channels." class="w-full mt-6" />
+
+Pixi combines packages from **conda-forge** and **RoboStack** in one environment.
 
 ---
 section: Pixi
@@ -274,10 +274,12 @@ section: Pixi
 
 # What is Pixi
 
-- `apt` is for Debian packages
-- `brew` is for Homebrew packages
-- `pip` is for PyPI packages
-- **Pixi is for conda packages** <span style="opacity: 0.55; font-weight: 400;">+ PyPI</span>
+| Package manager | Packages it installs |
+| --- | --- |
+| `apt` | Debian packages |
+| `brew` | Homebrew packages |
+| `pip` | Python packages from PyPI |
+| `pixi` | **conda packages + Python packages from PyPI** |
 
 <br>
 
@@ -287,30 +289,46 @@ Pixi creates an environment per project, from one file: `pixi.toml`.
 section: Pixi
 ---
 
-# How you install ROS today
+# Installing ROS 2 Jazzy
 
-- Find the Ubuntu version that matches your distro
-- `sudo apt install ros-jazzy-*`, system wide
-- One distro per machine
-- `source /opt/ros/jazzy/setup.bash` in every terminal
-- A second project? Docker, or a second machine
-- macOS? Not supported. Windows? Build from source
+<div class="text-base">
+
+| Official Ubuntu installation | With Pixi + RoboStack |
+| --- | --- |
+| Use Ubuntu 24.04 and a UTF-8 locale | Install Pixi on Linux, macOS or Windows |
+| Enable Universe; install `ros2-apt-source` | `pixi init -c robostack-jazzy -c conda-forge` |
+| `sudo apt update`<br>`sudo apt upgrade` | No system package changes |
+| `sudo apt install ros-jazzy-desktop` | `pixi add ros-jazzy-desktop` |
+| `source /opt/ros/jazzy/setup.bash` | `pixi shell` |
+| `ros2 run demo_nodes_cpp talker` | `ros2 run demo_nodes_cpp talker` |
+
+</div>
+
+<div class="ref"><a href="https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html" target="_blank">Official ROS 2 Jazzy installation guide</a> · <a href="https://robostack.github.io/GettingStarted.html" target="_blank">RoboStack getting started</a></div>
 
 ---
 section: Pixi
 ---
 
-# `pixi.toml`
+# The `pixi.toml`
 
-```toml
-[workspace]       # metadata, channels, platforms
-[dependencies]    # what you want installed
-[tasks]           # commands with a name
+<CodeWindow title="pixi.toml">
+
+```toml {*}{lines:true}
+[workspace]
+platforms = ["linux-64", "osx-arm64", "win-64"]
+channels = ["conda-forge", "robostack-jazzy"]
+
+[dependencies]
+ros-jazzy-desktop = "*"
+
+[tasks]
+start = "ros2 launch my_package my_launch_file.launch.py"
 ```
 
-<br>
+</CodeWindow>
 
-Everything you need to know for now. It lives at the **root** of your project.
+It lives at the **root** of your workspace.
 
 <div class="ref"><a href="https://pixi.prefix.dev/latest/reference/pixi_manifest/" target="_blank">Manifest reference</a></div>
 
@@ -318,52 +336,30 @@ Everything you need to know for now. It lives at the **root** of your project.
 section: Pixi
 ---
 
-# Channels and dependencies
-
-- A channel is like an apt source, but it's written in your `pixi.toml`
-- `conda-forge` for everything, `robostack-jazzy` for ROS 2 Jazzy
-  <br><span style="opacity: 0.55;">exactly like the Ubuntu repos plus the ROS repo you add to `sources.list`</span>
-- Package names are `ros-<distro>-<name>`, with hyphens
-- `pixi add` writes it in the manifest, solves and installs
-
-<div class="ref"><a href="https://robostack.github.io" target="_blank">RoboStack package list</a> · <a href="https://prefix.dev/channels" target="_blank">Search packages on prefix.dev</a></div>
-
----
-section: Pixi
----
-
 # The `pixi` command
 
-```bash
-pixi init                       # a new workspace
-pixi add ros-jazzy-ros-base     # add, solve, install
-pixi run ros2 topic list        # run inside the environment
-pixi shell                      # step inside
-pixi install                    # everything from the lockfile
-```
-
-<div class="text-sm" style="margin-top: 0.5rem;">
-
-| You know | With Pixi |
+| Command | What it does |
 | --- | --- |
-| `apt install`, system wide | `pixi add`, per project |
-| `source install/setup.bash` | `pixi shell` |
-| `rosdep install`, hoping for the same versions | `pixi install`, from the lockfile |
-
-</div>
+| `pixi init` | Create a workspace |
+| `pixi add ros-jazzy-ros-base` | Add the dependency, solve and install |
+| `pixi run ros2 topic list` | Run a command inside the environment |
+| `pixi shell` | Open a shell inside the environment |
+| `pixi install` | Install the environment |
 
 <div class="ref"><code>pixi &lt;command&gt; --help</code> · tab completion: <code>pixi completion --shell zsh</code> · <a href="https://pixi.prefix.dev/latest/reference/cli/pixi/" target="_blank">CLI reference</a></div>
 
 ---
 section: Pixi
-layout: two-cols-header
+layout: default
 ---
 
 # Tasks
 
-::left::
+<div class="grid gap-6 items-start" style="grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);">
 
-```toml
+<CodeWindow title="pixi.toml">
+
+```toml {*}{lines:false}
 [tasks]
 sim = "ros2 run turtlesim turtlesim_node"
 build = "colcon build"
@@ -373,13 +369,22 @@ cmd = "ros2 run turtle_dancer dance"
 depends-on = ["build"]
 ```
 
-::right::
+</CodeWindow>
 
-<div style="margin-left: 1.5rem;">
+<CodeWindow title="bash" terminal>
 
-- `pixi run sim`, on every platform
-- `pixi run dance` builds first
-- Any command works: `pixi run ros2 topic list`
+```bash
+# On every platform
+pixi run sim
+
+# Builds first
+pixi run dance
+
+# Run any command
+pixi run ros2 topic list
+```
+
+</CodeWindow>
 
 </div>
 
@@ -391,12 +396,16 @@ section: Pixi
 
 # `pixi shell`
 
+<CodeWindow title="bash" terminal>
+
 ```bash
 pixi shell
 ros2 topic list
 ros2 run turtlesim turtlesim_node
 exit
 ```
+
+</CodeWindow>
 
 - Puts you inside the environment, like `source install/setup.bash` did
 - Everything you type runs there, until you `exit`
@@ -410,9 +419,9 @@ section: Pixi
 
 # Activation
 
-Every `pixi run` and `pixi shell` activates the environment first: `PATH`, `ROS_DISTRO`, `AMENT_PREFIX_PATH`, all set for you.
+<CodeWindow title="pixi.toml">
 
-```toml
+```toml {*}{lines:true}
 [activation]
 scripts = ["install/setup.sh"]
 
@@ -420,9 +429,11 @@ scripts = ["install/setup.sh"]
 ROS_DOMAIN_ID = "42"
 ```
 
-- Packages bring their own: the ROS setup comes with `ros-jazzy-ros-workspace`
-- Your workspace can add scripts and variables
-- `pixi shell-hook` prints the whole thing as a shell script
+</CodeWindow>
+
+- `pixi run` activates the environment first
+- `pixi shell` activates the environment and drops you into a shell
+- `pixi shell-hook` prints the whole activation script as a shell script and lets you source it manually
 
 <div class="ref"><a href="https://pixi.prefix.dev/latest/workspace/environment/#activation" target="_blank">Environment activation</a></div>
 
@@ -432,13 +443,24 @@ section: Pixi
 
 # Building your own package with colcon
 
-- `ros-dev-tools` gives you colcon, CMake and the compilers
-- `colcon build` works like it always did
-- `ros2 run` only finds your node after sourcing, so we source on activation
+With ROS installed and `src/turtle_dancer/` in your workspace:
 
-<br>
+<CodeWindow title="bash" terminal>
 
-edit, `colcon build`, source, run. Remember this one.
+```bash
+pixi add ros-dev-tools
+pixi run colcon build
+
+# Source the built overlay whenever Pixi activates
+pixi workspace activation scripts add --target unix install/setup.sh
+
+pixi shell
+ros2 run ...
+```
+
+</CodeWindow>
+
+On Windows, use `--target win-64 install/setup.bat` for the activation script.
 
 <div class="ref"><a href="https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/01-ros-workspace/#14-build-your-own-node-with-colcon" target="_blank">Exercise 1.4: build your own node with colcon</a></div>
 
@@ -448,7 +470,9 @@ section: Pixi
 
 # Two distros, one workspace
 
-```toml
+<CodeWindow title="pixi.toml" :scale="85">
+
+```toml {*}{lines:true}
 [environments.default]
 channels = ["robostack-jazzy", "conda-forge"]
 [environments.default.dependencies]
@@ -459,6 +483,8 @@ channels = ["robostack-kilted", "conda-forge"]
 [environments.kilted.dependencies]
 ros-kilted-ros-base = "*"
 ```
+
+</CodeWindow>
 
 Every environment has its own channels and packages, the tasks are shared.
 
@@ -484,6 +510,8 @@ section: Pixi
 
 # Virtual packages
 
+<CodeWindow title="pixi info" terminal>
+
 ```console
 $ pixi info
 Virtual packages: __unix=0=0
@@ -492,6 +520,8 @@ Virtual packages: __unix=0=0
                 : __cuda=12.4=0
                 : __archspec=1=x86_64
 ```
+
+</CodeWindow>
 
 - Not packages you install, facts about the machine
 - The solver uses them: a package can require `__cuda >=12`
@@ -507,40 +537,32 @@ section: Pixi
 
 The driver comes from the OS, everything else from conda-forge.
 
-```bash
-pixi workspace platform add cuda-linux-64=linux-64 --cuda 12
-```
+<CodeWindow title="pixi.toml">
 
-```toml
+```toml {*}{lines:true}
+[workspace]
+platforms = [ { platform = "linux-64", cuda = 12 }, "linux-64"]
 [dependencies]
 pytorch-gpu = { version = ">=2.5", when = "__cuda" }
 pytorch = ">=2.5"
 ```
 
-- `--cuda 12` sets `__cuda` for that platform, so the solver picks GPU builds
+</CodeWindow>
+
+- `cuda = 12` sets `__cuda` for that platform, so the solver picks GPU builds
 - `when = "__cuda"`: the GPU build there, the CPU build everywhere else
 - Solving works from any laptop, running needs the driver
 
 <div class="ref"><a href="https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/explainers/cuda/" target="_blank">CUDA explainer</a> · <a href="https://pixi.prefix.dev/latest/workspace/multi_platform_configuration/" target="_blank">Multi-platform configuration</a></div>
 
----
-section: Pixi
----
-
-# The lockfile
-
-- `pixi.lock` has every package, version and hash
-- For every platform and every environment
-- Pixi writes it, you commit it
-- `pixi install --locked` in CI, so nothing changes without you noticing
-
-<div class="ref"><a href="https://pixi.prefix.dev/latest/workspace/lock_file/" target="_blank">The lockfile</a></div>
 
 ---
 section: Pixi
 ---
 
-# A workspace in five lines
+# A new workspace in five lines
+
+<CodeWindow title="bash" terminal>
 
 ```bash
 pixi init ros-workspace
@@ -550,7 +572,8 @@ pixi add ros-jazzy-ros-base ros-jazzy-turtlesim
 pixi run ros2 run turtlesim turtlesim_node
 ```
 
-That's it.
+</CodeWindow>
+
 
 <div class="ref"><a href="https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/reference/cheatsheet/" target="_blank">Command cheat sheet</a></div>
 
@@ -566,7 +589,7 @@ class: text-center
 
 30 minutes · `cd exercises/01-ros-workspace`
 
-<div class="text-left mx-auto" style="max-width: 30rem; margin: 1rem auto;">
+<div class="text-left mx-auto" style="max-width: 35rem; margin: 1rem auto;">
 
 1. `pixi init`, add the RoboStack channel, `pixi add` ROS 2
 2. Add tasks and drive the turtle
@@ -578,7 +601,7 @@ class: text-center
 
 <small>
 
-**prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/01-ros-workspace/**
+[exercises/01-ros-workspace/](https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/01-ros-workspace/)
 
 Stuck? Look in `solutions/01-ros-workspace/` or raise your hand.
 
@@ -591,23 +614,7 @@ layout: center
 
 # Building ROS packages with Pixi
 
-No colcon, no sourcing.
-
----
-section: Packaging
----
-
-# The loop from Exercise 1
-
-<div class="text-2xl" style="margin: 2rem 0;">
-
-edit → `colcon build` → `source install/setup.bash` → `ros2 run`
-
-</div>
-
-- Forget to source: `Package 'turtle_dancer' not found`
-- `build/ install/ log/` in your workspace
-- A full toolchain, just to build your own package
+Skip colcon.
 
 ---
 section: Packaging
@@ -630,6 +637,35 @@ The package manifest lives next to `package.xml`, and `package.xml` doesn't chan
 section: Packaging
 ---
 
+# What you write
+
+
+<CodeWindow title="pixi.toml">
+
+```toml {*}{lines:true}
+[dependencies]
+ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }
+```
+
+</CodeWindow>
+
+<CodeWindow title="src/turtle_dancer/pixi.toml">
+
+```toml {*}{lines:true}
+[package.build.backend]
+name = "pixi-build-ros"
+workspace = true
+```
+
+</CodeWindow>
+
+
+<div class="ref"><a href="https://pixi.prefix.dev/latest/build/ros/" target="_blank">Building ROS packages with Pixi</a> · <a href="https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/02-ros-package/" target="_blank">Exercise 2</a></div>
+
+---
+section: Packaging
+---
+
 # Build backends
 
 Pixi doesn't know how to compile your code. A **build backend** does.
@@ -641,10 +677,8 @@ Pixi doesn't know how to compile your code. A **build backend** does.
 | `pixi-build-rust` | Rust | `Cargo.toml` |
 | `pixi-build-ros` | ROS packages | `package.xml` |
 
-- The package manifest names its backend, Pixi fetches and runs it
-- The backend is a conda package itself, versioned and pinned like the rest
-
 <div class="ref"><a href="https://pixi.prefix.dev/latest/build/backends/" target="_blank">Build backends overview</a></div>
+
 
 ---
 section: Packaging
@@ -664,26 +698,71 @@ section: Packaging
 section: Packaging
 ---
 
-# What you write
+# What goes into a recipe?
 
-```toml
-# pixi.toml, three new lines
-[workspace]
-preview = ["pixi-build"]
-[workspace.dependencies]
-pixi-build-ros = ">=0.7.2"
-[dependencies]
-ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }
+The backend works out the sources, dependencies and build steps.
+
+<CodeWindow title="recipe.yaml · pseudocode" :scale="80">
+
+```yaml
+package:
+  name: ros-jazzy-turtle-dancer
+  version: 0.1.0
+source:
+  path: src/turtle_dancer
+requirements:
+  build: [cxx-compiler, cmake, ninja]
+  host: [ros-jazzy-ament-cmake, ros-jazzy-rclcpp]
+  run: [ros-jazzy-rclcpp]
+build:
+  script: configure → compile → install into $PREFIX
 ```
 
-```toml
-# src/turtle_dancer/pixi.toml, the whole file
-[package.build.backend]
-name = "pixi-build-ros"
-workspace = true
-```
+</CodeWindow>
 
-<div class="ref"><a href="https://pixi.prefix.dev/latest/build/ros/" target="_blank">Building ROS packages with Pixi</a> · <a href="https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/02-ros-package/" target="_blank">Exercise 2</a></div>
+With `pixi-build-ros`, you don't write this recipe yourself.
+
+---
+section: Packaging
+---
+
+# Inside a conda package
+
+`ros-jazzy-rclcpp-28.1.18-np2py312hd441986_18.conda`
+
+<div class="grid gap-8 items-start" style="grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);">
+
+<FileTree
+  root-label="Extracted package · osx-arm64"
+  :tree="[
+    { name: 'info', type: 'dir', children: [
+      { name: 'index.json' },
+      { name: 'paths.json' },
+    ]},
+    { name: 'lib', type: 'dir', children: [
+      { name: 'librclcpp.dylib' },
+    ]},
+    { name: 'include/rclcpp/rclcpp', type: 'dir', children: [
+      { name: 'rclcpp.hpp' },
+    ]},
+    { name: 'share/rclcpp', type: 'dir', children: [
+      { name: 'package.xml' },
+    ]},
+  ]"
+/>
+
+<div>
+
+- **Metadata:** `index.json` has the name, version and dependencies; `paths.json` lists files and hashes.
+- **Payload:** pre-built libraries, headers and ROS resources. Not just Python.
+- **Installation:** put the payload into an environment, no compilation.
+- Same package format across platforms, with platform-specific binaries.
+
+</div>
+</div>
+
+<div class="ref">Selected files after extraction. <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/concepts/packages.html" target="_blank">Conda package format</a></div>
+
 
 ---
 section: Packaging
@@ -767,9 +846,13 @@ section: Collaboration
 
 # Many platforms, one manifest
 
+<CodeWindow title="bash" terminal>
+
 ```bash
 pixi workspace platform add linux-64 osx-arm64 win-64
 ```
+
+</CodeWindow>
 
 - Pixi solves every platform and records all of them in one lockfile
 - A teammate: `git clone`, `pixi install`, done
@@ -787,10 +870,14 @@ section: Collaboration
 
 # CI made easy
 
+<CodeWindow title="GitHub Actions (steps)">
+
 ```yaml
 - uses: prefix-dev/setup-pixi@v0.10.0
 - run: pixi run test
 ```
+
+</CodeWindow>
 
 - Two lines: install Pixi and the environment, run your task
 - The same task names as on your laptop, no second setup in YAML
@@ -804,12 +891,19 @@ section: Collaboration
 
 # What `setup-pixi` does for you
 
+<div class="grid grid-cols-2 gap-6 items-start">
+<div>
+
 1. Downloads the Pixi binary and puts it on `PATH`
 2. Logs in to your channels, if you gave it a token
 3. Restores the environment from cache, keyed on the hash of `pixi.lock`
 4. `pixi install`, per environment you ask for, `--locked` if you say so
 5. Saves the cache, runs `pixi list` so you can see what you got
 6. Optionally activates the environment for every next step
+
+</div>
+
+<CodeWindow title="GitHub Actions (steps)">
 
 ```yaml
 - uses: prefix-dev/setup-pixi@v0.10.0
@@ -818,6 +912,10 @@ section: Collaboration
     activate-environment: default
     auth-token: ${{ secrets.PREFIX_DEV_TOKEN }}
 ```
+
+</CodeWindow>
+
+</div>
 
 <div class="ref"><a href="https://github.com/prefix-dev/setup-pixi" target="_blank">setup-pixi source</a> · <a href="https://pixi.prefix.dev/latest/integration/ci/github_actions/" target="_blank">GitHub Actions docs</a></div>
 
@@ -829,12 +927,16 @@ section: Collaboration
 
 One Dockerfile, two stages.
 
+<CodeWindow title="Dockerfile">
+
 ```dockerfile
 FROM ghcr.io/prefix-dev/pixi:0.76.2-noble AS build
 COPY . /app
 RUN pixi install --locked
 RUN pixi shell-hook -s bash > /shell-hook.sh
 ```
+
+</CodeWindow>
 
 - Start from the Pixi image, copy the workspace in
 - Install the environment from the lockfile
@@ -848,12 +950,16 @@ section: Collaboration
 
 # The runtime stage
 
+<CodeWindow title="Dockerfile">
+
 ```dockerfile
 FROM ubuntu:24.04 AS runtime
 COPY --from=build /app/.pixi/envs/default /app/.pixi/envs/default
 COPY --from=build /shell-hook.sh /shell-hook.sh
 ENTRYPOINT ["/bin/bash", "/shell-hook.sh"]
 ```
+
+</CodeWindow>
 
 - A plain base image, no Pixi, no package manager
 - It receives the finished environment and the activation script, nothing else
@@ -867,9 +973,13 @@ section: Collaboration
 
 # Why `--locked`
 
+<CodeWindow title="Dockerfile">
+
 ```dockerfile
 RUN pixi install --locked
 ```
+
+</CodeWindow>
 
 - Without it, Pixi re-solves when `pixi.toml` and `pixi.lock` disagree, and the image gets something the team never tested
 - With it, the build fails instead
@@ -886,14 +996,22 @@ section: Collaboration
 
 # `pixi-pack`
 
+<CodeWindow title="bash · pack" terminal>
+
 ```bash
 pixi-pack --environment default --platform linux-aarch64 pixi.toml
 ```
+
+</CodeWindow>
+
+<CodeWindow title="bash · unpack" terminal>
 
 ```bash
 pixi-unpack environment.tar     # on the other machine
 source activate.sh
 ```
+
+</CodeWindow>
 
 - One archive with the packages inside, no network or package manager needed to unpack
 - Pack for any platform from the machine you're on
