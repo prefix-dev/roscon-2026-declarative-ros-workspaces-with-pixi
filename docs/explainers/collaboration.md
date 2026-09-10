@@ -21,13 +21,81 @@ Adding one line is what supporting a new platform costs:
 pixi workspace platform add linux-64 osx-arm64 win-64
 ```
 
+The platform list in `pixi.toml` now looks like this (alongside your existing workspace settings):
+
+```toml title="pixi.toml"
+[workspace]
+platforms = ["linux-64", "osx-arm64", "win-64"]
+```
+
 Pixi re-solves the dependencies for each platform separately and records all of them in the same lockfile.
 From that moment a teammate's setup is `git clone`, `pixi install`, done: they get the environment the lockfile pins for their platform, not whatever resolved on the day they joined.
 
 Platforms differ, and the manifest has two tools for that:
 
-- A `[target.<platform>]` table overrides dependencies, tasks or activation for one platform, like the `install/setup.bat` versus `install/setup.sh` split from Exercise 1.
+- A `[target.<selector>]` table adds or overrides dependencies, tasks or activation for matching platforms.
 - A conditional dependency picks per machine capability, like the `when = "__cuda"` PyTorch split from Exercise 2.
+
+### Target configuration for different machines
+
+A selector can match an OS family (`unix`, `linux`, `osx`, `win`), an exact platform (`osx-arm64`), or a platform name you define yourself.
+Here is a standalone example with shared Python dependencies, OS-specific tools, and a named GPU machine:
+
+```toml title="pixi.toml"
+[workspace]
+name = "team-workspace"
+channels = ["conda-forge"]
+platforms = [
+    { name = "robot-gpu", platform = "linux-64", cuda = "12" },
+    "linux-64",
+    "osx-arm64",
+    "win-64",
+]
+
+[dependencies]
+python = "3.12.*"
+
+# Linux and macOS, including the Linux-based robot-gpu platform.
+[target.unix.dependencies]
+htop = "*"
+
+[target.unix.tasks]
+platform-info = "echo 'Using a Unix machine'"
+
+# All Windows platforms in this workspace.
+[target.win.dependencies]
+pywin32 = "*"
+
+[target.win.tasks]
+platform-info = "echo 'Using Windows'"
+
+# Only Apple Silicon macOS.
+[target.osx-arm64.tasks]
+platform-info = "echo 'Using an Apple Silicon Mac'"
+
+# Only the platform named robot-gpu above.
+[target.robot-gpu.dependencies]
+pytorch-gpu = "*"
+
+[target.robot-gpu.tasks]
+platform-info = "echo 'Using the GPU robot'"
+```
+
+Run `pixi run platform-info` on each machine:
+
+| Selected platform | Extra packages | Task output |
+| --- | --- | --- |
+| `linux-64` | `htop` | `Using a Unix machine` |
+| `osx-arm64` | `htop` | `Using an Apple Silicon Mac` |
+| `win-64` | `pywin32` | `Using Windows` |
+| `robot-gpu` | `htop`, `pytorch-gpu` | `Using the GPU robot` |
+
+All four keep the shared Python dependency.
+Matching targets combine; when they define the same task, the later definition wins, so place specific overrides after broader ones.
+The name `robot-gpu` refers to a declared platform, not a hostname or a separate environment.
+Pixi selects the first compatible platform in the list, so `robot-gpu` comes before the plain `linux-64` fallback.
+A Linux machine with compatible CUDA driver support selects `robot-gpu`; a Linux machine without it falls back to `linux-64`.
+See the [target reference](https://pixi.prefix.dev/latest/reference/pixi_manifest/#the-target-table) and [platform selection documentation](https://pixi.prefix.dev/latest/workspace/multi_platform_configuration/) for details.
 
 One honest caveat: "it solved" proves the packages exist and agree with each other on every platform.
 It does not prove your node runs there.
