@@ -19,10 +19,12 @@ The actual reference is the [Pixi documentation](https://pixi.prefix.dev/).
 
 Pixi is a package manager built on top of the conda ecosystem.
 
-- `apt` is for Debian packages
-- `brew` is for homebrew packages
-- `pip` is for PyPI packages
-- Pixi is for conda packages, and supports PyPI packages as a secondary source.
+| Package manager | Packages it installs |
+| --- | --- |
+| `apt` | Debian packages |
+| `brew` | Homebrew packages |
+| `pip` | Python packages from PyPI |
+| `pixi` | **conda packages + Python packages from PyPI** |
 
 Conda packages are pre-built, cross-platform binary packages.
 Pixi installs these in workspace specific virtual environments.
@@ -103,7 +105,7 @@ Tasks support a graph style dependency system, so you can define a task that dep
 
 ```toml title="pixi.toml"
 [tasks]
-download-data = "curl -O https://example.com/data.zip"
+download-data = "curl --remote-name https://example.com/data.zip"
 build = "colcon build"
 start = {
      cmd = "ros2 launch my_package my_launchfile.launch.py",
@@ -113,20 +115,36 @@ start = {
 
 This will first `build` your workspace, then `download-data`, and finally `start` your launchfile.
 
-Want a task to only run once?
+Want to skip a task when its files have not changed?
 Add the `inputs` and `outputs` keys to the task, and Pixi will cache the result based on those files.
 
 ```toml title="pixi.toml"
 [tasks]
 download-data = {
-    cmd = "curl -O https://example.com/data.zip",
+    cmd = "curl --remote-name https://example.com/data.zip",
     outputs = ["data.zip"],
 }
 ```
 
-Now Pixi will only run the `download-data` task if `data.zip` is missing, and will skip it if it already exists.
+After the first successful run, Pixi skips `download-data` while its output is unchanged.
+Deleting `data.zip` makes the task run again.
 
-See the [Pixi documentation](https://pixi.prefix.dev/docs/tasks/) for more details and more task features.
+For a task that needs to rerun when source files change, declare those files as `inputs`.
+For example, a documentation workspace with `zensical` installed can cache its site build:
+
+```toml title="pixi.toml"
+[tasks.build-docs]
+cmd = "zensical build --strict"
+inputs = ["docs/**", "zensical.toml"]
+outputs = ["site/**"]
+```
+
+Run `pixi run build-docs` once to build the site.
+Run it again without changing anything and Pixi skips the build.
+Edit a page in `docs/` or change `zensical.toml`, and the next run rebuilds the site.
+Deleting the generated `site/` directory also triggers a rebuild.
+
+See the [Pixi documentation](https://pixi.prefix.dev/latest/workspace/advanced_tasks/#caching) for more details and more task features.
 
 ### Environments
 
@@ -161,8 +179,8 @@ This allows you to create the right environment for the job, whether it's for de
     Since there are two environments, you need to tell Pixi which one to use when running a task.
 
     ```bash
-    pixi run -e jazzy sim
-    pixi run -e humble sim
+    pixi run --environment jazzy sim
+    pixi run --environment humble sim
     ```
 === "Specialized environments"
 
