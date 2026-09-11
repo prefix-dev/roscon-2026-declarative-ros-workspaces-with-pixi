@@ -33,7 +33,7 @@ lint = { features = ["lint"], no-default-feature = true }
 # Docs site (Zensical)
 # ---------------------------------------------------------------------------
 [tasks.docs]
-cmd = "zensical serve"
+cmd = "zensical serve --dev-addr localhost:3322"
 description = "Serve the docs site locally with live reload"
 
 [tasks.build-docs]

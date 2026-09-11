@@ -11,15 +11,15 @@ FROM ghcr.io/prefix-dev/pixi:0.80.0-noble AS build
 WORKDIR /app
 COPY . .
 
-RUN pixi install --locked
+# Install the dependencies for the robot environment, make sure it's locked
+RUN pixi FIXME
 
-# Bake the activation into a script, so the runtime stage needs no Pixi.
-RUN pixi shell-hook -s bash > /shell-hook.sh \
-    && echo 'exec "$@"' >> /shell-hook.sh
+# Bake the activation shell-hook into a script, so the runtime stage needs no Pixi.
+RUN pixi FIXME
 
 FROM ubuntu:26.04 AS runtime
 
-COPY --from=build /app/.pixi/envs/default /app/.pixi/envs/default
+COPY --from=build FIXME
 COPY --from=build /shell-hook.sh /shell-hook.sh
 COPY --from=build /app/src /app/src
 

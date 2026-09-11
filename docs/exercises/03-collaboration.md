@@ -36,7 +36,7 @@ The [GitHub CLI](https://cli.github.com) does that from the terminal, and it ins
     git init
     git add .
     git commit -m "ROS 2 workspace with Pixi"
-    gh repo create turtle-workspace --private --source=. --push
+    gh repo create turtle-workspace --source=. --push --public
     ```
 
 ## 3.2 Add CI
@@ -60,7 +60,7 @@ Your job is the Pixi part, with the [`prefix-dev/setup-pixi`](https://pixi.prefi
           test:
             runs-on: ubuntu-latest
             steps:
-              - uses: actions/checkout@v4
+              - uses: actions/checkout@v7
               # Your turn: set up Pixi and run the tests.
         ```
 
@@ -81,7 +81,6 @@ Your job is the Pixi part, with the [`prefix-dev/setup-pixi`](https://pixi.prefi
     git add .github/workflows/ci.yml
     git commit -m "Add CI"
     git push
-    gh run watch
     ```
 
 ## 3.3 Ship a Docker image

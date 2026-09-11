@@ -20,10 +20,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: prefix-dev/setup-pixi@v0.10.0
-        with:
-          # Install exactly what the lockfile says, and fail if it is stale.
-          locked: true
+      - uses: actions/checkout@v7
+      - uses: prefix-dev/setup-pixi@v0.10.2
       - run: pixi run test
 # --8<-- [end:workflow]

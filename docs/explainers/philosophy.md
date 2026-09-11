@@ -28,7 +28,6 @@ ROS doesn't have to be that way, and with RoboStack and Pixi it isn't.
     - **Windows:** limited support, build from source, or reach for WSL2 or Docker.
 
 Right now there is basically one answer to this: stop fighting your own machine and move development into a VM or a Docker image.
-And to be fair, that works.
 It makes the setup doable, and everyone on the team can share the same image.
 But you're not getting a "normal" development experience where you can just run things locally on your machine.
 Your whole workflow now lives inside a box, and you lose the flexibility of your own machine.
@@ -41,7 +40,7 @@ ROS is missing out on a lot of users due to this lock-in.
 
 Pixi together with RoboStack take a different approach.
 
-- All machines, not just Ubuntu.
+- Binaries for **all** machines, not just Ubuntu.
 - Reproducible, share it with your team without requiring a Docker Image.
 - Declarative, use version control to roll back to a known good state.
 - Fast, to get started in minutes instead of hours.
