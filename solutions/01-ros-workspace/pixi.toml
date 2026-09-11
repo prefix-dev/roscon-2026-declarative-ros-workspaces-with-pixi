@@ -55,9 +55,11 @@ description = "Build our own package the way you do it today, with colcon"
 cmd = "python -c \"import os; print('ros:', os.environ['ROS_DISTRO'], 'ok')\""
 description = "Prove ROS is active: what CI runs"
 
+# Run `pixi run build` once before the first launch so activation can find the overlay.
 [tasks.brain]
-cmd = "python src/turtle_brain/turtle_brain/brain.py"
-description = "Drive the turtle with PyTorch on the available device"
+cmd = "ros2 run turtle_brain brain"
+depends-on = ["build"]
+description = "Run the PyTorch ROS executable (build once before the first launch)"
 
 [tasks.cuda-check]
 cmd = "python src/turtle_brain/turtle_brain/check_cuda.py"

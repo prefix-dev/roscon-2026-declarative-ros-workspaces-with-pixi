@@ -131,6 +131,7 @@ If it fails, ask an instructor to check the instance type, driver and selected p
 Then try the ROS node on the same device:
 
 ```bash
+pixi run --manifest-path solutions/01-ros-workspace/pixi.toml --platform cuda-linux-64 build
 pixi run --manifest-path solutions/01-ros-workspace/pixi.toml --platform cuda-linux-64 brain
 ```
 

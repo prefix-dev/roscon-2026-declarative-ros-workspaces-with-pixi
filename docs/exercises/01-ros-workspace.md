@@ -261,14 +261,15 @@ Those distro-specific pieces go into an environment of their own, declared inlin
 
 ## 1.6 Give the turtle a PyTorch brain
 
-`src/turtle_brain/` is a second node, provided pre-written.
+`src/turtle_brain/` is a pre-written `ament_python` ROS package.
 It drives the turtle with a small PyTorch computation, on the GPU when one is available and the CPU otherwise.
 
 !!! exercise "Your turn"
 
     1. Add `pytorch` as a dependency.
-    2. Add a `brain` task that runs `python src/turtle_brain/turtle_brain/brain.py`.
-    3. Run the simulator and the brain, in two terminals.
+    2. Add a `brain` task that runs `ros2 run turtle_brain brain` and depends on `build`.
+    3. Run `pixi run build` once to install the package before activating its overlay in the next command.
+    4. Run the simulator and the brain, in two terminals.
 
 ??? success "Solution"
 
@@ -276,11 +277,17 @@ It drives the turtle with a small PyTorch computation, on the GPU when one is av
     # 1
     pixi add pytorch
     # 2
-    pixi task add brain "python src/turtle_brain/turtle_brain/brain.py"
-    # 3: in two terminals
+    pixi task add brain "ros2 run turtle_brain brain" --depends-on build
+    # 3: build before the next command activates the overlay
+    pixi run build
+    # 4: in two terminals
     pixi run sim
     pixi run brain    # the turtle moves, and the node logs "thinking on: cpu"
     ```
+
+    After the build, `pixi run ros2 pkg executables turtle_brain` should list `turtle_brain brain`.
+    You can also launch it directly with `pixi run ros2 run turtle_brain brain`, or with `ros2 run turtle_brain brain` inside `pixi shell`.
+    On a fresh checkout, the initial `pixi run build` must finish before starting a new `pixi run` or `pixi shell`; a task dependency cannot activate an overlay that did not exist when that invocation started.
 
     On a laptop the node runs on the CPU.
     Next you give it a GPU to think on.
@@ -392,6 +399,7 @@ It fails if CUDA is unavailable instead of silently using the CPU.
     If it fails, check the selected platform and ask an instructor to check the driver and PyTorch build.
 
     ```bash
+    pixi run --platform cuda-linux-64 build
     pixi run --platform cuda-linux-64 brain
     ```
 

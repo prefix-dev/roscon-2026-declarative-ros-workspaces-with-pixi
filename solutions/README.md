@@ -28,11 +28,14 @@ From `solutions/01-ros-workspace/` on a Linux GPU machine:
 
 ```bash
 pixi run --platform cuda-linux-64 cuda-check
+pixi run --platform cuda-linux-64 build
 pixi run --platform cuda-linux-64 brain
 ```
 
 `cuda-check` prints `GPU result: 8.0` and fails if CUDA is unavailable.
-The brain keeps running; stop it with Ctrl+C.
+The initial build creates the colcon overlay before the next command activates it.
+The `brain` task launches `ros2 run turtle_brain brain` and depends on `build` for subsequent changes.
+It keeps running; stop it with Ctrl+C.
 On the supported Jetson, use `--platform jetson` instead.
 Without suitable hardware, follow the [Brev setup](https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/brev/) with the instructors.
 
