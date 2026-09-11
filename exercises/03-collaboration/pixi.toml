@@ -16,11 +16,7 @@
 name = "turtle-dancer-team"
 description = "A ROS 2 workspace that works on exactly one machine"
 channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
-platforms =  [  "linux-64",
-                "linux-aarch64",
-                "osx-arm64",
-                "osx-64",
-                "win-64",]
+platforms = ["linux-64", "linux-aarch64", "osx-arm64", "osx-64", "win-64"]
 version = "0.1.0"
 preview = ["pixi-build"]
 
