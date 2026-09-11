@@ -259,12 +259,6 @@ Those distro-specific pieces go into an environment of their own, declared inlin
     Everything at workspace level belongs to the default feature, and every environment includes it.
     That is why `sim` runs in both environments without being defined twice.
 
-??? "The full `pixi.toml`"
-
-    ```toml title="solutions/01-ros-workspace/pixi.toml"
-    --8<-- "solutions/01-ros-workspace/pixi.toml"
-    ```
-
 ## 1.6 Give the turtle a PyTorch brain
 
 `src/turtle_brain/` is a second node, provided pre-written.
@@ -299,6 +293,7 @@ You tell Pixi a platform has a GPU by giving it a CUDA version, the `__cuda` vir
 !!! exercise "Your turn"
 
     1. Add a CUDA platform: name it `cuda-linux-64`, on `linux-64`, with CUDA 12.
+       Give it priority over ordinary Linux so a compatible GPU host selects the CUDA build.
     2. Add the ordinary platforms too: `linux-64`, `osx-arm64`, `win-64`.
     3. Make PyTorch use the GPU build where CUDA is present, and the CPU build everywhere else.
        Hint: a `when` condition on the dependency.
@@ -311,6 +306,7 @@ You tell Pixi a platform has a GPU by giving it a CUDA version, the `__cuda` vir
     pixi workspace platform add cuda-linux-64=linux-64 --cuda 12
     # 2
     pixi workspace platform add linux-64 osx-arm64 win-64
+    pixi workspace platform move cuda-linux-64 --to-top
     ```
 
     3: the GPU build cannot install without CUDA, so make it conditional and keep a CPU fallback.
@@ -359,6 +355,58 @@ That is just another platform, so you add it the same way, with its own CUDA ver
     You solve on your laptop and install on the Jetson.
 
 ## 1.9 Run it on a real GPU
+
+!!! warning "This step needs an NVIDIA GPU"
+
+    Declaring CUDA lets Pixi solve an environment; it does not give your laptop a GPU.
+    Running this step needs a Linux machine with an NVIDIA GPU and a compatible NVIDIA driver, or the Jetson from 1.8.
+    An Apple GPU cannot run CUDA.
+    If you don't have access to suitable hardware, follow the [Brev setup](../brev.md) with the instructors, then run the commands below **inside the remote terminal**.
+    Wait for the instructor coupon before creating an instance.
+
+The supplied `src/turtle_brain/turtle_brain/check_cuda.py` runs a short tensor computation directly on CUDA.
+It needs neither ROS nodes nor a turtlesim window, so you can run it over SSH.
+It fails if CUDA is unavailable instead of silently using the CPU.
+
+!!! exercise "Your turn"
+
+    1. On the GPU machine, check that `nvidia-smi` can see the device.
+    2. Add a `cuda-check` task that runs `python src/turtle_brain/turtle_brain/check_cuda.py`.
+    3. Run it on the `cuda-linux-64` platform and inspect the device name and computed result.
+       On the Jetson, select `jetson` instead.
+    4. Run the brain on the same platform.
+       Stop it with ++ctrl+c++ after it logs `thinking on: cuda`.
+
+??? success "Solution"
+
+    From your exercise directory on the GPU machine:
+
+    ```bash
+    nvidia-smi
+    pixi task add cuda-check "python src/turtle_brain/turtle_brain/check_cuda.py"
+    pixi run --platform cuda-linux-64 cuda-check
+    ```
+
+    The check prints the GPU name, compute capability, supported architectures and `GPU result: 8.0`.
+    Reading the result waits for the CUDA computation to finish, so detecting a driver alone cannot pass this check.
+    If it fails, check the selected platform and ask an instructor to check the driver and PyTorch build.
+
+    ```bash
+    pixi run --platform cuda-linux-64 brain
+    ```
+
+!!! note "Without a GPU"
+
+    You can finish the CPU brain and inspect the GPU/Jetson package selections from your laptop.
+    To try the CUDA computation during the workshop, join the [Brev setup](../brev.md) or follow along on an instructor's GPU machine.
+    A CPU run or successful solve is not a successful CUDA check.
+
+??? "The full `pixi.toml`"
+
+    ```toml title="solutions/01-ros-workspace/pixi.toml"
+    --8<-- "solutions/01-ros-workspace/pixi.toml"
+    ```
+
 
 ## Check your work
 

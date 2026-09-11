@@ -30,8 +30,8 @@ fi
 
 cd "${REPO_DIR}"
 
-# Pre-download the main ROS exercise environments while the instance starts.
-# This is the same warm-cache step participants run locally before the workshop.
+# Pre-download both ROS environments and PyTorch while the instance starts.
+# Compatible NVIDIA hosts select the preferred CUDA platform; CPU hosts stay on CPU.
 "${PIXI}" install --all --manifest-path solutions/01-ros-workspace/pixi.toml
 
 cat <<EOF
@@ -41,5 +41,8 @@ Repository: ${REPO_DIR}
 Try:
   cd ${REPO_DIR}
   pixi run --manifest-path solutions/01-ros-workspace/pixi.toml topics
-  pixi run --manifest-path solutions/01-ros-workspace/pixi.toml brain
+For the CUDA exercise (requires an NVIDIA GPU and compatible driver):
+  nvidia-smi
+  pixi run --manifest-path solutions/01-ros-workspace/pixi.toml --platform cuda-linux-64 cuda-check
+Instructions: https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/01-ros-workspace/#19-run-it-on-a-real-gpu
 EOF

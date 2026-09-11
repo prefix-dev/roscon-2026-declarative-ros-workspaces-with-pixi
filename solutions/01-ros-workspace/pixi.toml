@@ -6,6 +6,8 @@
 #     pixi run sim              # turtlesim on Lyrical
 #     pixi run teleop           # drive it with the arrow keys
 #     pixi run -e kilted sim    # the same workspace, on Kilted
+#     pixi run brain            # PyTorch on the CPU, or CUDA when available
+#     pixi run --platform cuda-linux-64 cuda-check  # requires an NVIDIA GPU
 #
 # The custom node here is built by colcon, which is why `dance` has to source
 # install/setup.bash first.
@@ -14,7 +16,13 @@
 name = "turtle-workspace"
 description = "A ROS 2 workspace managed entirely by Pixi, targeting two distros"
 channels = ["conda-forge"]
-platforms = ["linux-64", "osx-arm64", "win-64"]
+platforms = [
+  { name = "cuda-linux-64", platform = "linux-64", cuda = "12" },
+  "linux-64",
+  "osx-arm64",
+  "win-64",
+  { name = "jetson", platform = "linux-aarch64", cuda = "13" },
+]
 version = "0.1.0"
 
 # ---------------------------------------------------------------------------
@@ -24,6 +32,8 @@ version = "0.1.0"
 # The toolchain to build our own package with: colcon, CMake and the compilers
 # in one package, so there is nothing to install with apt or Visual Studio.
 ros-dev-tools = ">=1.0"
+pytorch = ">=2.5"
+pytorch-gpu = { version = ">=2.5", when = "__cuda" }
 
 [tasks.sim]
 cmd = "ros2 run turtlesim turtlesim_node"
@@ -44,6 +54,14 @@ description = "Build our own package the way you do it today, with colcon"
 [tasks.test]
 cmd = "python -c \"import os; print('ros:', os.environ['ROS_DISTRO'], 'ok')\""
 description = "Prove ROS is active: what CI runs"
+
+[tasks.brain]
+cmd = "python src/turtle_brain/turtle_brain/brain.py"
+description = "Drive the turtle with PyTorch on the available device"
+
+[tasks.cuda-check]
+cmd = "python src/turtle_brain/turtle_brain/check_cuda.py"
+description = "Run a CUDA tensor computation; fail if CUDA is unavailable"
 
 # Our colcon-built node is only on the path once the overlay is sourced. Instead
 # of sourcing inside the task, we add the overlay as an activation script, so it
