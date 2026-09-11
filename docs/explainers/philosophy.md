@@ -28,7 +28,6 @@ ROS doesn't have to be that way, and with RoboStack and Pixi it isn't.
     - **Windows:** limited support, build from source, or reach for WSL2 or Docker.
 
 Right now there is basically one answer to this: stop fighting your own machine and move development into a VM or a Docker image.
-And to be fair, that works.
 It makes the setup doable, and everyone on the team can share the same image.
 But you're not getting a "normal" development experience where you can just run things locally on your machine.
 Your whole workflow now lives inside a box, and you lose the flexibility of your own machine.
@@ -41,7 +40,7 @@ ROS is missing out on a lot of users due to this lock-in.
 
 Pixi together with RoboStack take a different approach.
 
-- All machines, not just Ubuntu.
+- Binaries for **all** machines, not just Ubuntu.
 - Reproducible, share it with your team without requiring a Docker Image.
 - Declarative, use version control to roll back to a known good state.
 - Fast, to get started in minutes instead of hours.
@@ -112,7 +111,7 @@ This allows you to mix and match dependencies from both ecosystems, and gives yo
 None of this would work without an enormous amount of community effort underneath it.
 [conda-forge](https://conda-forge.org) is a huge, community-run collection of pre-built, cross-platform binary packages, tens of thousands of them, already compiled for Linux, macOS, and Windows.
 That is the base layer.
-It provides packages and libraries like `gcc`, `Python`, `cmake`, `OpenCV`, `PyTorch`, and many more, all built for multiple platforms and architectures.
+It provides packages and libraries like [`gcc`](https://prefix.dev/channels/conda-forge/packages/gcc), [`Python`](https://prefix.dev/channels/conda-forge/packages/python), [`cmake`](https://prefix.dev/channels/conda-forge/packages/cmake), [`OpenCV`](https://prefix.dev/channels/conda-forge/packages/opencv), [`PyTorch`](https://prefix.dev/channels/conda-forge/packages/pytorch), and many more, all built for multiple platforms and architectures.
 
 RoboStack builds on conda-forge and packages the ROS distributions themselves as conda packages, so you can install ROS the same way you install anything else, on any of those platforms.
 It provides packages from most ROS distributions, from Noetic to Lyrical, like `ros-noetic-rqt` to `ros-lyrical-plotjuggler`, and everything in between.

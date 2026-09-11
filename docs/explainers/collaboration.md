@@ -21,13 +21,46 @@ Adding one line is what supporting a new platform costs:
 pixi workspace platform add linux-64 osx-arm64 win-64
 ```
 
+The platform list in `pixi.toml` now looks like this (alongside your existing workspace settings):
+
+```toml title="pixi.toml"
+[workspace]
+platforms = ["linux-64", "osx-arm64", "win-64"]
+```
+
 Pixi re-solves the dependencies for each platform separately and records all of them in the same lockfile.
 From that moment a teammate's setup is `git clone`, `pixi install`, done: they get the environment the lockfile pins for their platform, not whatever resolved on the day they joined.
 
 Platforms differ, and the manifest has two tools for that:
 
-- A `[target.<platform>]` table overrides dependencies, tasks or activation for one platform, like the `install/setup.bat` versus `install/setup.sh` split from Exercise 1.
+- A `[target.<selector>]` table adds or overrides dependencies, tasks or activation for matching platforms.
 - A conditional dependency picks per machine capability, like the `when = "__cuda"` PyTorch split from Exercise 2.
+
+### Target configuration for different machines
+
+Use `unix` for Linux and macOS, `win` for Windows, or a declared platform name for a specific machine configuration:
+
+```toml title="pixi.toml"
+[workspace]
+channels = ["conda-forge"]
+platforms = [
+    { name = "robot-gpu", platform = "linux-64", cuda = "12" },
+    "linux-64", "osx-arm64", "win-64",
+]
+
+[target.unix.dependencies]
+htop = "*" # Linux and macOS
+
+[target.win.dependencies]
+pywin32 = "*" # Windows only
+
+[target.robot-gpu.dependencies]
+pytorch-gpu = "*" # Only the named GPU platform
+```
+
+Matching targets combine: `robot-gpu` gets both `htop` and `pytorch-gpu`.
+Exact platforms such as `[target.osx-arm64.dependencies]` work too.
+See the [target reference](https://pixi.prefix.dev/latest/reference/pixi_manifest/#the-target-table) for more options.
 
 One honest caveat: "it solved" proves the packages exist and agree with each other on every platform.
 It does not prove your node runs there.
