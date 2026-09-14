@@ -136,6 +136,7 @@ The dependency name is the `package.xml` name with the distro prefix and hyphens
 
     A `Running build for recipe: ros-lyrical-turtle-dancer-0.1.0-...` block scrolls by.
     The first install fetches the backend and a build environment (CMake, the compilers, the ROS libraries from `package.xml`) into `.pixi/bld/`, compiles the node and installs the result into the environment as a conda package.
+    On Windows, compiler activation uses the Visual Studio tools you installed in [Before you start](../setup.md#1-install-pixi).
     Later builds are incremental.
 
     ```console

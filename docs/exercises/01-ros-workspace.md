@@ -141,10 +141,11 @@ Commands you reuse get a name in the manifest, so your teammates run them withou
 
 `src/turtle_dancer/` is a small ROS 2 C++ package, written for you already.
 Building it needs a toolchain and the ROS libraries it includes, and those come from the same channels as everything else.
+On Windows, the compiler and SDK must already be installed: see [Before you start](../setup.md#1-install-pixi).
 
 !!! exercise "Your turn"
 
-    1. Add `ros-dev-tools`: one package that brings colcon, CMake and the compilers.
+    1. Add `ros-dev-tools`: one package that brings colcon, CMake and compiler tooling.
        The ROS libraries the node uses are already there, `ros-lyrical-ros-base` includes them.
     2. Build the workspace with colcon.
     3. Try to run your node with `ros2 run turtle_dancer dance` and read the error.

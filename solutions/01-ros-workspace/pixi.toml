@@ -29,8 +29,9 @@ version = "0.1.0"
 # Shared by every environment: the toolchain and the tasks.
 # ---------------------------------------------------------------------------
 [dependencies]
-# The toolchain to build our own package with: colcon, CMake and the compilers
-# in one package, so there is nothing to install with apt or Visual Studio.
+# Colcon, CMake and compiler tooling for building our own package.
+# Windows needs Visual Studio C++ Build Tools and a Windows SDK installed first;
+# see docs/setup.md for Microsoft's installation instructions.
 ros-dev-tools = ">=1.0"
 pytorch = ">=2.5"
 pytorch-gpu = { version = ">=2.5", when = "__cuda" }

@@ -28,6 +28,12 @@ You need 0.77 or newer:
 pixi --version
 ```
 
+!!! note "Windows C++ compilers"
+
+    The C++ exercises need Visual Studio 2022 Build Tools with the C++ workload and a Windows SDK.
+    Follow [Microsoft's installation instructions](https://learn.microsoft.com/en-us/cpp/build/vscpp-step-0-installation?view=msvc-170).
+    Pixi activates these tools but doesn't install them for you.
+
 ## 2. Get the workshop material
 
 ```bash
