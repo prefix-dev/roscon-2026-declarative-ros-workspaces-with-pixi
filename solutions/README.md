@@ -23,6 +23,20 @@ cd solutions/01-ros-workspace
 pixi run sim
 ```
 
+Exercise 1 keeps colcon output in `build/<environment>`, `install/<environment>` and `log/<environment>`.
+Build once in each environment before launching the local nodes:
+
+```bash
+pixi run -e default build
+pixi run -e default test-overlay
+pixi run -e kilted build
+pixi run -e kilted test-overlay
+pixi run -e default test-overlay
+```
+
+Run these commands outside an activated `pixi shell`.
+Each new command activates only that environment's `local_setup` overlay.
+
 To try CUDA, use an NVIDIA GPU with a compatible driver.
 From `solutions/01-ros-workspace/` on a Linux GPU machine:
 

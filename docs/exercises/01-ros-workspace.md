@@ -225,39 +225,67 @@ Building it needs a toolchain and the ROS libraries it includes, and those come 
 ## 1.5 Two ROS distros, one workspace
 
 A second ROS distribution is a second environment in the same manifest.
-The tasks, the toolchain and the activation are shared; what differs per distro is the channel and the `ros-*` packages.
-Those distro-specific pieces go into an environment of their own, declared inline.
+The toolchain and run tasks are shared, but compiled packages and Python modules belong to the distro that built them.
+Give each environment its own colcon directories and activate only its matching overlay.
 
 !!! exercise "Your turn"
 
-    1. Move the Lyrical pieces into their own environment: declare `[environments.default]` inline, holding the RoboStack channel and the `ros-lyrical` packages.
-       The tasks, `ros-dev-tools` and the activation stay at workspace level.
-    2. Add a `kilted` environment the same way, with the `robostack-kilted` channel and the `ros-kilted` variants of the packages.
-    3. Run turtlesim from each distribution.
-       Hint: `pixi run --environment` picks the environment, and the tasks are shared.
+    1. Move the Lyrical channel and `ros-lyrical` packages into `[environments.default]`.
+       Remove the workspace-level `[target.unix.activation]` and `[target.win-64.activation]` tables you added in 1.4.
+       Put activation under the default environment instead, pointing at `install/default/local_setup.sh` on Unix and `install/default/local_setup.bat` on Windows.
+    2. Add a `kilted` environment with its own channel, packages and activation scripts under `install/kilted/`.
+       Include both OS activation tables so the workspace also works on your teammate's machine.
+    3. Replace the `build` task so colcon uses `build/<environment>`, `install/<environment>` and `log/<environment>`.
+       Pixi sets `$PIXI_ENVIRONMENT_NAME` in its cross-platform task shell.
+    4. From a normal terminal outside `pixi shell`, build once in each environment.
+       Exit any previously activated shell before switching distros.
+    5. Run turtlesim from each distribution, then switch back to Lyrical.
+       Stop each simulator before starting the next one.
 
 ??? success "Solution"
 
-    1: the workspace channel list goes back to `conda-forge` only, and the Lyrical channel and packages become the inline `default` environment:
+    1: keep only `conda-forge` in the workspace channel list.
+    Move the ROS dependencies and activation into the default environment, and remove the old workspace-level activation tables:
 
     ```toml title="exercises/01-ros-workspace/pixi.toml"
     --8<-- "solutions/01-ros-workspace/pixi.toml:lyrical"
     ```
 
-    2: the new environment is the same shape, with a different channel and package prefix:
+    2: Kilted has a different channel, package prefix and overlay directory:
 
     ```toml title="exercises/01-ros-workspace/pixi.toml"
     --8<-- "solutions/01-ros-workspace/pixi.toml:kilted"
     ```
 
+    Use `local_setup` rather than `setup`: Pixi already supplies the selected ROS underlay.
+    Colcon's `setup` script also replays the underlays recorded during the build, which can reintroduce another distro.
+    Separate directories keep the CMake cache, executables and installed Python modules apart too.
+
+    3: replace the old `build = "colcon build"` task with:
+
+    ```toml title="exercises/01-ros-workspace/pixi.toml"
+    --8<-- "solutions/01-ros-workspace/pixi.toml:build"
+    ```
+
+    `--log-base` is a colcon option before the `build` subcommand.
+    `--base-paths src` restricts package discovery to the source tree.
+    The old flat `install/setup.*` files from 1.4 are no longer activated.
+
     ```bash
-    # 3
-    pixi run sim               # turtlesim on Lyrical
-    pixi run -e kilted sim     # the same task, on Kilted
+    # 4: build both overlays before launching nodes
+    pixi run -e default build
+    pixi run -e kilted build
+    ```
+
+    ```bash
+    # 5: stop each simulator with Ctrl+C before the next command
+    pixi run -e default sim
+    pixi run -e kilted sim
+    pixi run -e default sim
     ```
 
     Everything at workspace level belongs to the default feature, and every environment includes it.
-    That is why `sim` runs in both environments without being defined twice.
+    The `sim`, `dance` and `build` tasks stay shared; the build paths and activation now select the correct distro.
 
 ## 1.6 Give the turtle a PyTorch brain
 
@@ -287,7 +315,8 @@ It drives the turtle with a small PyTorch computation, on the GPU when one is av
 
     After the build, `pixi run ros2 pkg executables turtle_brain` should list `turtle_brain brain`.
     You can also launch it directly with `pixi run ros2 run turtle_brain brain`, or with `ros2 run turtle_brain brain` inside `pixi shell`.
-    On a fresh checkout, the initial `pixi run build` must finish before starting a new `pixi run` or `pixi shell`; a task dependency cannot activate an overlay that did not exist when that invocation started.
+    On a fresh checkout, build once in each environment before launching nodes there.
+    Start a new `pixi run` or `pixi shell` after that build so its matching overlay can be activated.
 
     On a laptop the node runs on the CPU.
     Next you give it a GPU to think on.

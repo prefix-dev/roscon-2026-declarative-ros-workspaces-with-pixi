@@ -9,8 +9,8 @@
 #     pixi run brain            # PyTorch on the CPU, or CUDA when available
 #     pixi run --platform cuda-linux-64 cuda-check  # requires an NVIDIA GPU
 #
-# The custom node here is built by colcon, which is why `dance` has to source
-# install/setup.bash first.
+# Colcon builds each distro into its own build/, install/ and log/ subdirectories.
+# Run `pixi run -e <environment> build` once before launching nodes there.
 
 [workspace]
 name = "turtle-workspace"
@@ -26,7 +26,7 @@ platforms = [
 version = "0.1.0"
 
 # ---------------------------------------------------------------------------
-# Shared by every environment: the toolchain, the tasks and the activation.
+# Shared by every environment: the toolchain and the tasks.
 # ---------------------------------------------------------------------------
 [dependencies]
 # The toolchain to build our own package with: colcon, CMake and the compilers
@@ -47,13 +47,19 @@ description = "Drive the turtle with the arrow keys"
 cmd = "ros2 topic list"
 description = "List the ROS topics: proof that ROS works without sourcing anything"
 
+# --8<-- [start:build]
 [tasks.build]
-cmd = "colcon build"
-description = "Build our own package the way you do it today, with colcon"
+cmd = "colcon --log-base log/$PIXI_ENVIRONMENT_NAME build --base-paths src --build-base build/$PIXI_ENVIRONMENT_NAME --install-base install/$PIXI_ENVIRONMENT_NAME"
+description = "Build the packages into this ROS environment's own colcon overlay"
+# --8<-- [end:build]
 
 [tasks.test]
 cmd = "python -c \"import os; print('ros:', os.environ['ROS_DISTRO'], 'ok')\""
 description = "Prove ROS is active: what CI runs"
+
+[tasks.test-overlay]
+cmd = "python check_overlay.py"
+description = "Check that ROS and both local packages belong to the selected environment"
 
 # Run `pixi run build` once before the first launch so activation can find the overlay.
 [tasks.brain]
@@ -65,21 +71,13 @@ description = "Run the PyTorch ROS executable (build once before the first launc
 cmd = "python src/turtle_brain/turtle_brain/check_cuda.py"
 description = "Run a CUDA tensor computation; fail if CUDA is unavailable"
 
-# Our colcon-built node is only on the path once the overlay is sourced. Instead
-# of sourcing inside the task, we add the overlay as an activation script, so it
-# is sourced whenever the environment activates: `dance`, `pixi shell`, anything.
-# The script only exists after `build`, and Pixi just warns until then.
+# Each environment activates only its own colcon overlay, without replaying the
+# underlay chain recorded by setup.sh. Build once before launching either node.
 [tasks.dance]
 cmd = "ros2 run turtle_dancer dance"
 depends-on = ["build"]
 description = "Run our own node (the colcon overlay is sourced on activation)"
 
-# The overlay filename differs per platform, so the activation is split by target.
-[target.unix.activation]
-scripts = ["install/setup.sh"]
-
-[target.win-64.activation]
-scripts = ["install/setup.bat"]
 
 # ---------------------------------------------------------------------------
 # ROS 2 Lyrical: the main workshop distro. The default
@@ -94,6 +92,12 @@ channels = ["https://prefix.dev/robostack-lyrical", "conda-forge"]
 [environments.default.dependencies]
 ros-lyrical-ros-base = ">=0.13"
 ros-lyrical-turtlesim = ">=1.10"
+
+[environments.default.target.unix.activation]
+scripts = ["install/default/local_setup.sh"]
+
+[environments.default.target.win-64.activation]
+scripts = ["install/default/local_setup.bat"]
 # --8<-- [end:lyrical]
 
 # ---------------------------------------------------------------------------
@@ -107,4 +111,10 @@ channels = ["https://prefix.dev/robostack-kilted", "conda-forge"]
 [environments.kilted.dependencies]
 ros-kilted-ros-base = "*"
 ros-kilted-turtlesim = "*"
+
+[environments.kilted.target.unix.activation]
+scripts = ["install/kilted/local_setup.sh"]
+
+[environments.kilted.target.win-64.activation]
+scripts = ["install/kilted/local_setup.bat"]
 # --8<-- [end:kilted]
