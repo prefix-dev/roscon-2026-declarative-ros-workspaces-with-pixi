@@ -27,7 +27,7 @@ build = "colcon build"
 dance = { cmd = "ros2 run turtle_dancer dance", depends-on = ["build"] }
 
 [target.unix.activation]
-scripts = ["install/default/local_setup.sh"]
+scripts = ["install/local_setup.sh"]
 
 [target.win-64.activation]
-scripts = ["install/default/local_setup.bat"]
+scripts = ["install/local_setup.bat"]
