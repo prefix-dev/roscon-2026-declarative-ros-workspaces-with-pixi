@@ -28,13 +28,13 @@ section: Welcome
 
 # Who we are
 
-- **Ruben Arts**, prefix.dev: Pixi
-- **Wolf Vollprecht**, prefix.dev: RoboStack, mamba, conda-forge
-- **Bas Zalmstra**, prefix.dev: rattler, the Rust conda libraries under Pixi
-
 Three of us in the room. Raise your hand, we come to you.
 
-<img src="/bas-wolf-ruben-prefix.png" alt="Bas, Wolf, and Ruben from prefix.dev" class="absolute bottom-10 left-1/2 -translate-x-1/2 h-48 w-auto" />
+- Wolf Vollprecht: Prefix.dev founder/CEO
+- Bas Zalmstra: Software Architect
+- Ruben Arts: Pixi, Community focus
+
+<img src="/bas-wolf-ruben-prefix.png" alt="Bas, Wolf, and Ruben from prefix.dev" class="absolute bottom-10 left-1/2 -translate-x-1/2 h-80 w-auto" />
 
 ---
 section: Welcome
@@ -44,17 +44,18 @@ section: Welcome
 
 <div class="schedule">
 
-| | | |
-| --- | --- | --- |
-| 15 min | Welcome and setup | together |
-| 15 min | Robotics for everyone | we talk |
-| 30 min | Pixi in 30 minutes, CUDA included | we talk |
-| 30 min | **Exercise 1:** your first ROS 2 workspace | you type |
-| 15 min | Building ROS packages with Pixi | we talk |
-| 30 min | **Exercise 2:** build ROS packages with Pixi | you type |
-| 15 min | Collaboration, CI/CD & Docker | we talk |
-| 20 min | **Exercise 3:** ready for your team | you type |
-
+| Time | Duration | Topic | Format |
+| --- | --- | --- | --- |
+| 08:00 | 15 min | Welcome and setup | together |
+| 08:15 | 15 min | Robotics for everyone | we talk |
+| 08:30 | 30 min | Pixi intro | we talk |
+| 09:00 | 50 min | **Exercise 1:** your first ROS 2 workspace | you type |
+| 09:50 | 10 min | Coffee break | together |
+| 10:00 | 20 min | Building ROS packages with Pixi | we talk |
+| 10:20 | 30 min | **Exercise 2:** build ROS packages with Pixi | you type |
+| 10:50 | 20 min | Collaboration, CI/CD & Docker | we talk |
+| 11:10 | 30 min | **Exercise 3:** ready for your team | you type |
+| 11:40 | 20 min | Wrap-up and Q&A | together |
 </div>
 
 <div class="ref">Everything is written up at <a href="https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/" target="_blank">prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi</a></div>
@@ -281,9 +282,6 @@ section: Pixi
 | `pip` | Python packages from PyPI |
 | `pixi` | **conda packages + Python packages from PyPI** |
 
-<br>
-
-Pixi creates an environment per project, from one file: `pixi.toml`.
 
 ---
 section: Pixi
@@ -362,7 +360,10 @@ layout: default
 ```toml {*}{lines:false}
 [tasks]
 sim = "ros2 run turtlesim turtlesim_node"
-build = "colcon build"
+
+[tasks.build]
+cmd = "colcon build"
+inputs = ["src/turtle_dancer"]
 
 [tasks.dance]
 cmd = "ros2 run turtle_dancer dance"
@@ -451,16 +452,11 @@ With ROS installed and `src/turtle_dancer/` in your workspace:
 pixi add ros-dev-tools
 pixi run colcon build
 
-# Source the built overlay whenever Pixi activates
-pixi workspace activation scripts add --target unix install/setup.sh
-
 pixi shell
-ros2 run ...
+(ros_ws)> ros2 run ...
 ```
 
 </CodeWindow>
-
-On Windows, use `--target win-64 install/setup.bat` for the activation script.
 
 <div class="ref"><a href="https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/01-ros-workspace/#14-build-your-own-node-with-colcon" target="_blank">Exercise 1.4: build your own node with colcon</a></div>
 
@@ -474,12 +470,12 @@ section: Pixi
 
 ```toml {*}{lines:true}
 [environments.default]
-channels = ["https://prefix.dev/robostack-lyrical", "conda-forge"]
+channels = ["robostack-lyrical", "conda-forge"]
 [environments.default.dependencies]
 ros-lyrical-ros-base = ">=0.13"
 
 [environments.kilted]
-channels = ["https://prefix.dev/robostack-kilted", "conda-forge"]
+channels = ["robostack-kilted", "conda-forge"]
 [environments.kilted.dependencies]
 ros-kilted-ros-base = "*"
 ```
@@ -498,9 +494,24 @@ section: Pixi
 
 # Solve for machines you don't have
 
-- `platforms`: Pixi solves for all of them, you install where you need it
-- A named platform describes a machine: `jetson` is `linux-aarch64` with CUDA 13
-- `pixi list --platform jetson`, from your laptop
+Pixi solves for every platform you declare, not just the one you are currently on.
+
+<CodeWindow title="pixi.toml">
+
+```toml {*}{lines:true}
+[workspace]
+platforms = ["linux-64", "linux-aarch64", "osx-arm64", "win-64"]
+```
+
+</CodeWindow>
+
+<CodeWindow title="Terminal" terminal>
+
+```bash
+$ pixi lock
+```
+
+</CodeWindow>
 
 <div class="ref"><a href="https://pixi.prefix.dev/latest/workspace/multi_platform_configuration/" target="_blank">Multi-platform configuration</a></div>
 
@@ -512,7 +523,7 @@ section: Pixi
 
 <CodeWindow title="pixi info" terminal>
 
-```console
+```bash
 $ pixi info
 Virtual packages: __unix=0=0
                 : __linux=6.8.0=0
@@ -565,9 +576,8 @@ section: Pixi
 <CodeWindow title="bash" terminal>
 
 ```bash
-pixi init ros-workspace
+pixi init ros-workspace -c robostack-lyrical -c conda-forge
 cd ros-workspace
-pixi workspace channel add --prepend https://prefix.dev/robostack-lyrical
 pixi add ros-lyrical-ros-base ros-lyrical-turtlesim
 pixi run ros2 run turtlesim turtlesim_node
 ```
@@ -589,15 +599,6 @@ class: text-center
 
 30 minutes · `cd exercises/01-ros-workspace`
 
-<div class="text-left mx-auto" style="max-width: 35rem; margin: 1rem auto;">
-
-1. `pixi init`, add the RoboStack channel, `pixi add` ROS 2
-2. Add tasks and drive the turtle
-3. Build `src/turtle_dancer` with colcon
-4. Add Kilted as a second environment
-5. Add PyTorch, a GPU platform and a Jetson
-
-</div>
 
 <small>
 
@@ -628,8 +629,14 @@ section: Packaging
 | **Package** | `[package]` | what Pixi builds |
 
 <br>
+<br>
+<br>
 
-The package manifest lives next to `package.xml`, and `package.xml` doesn't change.
+Currently in preview as we might still change some syntax and conventions.
+
+```bash
+pixi workspace preview add pixi-build
+```
 
 <div class="ref"><a href="https://pixi.prefix.dev/latest/build/workspace/" target="_blank">Workspaces and packages</a></div>
 
@@ -654,13 +661,76 @@ ros-lyrical-turtle-dancer = { path = "src/turtle_dancer" }
 ```toml {*}{lines:true}
 [package.build.backend]
 name = "pixi-build-ros"
-workspace = true
 ```
 
 </CodeWindow>
 
 
 <div class="ref"><a href="https://pixi.prefix.dev/latest/build/ros/" target="_blank">Building ROS packages with Pixi</a> · <a href="https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/02-ros-package/" target="_blank">Exercise 2</a></div>
+
+---
+section: Packaging
+---
+
+# `pixi-build-ros` reads your `package.xml`
+
+<div class="grid grid-cols-2 gap-6 items-start mt-6">
+<div>
+
+<div class="text-sm mb-2">Existing ROS metadata (excerpt)</div>
+
+<CodeWindow title="package.xml" :scale="70">
+
+```xml {*}{lines:false}
+<package format="3">
+  <name>turtle_dancer</name>
+  <version>0.1.0</version>
+  <license>BSD-3-Clause</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend version_gte="1.0.0">rclcpp</depend>
+  <depend>geometry_msgs</depend>
+  <exec_depend>turtlesim</exec_depend>
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
+```
+
+</CodeWindow>
+</div>
+<div>
+
+<div class="text-sm mb-2">Explicit Pixi metadata (illustrative)</div>
+
+<CodeWindow title="pixi.toml · [package]" :scale="70">
+
+```toml {*}{lines:false}
+[package]
+name = "ros-lyrical-turtle-dancer"
+version = "0.1.0"
+license = "BSD-3-Clause"
+[package.build-dependencies]
+ros-lyrical-ament-cmake = "*"
+ros-lyrical-rclcpp = ">=1.0.0"
+ros-lyrical-geometry-msgs = "*"
+[package.run-dependencies]
+ros-lyrical-rclcpp = "*"
+ros-lyrical-geometry-msgs = "*"
+ros-lyrical-turtlesim = "*"
+```
+
+</CodeWindow>
+</div>
+
+</div>
+
+<div class="text-base mt-2">
+
+With `pixi-build-ros`, keep the metadata in `package.xml`, not both files.
+
+</div>
+
+<div class="ref">The workspace channel selects the ROS distro. · <a href="https://pixi.prefix.dev/latest/build/backends/pixi-build-ros/" target="_blank">pixi-build-ros documentation</a></div>
 
 ---
 section: Packaging
@@ -680,19 +750,6 @@ Pixi doesn't know how to compile your code. A **build backend** does.
 <div class="ref"><a href="https://pixi.prefix.dev/latest/build/backends/" target="_blank">Build backends overview</a></div>
 
 
----
-section: Packaging
----
-
-# `pixi-build-ros` reads your `package.xml`
-
-- Name, version, dependencies and build type come from `package.xml`
-- Dependencies get RoboStack names: `rclcpp` becomes `ros-lyrical-rclcpp`
-- The distro comes from your channel
-- It runs your normal `ament_cmake` or `ament_python` build
-- The result is a conda package
-
-<div class="ref"><a href="https://pixi.prefix.dev/latest/build/backends/pixi-build-ros/" target="_blank">pixi-build-ros documentation</a></div>
 
 ---
 section: Packaging
@@ -761,6 +818,92 @@ section: Packaging
 </div>
 
 <div class="ref">Selected files after extraction. <a href="https://docs.conda.io/projects/conda/en/latest/user-guide/concepts/packages.html" target="_blank">Conda package format</a></div>
+
+---
+section: Packaging
+---
+
+# Publishing Pixi packages
+
+Opt each package into workspace publishing:
+
+<CodeWindow title="src/turtle_dancer/pixi.toml">
+
+```toml {*}{lines:false}
+[package]
+publish = true
+```
+
+</CodeWindow>
+
+<CodeWindow title="bash" terminal :scale="80">
+
+```bash
+# Local channel, as in Exercise 2
+pixi publish --target-channel output
+
+# Your Prefix.dev channel (requires write access)
+pixi auth login prefix.dev
+pixi publish --target-channel https://prefix.dev/<your-channel>
+```
+
+</CodeWindow>
+
+<div class="ref"><a href="https://pixi.prefix.dev/latest/reference/cli/pixi/publish/" target="_blank">pixi publish</a> · <a href="https://pixi.prefix.dev/latest/build/workspace/#publishing-the-workspace" target="_blank">Publishing a workspace</a></div>
+
+
+---
+section: Packaging
+---
+
+# Depend on a Pixi package
+
+Install a binary, or let Pixi build from source.
+
+<div class="grid grid-cols-2 gap-6 items-start mt-6">
+<div>
+
+<CodeWindow title="pixi.toml · channel, path or Git" :scale="75">
+
+```toml {*}{lines:false}
+[dependencies]
+# Pre-built package from a channel
+ros-lyrical-rclcpp = "32.0.0"
+
+# Local source package
+[dependencies.ros-lyrical-turtle-dancer]
+path = "src/turtle_dancer"
+
+[dependencies.brain]
+git = "https://github.com/user/brain.git"
+branch = "main"
+```
+
+</CodeWindow>
+</div>
+<div>
+
+<CodeWindow title="pixi.toml · inline package" :scale="75">
+
+```toml {*}{lines:false}
+[dependencies.visualizer]
+git = "https://github.com/user/visualizer.git"
+package.build.backend.name = "pixi-build-python"
+```
+
+</CodeWindow>
+
+<div class="text-base">
+
+No `pixi.toml` upstream?
+Define the package's backend here.
+
+</div>
+</div>
+</div>
+
+
+<div class="ref"><a href="https://pixi.prefix.dev/latest/reference/pixi_manifest/#dependencies" target="_blank">Dependency specifications</a> · <a href="https://pixi.prefix.dev/latest/build/inline_packages/" target="_blank">Inline packages</a></div>
 
 
 ---

@@ -124,15 +124,16 @@ html.dark {
   line-height: 1.6 !important;
 }
 
-/* The schedule table on the "Today" slide: no empty header row, tight rows */
-.slidev-layout .schedule table thead {
-  display: none;
+.slidev-layout .schedule table th {
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+  font-size: 0.80rem;
 }
 
 .slidev-layout .schedule table td {
   padding-top: 0.35rem;
   padding-bottom: 0.35rem;
-  font-size: 0.95rem;
+  font-size: 0.90rem;
 }
 
 /* Kicker above the title on the "How we get there" item slides */
