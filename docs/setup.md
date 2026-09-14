@@ -72,13 +72,18 @@ pixi run --manifest-path solutions/01-ros-workspace/pixi.toml -e kilted sim
 
 If both worked, you are ready.
 
+!!! note "Interested in Docker?"
+
+    If you're interested in the Docker part of the workshop, make sure Docker is installed before you arrive.
+    Get the installer for your platform from [Docker's download page](https://docs.docker.com/get-started/get-docker/).
+
 ## What you do not need
 
 - No ROS installation.
   No `apt`, no `rosdep`, no `/opt/ros`.
   If you already have one it will not be used.
   Do check your `.bashrc` for a `source /opt/ros/<distro>/setup.bash` line and turn it off for the workshop: it sets ROS variables in every terminal, and those can shadow the Pixi environment.
-- No `sudo`, no Docker, no virtual machine.
+- No `sudo` or virtual machine for the local ROS exercises.
 - No GPU for the local exercises through the cross-platform solve.
   Running the CUDA computation in [Exercise 1.9](exercises/01-ros-workspace.md#19-run-it-on-a-real-gpu) does need an NVIDIA GPU and a compatible driver; an Apple GPU cannot run CUDA.
   Use your own compatible Linux GPU machine or join the [Brev setup](brev.md) with the instructors to try it during the workshop.
