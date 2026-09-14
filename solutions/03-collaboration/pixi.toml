@@ -17,7 +17,7 @@
 [workspace]
 name = "turtle-dancer-team"
 description = "A multi-platform ROS 2 workspace ready for a team, CI and a robot"
-channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
+channels = ["https://prefix.dev/robostack-lyrical", "conda-forge"]
 version = "0.1.0"
 preview = ["pixi-build"]
 
@@ -30,18 +30,18 @@ preview = ["pixi-build"]
 platforms = [
   "linux-64",
   "linux-aarch64",
-  "osx-arm64",
-  "osx-64",
+  { platform = "osx-arm64", macos = "14.0" },
+  { platform = "osx-64", macos = "14.0" },
   "win-64",
   { name = "workstation-gpu", platform = "linux-64", cuda = "12.0" },
   { name = "jetson", platform = "linux-aarch64", cuda = "12.6" },
 ]
 
 [dependencies]
-ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }
-ros-jazzy-turtle-choreographer = { path = "src/turtle_choreographer" }
-ros-jazzy-ros2run = ">=0.32"
-ros-jazzy-ros2topic = ">=0.32"
+ros-lyrical-turtle-dancer = { path = "src/turtle_dancer" }
+ros-lyrical-turtle-choreographer = { path = "src/turtle_choreographer" }
+ros-lyrical-ros2run = ">=0.40"
+ros-lyrical-ros2topic = ">=0.40"
 
 [tasks.dance]
 cmd = "ros2 run turtle_dancer dance"
@@ -72,7 +72,7 @@ description = "Build the runtime image"
 # not part of what we ship to the robot.
 # ---------------------------------------------------------------------------
 [feature.sim.dependencies]
-ros-jazzy-turtlesim = ">=1.8"
+ros-lyrical-turtlesim = ">=1.8"
 
 [feature.sim.tasks.sim]
 cmd = "ros2 run turtlesim turtlesim_node"

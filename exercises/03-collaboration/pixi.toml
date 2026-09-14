@@ -15,17 +15,23 @@
 [workspace]
 name = "turtle-dancer-team"
 description = "A ROS 2 workspace that works on exactly one machine"
-channels = ["https://prefix.dev/robostack-jazzy", "conda-forge"]
-platforms = ["linux-64", "linux-aarch64", "osx-arm64", "osx-64", "win-64"]
+channels = ["https://prefix.dev/robostack-lyrical", "conda-forge"]
+platforms = [
+  "linux-64",
+  "linux-aarch64",
+  { platform = "osx-arm64", macos = "14.0" },
+  { platform = "osx-64", macos = "14.0" },
+  "win-64",
+]
 version = "0.1.0"
 preview = ["pixi-build"]
 
 [dependencies]
-ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }
-ros-jazzy-turtle-choreographer = { path = "src/turtle_choreographer" }
-ros-jazzy-ros2run = ">=0.32"
-ros-jazzy-ros2topic = ">=0.32"
-ros-jazzy-turtlesim = ">=1.8"
+ros-lyrical-turtle-dancer = { path = "src/turtle_dancer" }
+ros-lyrical-turtle-choreographer = { path = "src/turtle_choreographer" }
+ros-lyrical-ros2run = ">=0.40"
+ros-lyrical-ros2topic = ">=0.40"
+ros-lyrical-turtlesim = ">=1.8"
 
 [tasks.sim]
 cmd = "ros2 run turtlesim turtlesim_node"
