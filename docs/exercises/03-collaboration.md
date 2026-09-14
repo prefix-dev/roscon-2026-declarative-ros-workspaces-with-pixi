@@ -90,13 +90,23 @@ The [pattern from the Pixi documentation](https://pixi.prefix.dev/latest/deploym
 
 !!! exercise "Your turn"
 
-    1. Read the provided `Dockerfile`: find where the lockfile is enforced, and find the last line where Pixi still exists.
-    2. Build the image.
-    3. Run it, then check what the image weighs.
+    Complete the three `FIXME` lines in `exercises/03-collaboration/Dockerfile`.
+    Use the workspace's **default** environment throughout, not a separate robot environment.
+
+    1. Replace the first `RUN pixi FIXME` with a locked install of the default environment.
+       It must fail rather than re-solve if `pixi.lock` is missing or out of date.
+    2. Replace the second `RUN pixi FIXME` with a Bash activation shell-hook written to `/shell-hook.sh`.
+       Append `exec "$@"` to that script so it runs the container's command after activation.
+    3. Complete `COPY --from=build FIXME` to copy `/app/.pixi/envs/default` from the build stage to the same absolute path in the runtime stage.
+    4. Read your completed file: where is the lockfile enforced, and where does Pixi last run?
+    5. Build the image.
+    6. Run it, stop it with Ctrl+C, then check what the image weighs.
 
 ??? success "Solution"
 
-    ```dockerfile title="solutions/03-collaboration/Dockerfile"
+    Check your three completed lines against this file:
+
+    ```dockerfile title="exercises/03-collaboration/Dockerfile"
     --8<-- "solutions/03-collaboration/Dockerfile"
     ```
 
@@ -104,10 +114,11 @@ The [pattern from the Pixi documentation](https://pixi.prefix.dev/latest/deploym
     Pixi's last appearance is the `pixi shell-hook` line: it writes the activation as a plain shell script, and the runtime stage copies only that script and the installed environment out of the build stage.
 
     ```bash
-    # 2
+    # 5
     docker build -t turtle-dancer:latest .
-    # 3
+    # 6
     docker run --rm turtle-dancer:latest
+    # Stop the node with Ctrl+C before running the next command.
     docker images turtle-dancer
     ```
 
