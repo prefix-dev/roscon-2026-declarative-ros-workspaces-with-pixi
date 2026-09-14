@@ -12,7 +12,12 @@
 [workspace]
 name = "02-ros-package"
 channels = ["https://prefix.dev/robostack-lyrical", "conda-forge"]
-platforms = ["linux-64", "osx-arm64", "win-64"]
+platforms = [
+  "linux-64",
+  # Requires macOS 14 to be able to install MoltonVK in the build environments
+  { platform = "osx-arm64", macos = "14.0" },
+  "win-64",
+]
 
 [dependencies]
 ros-lyrical-ros-base = ">=0.11"

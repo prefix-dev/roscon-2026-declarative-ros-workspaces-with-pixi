@@ -57,11 +57,15 @@ For ROS that is [`pixi-build-ros`](https://pixi.prefix.dev/latest/build/backends
     pixi workspace dependencies add "pixi-build-ros >=0.7.2"
     ```
 
-    ```toml title="exercises/02-ros-package/pixi.toml" hl_lines="6 8 9"
+    ```toml title="exercises/02-ros-package/pixi.toml" hl_lines="10 12 13"
     [workspace]
     name = "02-ros-package"
     channels = ["https://prefix.dev/robostack-lyrical", "conda-forge"]
-    platforms = ["linux-64", "osx-arm64", "win-64"]
+    platforms = [
+      "linux-64",
+      { platform = "osx-arm64", macos = "14.0" },
+      "win-64",
+    ]
     version = "0.1.0"
     preview = ["pixi-build"]
 
@@ -185,7 +189,11 @@ Everything colcon needed can go.
     [workspace]
     name = "02-ros-package"
     channels = ["https://prefix.dev/robostack-lyrical", "conda-forge"]
-    platforms = ["linux-64", "osx-arm64", "win-64"]
+    platforms = [
+      "linux-64",
+      { platform = "osx-arm64", macos = "14.0" },
+      "win-64",
+    ]
     version = "0.1.0"
     preview = ["pixi-build"]
 
