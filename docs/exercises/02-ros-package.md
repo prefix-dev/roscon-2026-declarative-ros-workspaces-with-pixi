@@ -25,6 +25,8 @@ Same format as before: each step says what to do, the commands are folded away u
 
     This is where Exercise 1 left off, trimmed to Lyrical only: `pixi.toml` builds `src/turtle_dancer/` with `colcon` and sources the overlay on activation.
     The Kilted environment and the PyTorch node are left out so the diff in this exercise stays about the build.
+    The initial build selects only `turtle_dancer`, with its overlay in `install/default/`.
+    The Python package stays unbuilt until 2.6.
 
     Run the colcon way once, so you have the before in front of you:
 
@@ -32,6 +34,8 @@ Same format as before: each step says what to do, the commands are folded away u
     pixi run build      # colcon builds the workspace
     ls                  # build/ install/ log/ appeared next to src/
     ```
+
+    Run this initial build before `pixi run dance`: activation needs the overlay to exist before the command starts.
 
 ## 2.1 Turn on Pixi build
 
@@ -94,7 +98,9 @@ So the package manifest has very little to say.
 ??? success "Solution"
 
     ```toml title="exercises/02-ros-package/src/turtle_dancer/pixi.toml"
-    --8<-- "solutions/02-ros-package/src/turtle_dancer/pixi.toml"
+    [package.build.backend]
+    name = "pixi-build-ros"
+    workspace = true
     ```
 
     Two lines: which backend, and "the version is in the workspace pool".
@@ -155,7 +161,7 @@ Everything colcon needed can go.
 
 !!! exercise "Your turn"
 
-    1. Remove the `build` task, the `depends-on` of `dance`, the `ros-dev-tools` dependency and both `activation` tables.
+    1. Remove the `depends-on` of `dance` and both `activation` tables, then remove the `build` task and the `ros-dev-tools` dependency.
     2. Delete `build/`, `install/` and `log/`.
     3. Run the node.
        In a second terminal, run the simulator and watch it go.
@@ -163,10 +169,9 @@ Everything colcon needed can go.
 ??? success "Solution"
 
     ```bash
-    # 1
+    # 1. in your editor: drop `depends-on` from dance and delete both [target.*.activation] tables
     pixi task remove build
     pixi remove ros-dev-tools
-    # ...then in your editor: drop `depends-on` from dance, and delete both [target.*.activation] tables
     # 2 (PowerShell: Remove-Item -Recurse build, install, log)
     rm -rf build install log
     # 3, in two terminals
@@ -247,7 +252,9 @@ It gets the same treatment: a package manifest, a path dependency, a task.
 ??? success "Solution"
 
     ```toml title="exercises/02-ros-package/src/turtle_choreographer/pixi.toml"
-    --8<-- "solutions/02-ros-package/src/turtle_choreographer/pixi.toml"
+    [package.build.backend]
+    name = "pixi-build-ros"
+    workspace = true
     ```
 
     ```toml title="exercises/02-ros-package/pixi.toml"

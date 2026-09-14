@@ -2,8 +2,8 @@
 #
 # This is where Exercise 1 left off, trimmed to Lyrical: ROS 2 from RoboStack,
 # and our own C++ node in src/turtle_dancer built by colcon. Running it means
-# `colcon build` first and sourcing the overlay after, which is what the
-# activation scripts below do for you.
+# `pixi run build` once before the first launch so activation can find the
+# overlay. The Python package is left for the second half of this exercise.
 #
 # Your job: hand the build to Pixi, then delete everything colcon needed.
 #
@@ -13,16 +13,21 @@
 name = "02-ros-package"
 channels = ["https://prefix.dev/robostack-lyrical", "conda-forge"]
 platforms = ["linux-64", "osx-arm64", "win-64"]
-preview = ["pixi-build"]
-
 
 [dependencies]
 ros-lyrical-ros-base = ">=0.11"
 ros-lyrical-turtlesim = ">=1.8"
+ros-dev-tools = ">=1.0"
 
 [tasks]
 sim = "ros2 run turtlesim turtlesim_node"
 teleop = "ros2 run turtlesim turtle_teleop_key"
 topics = "ros2 topic list"
-dance = "ros2 run turtle_dancer dance"
-choreograph = "ros2 run turtle_choreographer choreograph"
+build = "colcon build"
+dance = { cmd = "ros2 run turtle_dancer dance", depends-on = ["build"] }
+
+[target.unix.activation]
+scripts = ["install/default/local_setup.sh"]
+
+[target.win-64.activation]
+scripts = ["install/default/local_setup.bat"]
