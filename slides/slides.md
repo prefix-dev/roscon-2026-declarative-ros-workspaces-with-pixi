@@ -289,22 +289,22 @@ Pixi creates an environment per project, from one file: `pixi.toml`.
 section: Pixi
 ---
 
-# Installing ROS 2 Jazzy
+# Installing ROS 2
 
 <div class="text-base">
 
-| Official Ubuntu installation | With Pixi + RoboStack |
+| Official Ubuntu installation| With Pixi + RoboStack |
 | --- | --- |
 | Use Ubuntu 24.04 and a UTF-8 locale | Install Pixi on Linux, macOS or Windows |
-| Enable Universe; install `ros2-apt-source` | `pixi init -c robostack-jazzy -c conda-forge` |
+| Enable Universe; install `ros2-apt-source` | `pixi init -c robostack-lyrical -c conda-forge` |
 | `sudo apt update`<br>`sudo apt upgrade` | No system package changes |
-| `sudo apt install ros-jazzy-desktop` | `pixi add ros-jazzy-desktop` |
-| `source /opt/ros/jazzy/setup.bash` | `pixi shell` |
+| `sudo apt install ros-lyrical-desktop` | `pixi add ros-lyrical-desktop` |
+| `source /opt/ros/lyrical/setup.bash` | `pixi shell` |
 | `ros2 run demo_nodes_cpp talker` | `ros2 run demo_nodes_cpp talker` |
 
 </div>
 
-<div class="ref"><a href="https://docs.ros.org/en/jazzy/Installation/Ubuntu-Install-Debs.html" target="_blank">Official ROS 2 Jazzy installation guide</a> · <a href="https://robostack.github.io/GettingStarted.html" target="_blank">RoboStack getting started</a></div>
+<div class="ref"><a href="https://docs.ros.org/en/lyrical/Get-Started/Installation.html" target="_blank">Official ROS 2 Lyrical installation guide</a> · <a href="https://robostack.github.io/GettingStarted.html" target="_blank">RoboStack getting started</a></div>
 
 ---
 section: Pixi
@@ -317,10 +317,10 @@ section: Pixi
 ```toml {*}{lines:true}
 [workspace]
 platforms = ["linux-64", "osx-arm64", "win-64"]
-channels = ["conda-forge", "robostack-jazzy"]
+channels = ["robostack-lyrical", "conda-forge"]
 
 [dependencies]
-ros-jazzy-desktop = "*"
+ros-lyrical-desktop = "*"
 
 [tasks]
 start = "ros2 launch my_package my_launch_file.launch.py"
@@ -341,7 +341,7 @@ section: Pixi
 | Command | What it does |
 | --- | --- |
 | `pixi init` | Create a workspace |
-| `pixi add ros-jazzy-ros-base` | Add the dependency, solve and install |
+| `pixi add ros-lyrical-ros-base` | Add the dependency, solve and install |
 | `pixi run ros2 topic list` | Run a command inside the environment |
 | `pixi shell` | Open a shell inside the environment |
 | `pixi install` | Install the environment |
@@ -474,12 +474,12 @@ section: Pixi
 
 ```toml {*}{lines:true}
 [environments.default]
-channels = ["robostack-jazzy", "conda-forge"]
+channels = ["https://prefix.dev/robostack-lyrical", "conda-forge"]
 [environments.default.dependencies]
-ros-jazzy-ros-base = ">=0.11"
+ros-lyrical-ros-base = ">=0.13"
 
 [environments.kilted]
-channels = ["robostack-kilted", "conda-forge"]
+channels = ["https://prefix.dev/robostack-kilted", "conda-forge"]
 [environments.kilted.dependencies]
 ros-kilted-ros-base = "*"
 ```
@@ -488,7 +488,7 @@ ros-kilted-ros-base = "*"
 
 Every environment has its own channels and packages, the tasks are shared.
 
-`pixi run sim` for Jazzy, `pixi run -e kilted sim` for Kilted.
+`pixi run sim` for Lyrical, `pixi run -e kilted sim` for Kilted.
 
 <div class="ref"><a href="https://pixi.prefix.dev/latest/workspace/multi_environment/" target="_blank">Multiple environments</a></div>
 
@@ -567,8 +567,8 @@ section: Pixi
 ```bash
 pixi init ros-workspace
 cd ros-workspace
-pixi workspace channel add --prepend robostack-jazzy
-pixi add ros-jazzy-ros-base ros-jazzy-turtlesim
+pixi workspace channel add --prepend https://prefix.dev/robostack-lyrical
+pixi add ros-lyrical-ros-base ros-lyrical-turtlesim
 pixi run ros2 run turtlesim turtlesim_node
 ```
 
@@ -644,7 +644,7 @@ section: Packaging
 
 ```toml {*}{lines:true}
 [dependencies]
-ros-jazzy-turtle-dancer = { path = "src/turtle_dancer" }
+ros-lyrical-turtle-dancer = { path = "src/turtle_dancer" }
 ```
 
 </CodeWindow>
@@ -687,7 +687,7 @@ section: Packaging
 # `pixi-build-ros` reads your `package.xml`
 
 - Name, version, dependencies and build type come from `package.xml`
-- Dependencies get RoboStack names: `rclcpp` becomes `ros-jazzy-rclcpp`
+- Dependencies get RoboStack names: `rclcpp` becomes `ros-lyrical-rclcpp`
 - The distro comes from your channel
 - It runs your normal `ament_cmake` or `ament_python` build
 - The result is a conda package
@@ -706,14 +706,14 @@ The backend works out the sources, dependencies and build steps.
 
 ```yaml
 package:
-  name: ros-jazzy-turtle-dancer
+  name: ros-lyrical-turtle-dancer
   version: 0.1.0
 source:
   path: src/turtle_dancer
 requirements:
   build: [cxx-compiler, cmake, ninja]
-  host: [ros-jazzy-ament-cmake, ros-jazzy-rclcpp]
-  run: [ros-jazzy-rclcpp]
+  host: [ros-lyrical-ament-cmake, ros-lyrical-rclcpp]
+  run: [ros-lyrical-rclcpp]
 build:
   script: configure → compile → install into $PREFIX
 ```
@@ -728,7 +728,7 @@ section: Packaging
 
 # Inside a conda package
 
-`ros-jazzy-rclcpp-28.1.18-np2py312hd441986_18.conda`
+`ros-lyrical-rclcpp-32.0.0-np2py314h1e5664e_22.conda`
 
 <div class="grid gap-8 items-start" style="grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);">
 
