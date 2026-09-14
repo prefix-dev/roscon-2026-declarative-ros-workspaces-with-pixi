@@ -23,7 +23,9 @@ The [GitHub CLI](https://cli.github.com) does that from the terminal, and it ins
     1. Install the GitHub CLI, unless you have it already.
        Hint: Pixi installs tools outside your workspace too, with `pixi global install <tool>`.
     2. Log in with your GitHub account.
-    3. Turn your workspace into a repository on GitHub.
+    3. Resolve this workspace to generate its `pixi.lock`.
+       Exercise 3 is a separate workspace, so don't copy the lockfile from Exercise 2.
+    4. Create a Git repository on the `main` branch, commit the workspace including `pixi.lock`, and push it to GitHub.
 
 ??? success "Solution"
 
@@ -33,7 +35,9 @@ The [GitHub CLI](https://cli.github.com) does that from the terminal, and it ins
     # 2
     gh auth login
     # 3
-    git init
+    pixi lock
+    # 4
+    git init -b main
     git add .
     git commit -m "ROS 2 workspace with Pixi"
     gh repo create turtle-workspace --source=. --push --public
@@ -64,7 +68,7 @@ Your job is the Pixi part, with the [`prefix-dev/setup-pixi`](https://pixi.prefi
               # Your turn: set up Pixi and run the tests.
         ```
 
-    2. Add the Pixi setup: install from the lockfile, exactly what it pins.
+    2. Add the Pixi setup with `locked: true`: install from the committed lockfile, and fail if it is missing or out of date.
     3. Run your `test` task in CI.
     4. Commit, push, and watch the Actions tab go green.
 
@@ -74,7 +78,7 @@ Your job is the Pixi part, with the [`prefix-dev/setup-pixi`](https://pixi.prefi
     --8<-- "solutions/03-collaboration/ci-template.yml:workflow"
     ```
 
-    `locked: true` makes setup-pixi run `pixi install --locked`, which errors instead of re-solving when someone edited `pixi.toml` and forgot the lockfile.
+    `locked: true` makes setup-pixi run `pixi install --locked`, which fails if `pixi.lock` is missing or no longer matches the manifest.
 
     ```bash
     # 4
