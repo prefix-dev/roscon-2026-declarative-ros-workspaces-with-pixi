@@ -5,4 +5,3 @@
 channels = ["conda-forge"]
 name = "pixi-build-ros"
 version = "*"
-
