@@ -12,11 +12,13 @@ workspace = Path(__file__).resolve().parent
 environment = os.environ["PIXI_ENVIRONMENT_NAME"]
 expected_distro = {"default": "lyrical", "kilted": "kilted"}[environment]
 underlay = Path(os.environ["CONDA_PREFIX"]).resolve()
+# Conda installs ROS under Library on Windows, but Python at the environment root.
+ros_prefix = underlay / "Library" if os.name == "nt" else underlay
 overlay = workspace / "install" / environment
 
 assert os.environ["ROS_DISTRO"] == expected_distro, os.environ["ROS_DISTRO"]
 assert Path(rclpy.__file__).resolve().is_relative_to(underlay), rclpy.__file__
-assert Path(get_package_prefix("rclcpp")).resolve() == underlay
+assert Path(get_package_prefix("rclcpp")).resolve() == ros_prefix, get_package_prefix("rclcpp")
 assert Path(turtle_brain.__file__).resolve().is_relative_to(overlay), turtle_brain.__file__
 
 for package, executable in [("turtle_dancer", "dance"), ("turtle_brain", "brain")]:
