@@ -838,8 +838,7 @@ section: Packaging
 <div>
 
 - **Metadata:** `index.json` has the name, version and dependencies; `paths.json` lists files and hashes.
-- **Payload:** pre-built libraries, headers and ROS resources.
-- **Installation:** put the payload into an environment.
+- **Content:** pre-built libraries, headers and ROS resources.
 
 </div>
 </div>
@@ -884,8 +883,6 @@ section: Packaging
 ---
 
 # Depend on a Pixi package
-
-Install a binary, or let Pixi build from source.
 
 <div class="grid grid-cols-2 gap-6 items-start mt-6">
 <div>
@@ -960,8 +957,6 @@ class: text-center
 <small>
 
 **prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/02-ros-package/**
-
-Brought your own workspace? Try the backend on one of your packages and call us over.
 
 </small>
 
@@ -1109,7 +1104,6 @@ class: text-center
 
 **prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/03-collaboration/**
 
-Use the starter workspace with prebuilt ROS demo nodes.
 
 </small>
 
