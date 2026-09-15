@@ -95,10 +95,10 @@ ros-lyrical-ros-base = ">=0.13"
 ros-lyrical-turtlesim = ">=1.10"
 
 [environments.default.target.unix.activation]
-scripts = ["install/default/local_setup.sh"]
+scripts = ["install/default/setup.sh"]
 
 [environments.default.target.win-64.activation]
-scripts = ["install/default/local_setup.bat"]
+scripts = ["install/default/setup.bat"]
 # --8<-- [end:lyrical]
 
 # ---------------------------------------------------------------------------
@@ -114,8 +114,8 @@ ros-kilted-ros-base = "*"
 ros-kilted-turtlesim = "*"
 
 [environments.kilted.target.unix.activation]
-scripts = ["install/kilted/local_setup.sh"]
+scripts = ["install/kilted/setup.sh"]
 
 [environments.kilted.target.win-64.activation]
-scripts = ["install/kilted/local_setup.bat"]
+scripts = ["install/kilted/setup.bat"]
 # --8<-- [end:kilted]
