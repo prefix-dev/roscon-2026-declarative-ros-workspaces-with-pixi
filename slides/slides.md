@@ -702,7 +702,7 @@ section: Packaging
 
 <div class="text-sm mb-2">Explicit Pixi metadata (illustrative)</div>
 
-<CodeWindow title="pixi.toml · [package]" :scale="70">
+<CodeWindow title="pixi.toml [package]" :scale="70">
 
 ```toml {*}{lines:false}
 [package]
@@ -746,6 +746,7 @@ Pixi doesn't know how to compile your code. A **build backend** does.
 | `pixi-build-python` | Python | `pyproject.toml` |
 | `pixi-build-rust` | Rust | `Cargo.toml` |
 | `pixi-build-ros` | ROS packages | `package.xml` |
+| `pixi-build-rattler-build` | Conda recipes | `recipe.yaml` |
 
 <div class="ref"><a href="https://pixi.prefix.dev/latest/build/backends/" target="_blank">Build backends overview</a></div>
 
@@ -759,7 +760,7 @@ section: Packaging
 
 The backend works out the sources, dependencies and build steps.
 
-<CodeWindow title="recipe.yaml · pseudocode" :scale="80">
+<CodeWindow title="recipe.yaml pseudocode" :scale="80">
 
 ```yaml
 package:
@@ -778,6 +779,32 @@ build:
 </CodeWindow>
 
 With `pixi-build-ros`, you don't write this recipe yourself.
+
+---
+section: Packaging
+---
+
+# Need more control? Use `rattler-build`
+
+Already have a recipe, or need custom build steps?
+
+`rattler-build` builds conda packages from a `recipe.yaml`
+
+<CodeWindow title="pixi.toml  next to your recipe.yaml">
+
+```toml {*}{lines:false}
+[package.build.backend]
+name = "pixi-build-rattler-build"
+
+[package.build.config]
+recipe = "recipe.yaml"
+```
+
+</CodeWindow>
+
+Have full control over the sources, dependencies, patches and build steps in the recipe.
+
+<div class="ref"><a href="https://rattler-build.prefix.dev/latest/" target="_blank">rattler-build documentation</a> · <a href="https://pixi.prefix.dev/latest/build/backends/pixi-build-rattler-build/" target="_blank">Using recipes with Pixi</a></div>
 
 ---
 section: Packaging
@@ -844,7 +871,7 @@ pixi publish --target-channel output
 
 # Your Prefix.dev channel (requires write access)
 pixi auth login prefix.dev
-pixi publish --target-channel https://prefix.dev/<your-channel>
+pixi publish --target-channel https://prefix.dev/[your-channel]
 ```
 
 </CodeWindow>
@@ -953,11 +980,16 @@ section: Collaboration
 
 # CI made easy
 
-<CodeWindow title="GitHub Actions (steps)">
+<CodeWindow title="GitHub Actions (steps)" scale="85">
 
 ```yaml
-- uses: prefix-dev/setup-pixi@v0.10.2
-- run: pixi run test
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: prefix-dev/setup-pixi@v0.10.2
+      - run: pixi run test
 ```
 
 </CodeWindow>
@@ -972,49 +1004,16 @@ section: Collaboration
 section: Collaboration
 ---
 
-# What `setup-pixi` does for you
-
-<div class="grid grid-cols-2 gap-6 items-start">
-<div>
-
-1. Downloads the Pixi binary and puts it on `PATH`
-2. Logs in to your channels, if you gave it a token
-3. Restores the environment from cache, keyed on the hash of `pixi.lock`
-4. `pixi install`, per environment you ask for, `--locked` if you say so
-5. Saves the cache, runs `pixi list` so you can see what you got
-6. Optionally activates the environment for every next step
-
-</div>
-
-<CodeWindow title="GitHub Actions (steps)">
-
-```yaml
-- uses: prefix-dev/setup-pixi@v0.10.0
-  with:
-    environments: default kilted
-    activate-environment: default
-    auth-token: ${{ secrets.PREFIX_DEV_TOKEN }}
-```
-
-</CodeWindow>
-
-</div>
-
-<div class="ref"><a href="https://github.com/prefix-dev/setup-pixi" target="_blank">setup-pixi source</a> · <a href="https://pixi.prefix.dev/latest/integration/ci/github_actions/" target="_blank">GitHub Actions docs</a></div>
-
----
-section: Collaboration
----
-
 # Docker
 
 <CodeWindow title="Dockerfile">
 
 ```dockerfile
 FROM ghcr.io/prefix-dev/pixi:0.80.0-noble AS build
-COPY . /app
+WORKDIR /app
+COPY . .
 RUN pixi install --locked
-RUN pixi shell-hook -s bash > /shell-hook.sh
+RUN pixi shell-hook --shell bash > /shell-hook.sh
 ```
 
 </CodeWindow>
@@ -1042,9 +1041,9 @@ ENTRYPOINT ["/bin/bash", "/shell-hook.sh"]
 
 </CodeWindow>
 
-- A plain base image, no Pixi, no package manager
-- It receives the finished environment and the activation script, nothing else
-- `shell-hook.sh` is the `source setup.bash` of the container
+- A plain base image, without a `pixi` binary
+- It receives the finished environment and the activation script
+- `shell-hook.sh` contains the activation commands without Pixi
 
 <div class="ref"><a href="https://pixi.prefix.dev/latest/deployment/container/" target="_blank">Pixi in containers</a></div>
 
@@ -1052,50 +1051,33 @@ ENTRYPOINT ["/bin/bash", "/shell-hook.sh"]
 section: Collaboration
 ---
 
-# Why `--locked`
+# `pixi-pack`: Shipping an environment as a file
 
-<CodeWindow title="Dockerfile">
+<div class="grid grid-cols-2 gap-6 items-start mt-6">
 
-```dockerfile
-RUN pixi install --locked
-```
-
-</CodeWindow>
-
-- Without it, Pixi re-solves when `pixi.toml` and `pixi.lock` disagree, and the image gets something the team never tested
-- With it, the build fails instead
-- Same flag in CI, same answer: the lockfile is the only thing that decides what's installed
-
-<br>
-
-Laptop, CI and image all install from the same `pixi.lock`.
-"It works in the container but not on my machine" becomes a diff of one file.
-
----
-section: Collaboration
----
-
-# `pixi-pack`
-
-<CodeWindow title="bash · pack" terminal>
+<CodeWindow title="Terminal" terminal scale="85">
 
 ```bash
-pixi-pack --environment default --platform linux-aarch64 pixi.toml
+$ pixi-pack --platform linux-aarch64
+⏳ Downloading 1016 packages...
+📦 Created pack at `environment.tar`
 ```
 
 </CodeWindow>
 
-<CodeWindow title="bash · unpack" terminal>
+<CodeWindow title="Terminal other machine" terminal scale="85">
 
 ```bash
-pixi-unpack environment.tar     # on the other machine
-source activate.sh
+$ pixi-unpack environment.tar
+$ source activate.sh
 ```
 
 </CodeWindow>
 
-- One archive with the packages inside, no network or package manager needed to unpack
-- Pack for any platform from the machine you're on
+</div>
+
+- Use for offline deployment
+- Use for no-Pixi deployment
 - `--create-executable` gives one self-extracting file
 
 <div class="ref"><a href="https://pixi.prefix.dev/latest/deployment/pixi_pack/" target="_blank">pixi-pack</a> · <a href="https://pixi.prefix.dev/latest/reference/cli/pixi/publish/" target="_blank">pixi publish</a></div>
@@ -1117,7 +1099,7 @@ class: text-center
 1. `pixi global install gh`, put the workspace on GitHub
 2. Add CI with `setup-pixi`, watch it go green
 3. Build the Docker image and run it: no Pixi inside
-4. We demo `pixi publish` and `pixi-pack`
+4. Try `pixi publish` and `pixi-pack`
 
 </div>
 
