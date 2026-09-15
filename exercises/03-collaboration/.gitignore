@@ -1,4 +1,4 @@
-# Pixi environments and build directories (also inside exercises/ and solutions/)
+# Pixi environments
 .pixi/
 **/.pixi/
 

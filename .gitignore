@@ -26,6 +26,10 @@ log/
 *.conda
 output/
 
+# Exercise 3 packed deployment and unpacked environment
+environment.tar
+unpacked/
+
 # OS
 .DS_Store
 

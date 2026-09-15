@@ -838,8 +838,7 @@ section: Packaging
 <div>
 
 - **Metadata:** `index.json` has the name, version and dependencies; `paths.json` lists files and hashes.
-- **Payload:** pre-built libraries, headers and ROS resources.
-- **Installation:** put the payload into an environment.
+- **Content:** pre-built libraries, headers and ROS resources.
 
 </div>
 </div>
@@ -884,8 +883,6 @@ section: Packaging
 ---
 
 # Depend on a Pixi package
-
-Install a binary, or let Pixi build from source.
 
 <div class="grid grid-cols-2 gap-6 items-start mt-6">
 <div>
@@ -961,8 +958,6 @@ class: text-center
 
 **prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/02-ros-package/**
 
-Brought your own workspace? Try the backend on one of your packages and call us over.
-
 </small>
 
 ---
@@ -1011,14 +1006,15 @@ section: Collaboration
 ```dockerfile
 FROM ghcr.io/prefix-dev/pixi:0.80.0-noble AS build
 WORKDIR /app
-COPY . .
+COPY pixi.toml pixi.lock ./
 RUN pixi install --locked
-RUN pixi shell-hook --shell bash > /shell-hook.sh
+RUN pixi shell-hook --shell bash > /shell-hook.sh \
+    && echo 'exec "$@"' >> /shell-hook.sh
 ```
 
 </CodeWindow>
 
-- Start from the Pixi image, copy the workspace in
+- Start from the Pixi image, copy the manifest and lockfile in
 - Install the environment from the lockfile
 - Write the activation to a script, for the next stage
 
@@ -1033,10 +1029,11 @@ section: Collaboration
 <CodeWindow title="Dockerfile">
 
 ```dockerfile
-FROM ubuntu:24.04 AS runtime
+FROM ubuntu:26.04 AS runtime
 COPY --from=build /app/.pixi/envs/default /app/.pixi/envs/default
 COPY --from=build /shell-hook.sh /shell-hook.sh
 ENTRYPOINT ["/bin/bash", "/shell-hook.sh"]
+CMD ["ros2", "run", "demo_nodes_cpp", "talker"]
 ```
 
 </CodeWindow>
@@ -1058,9 +1055,7 @@ section: Collaboration
 <CodeWindow title="Terminal" terminal scale="85">
 
 ```bash
-$ pixi-pack --platform linux-aarch64
-⏳ Downloading 1016 packages...
-📦 Created pack at `environment.tar`
+$ pixi-pack --platform linux-64
 ```
 
 </CodeWindow>
@@ -1070,6 +1065,8 @@ $ pixi-pack --platform linux-aarch64
 ```bash
 $ pixi-unpack environment.tar
 $ source activate.sh
+$ ros2 pkg executables demo_nodes_cpp
+$ ros2 run demo_nodes_cpp talker
 ```
 
 </CodeWindow>
@@ -1077,10 +1074,10 @@ $ source activate.sh
 </div>
 
 - Use for offline deployment
-- Use for no-Pixi deployment
+- Unpack and run on the target platform, without Pixi
 - `--create-executable` gives one self-extracting file
 
-<div class="ref"><a href="https://pixi.prefix.dev/latest/deployment/pixi_pack/" target="_blank">pixi-pack</a> · <a href="https://pixi.prefix.dev/latest/reference/cli/pixi/publish/" target="_blank">pixi publish</a></div>
+<div class="ref"><a href="https://pixi.prefix.dev/latest/deployment/pixi_pack/" target="_blank">pixi-pack</a></div>
 
 ---
 section: Exercise 3
@@ -1092,14 +1089,14 @@ class: text-center
 
 ## Exercise 3: Ready for your team
 
-20 minutes · `cd exercises/03-collaboration`
+30 minutes · `cd exercises/03-collaboration`
 
 <div class="text-left mx-auto" style="max-width: 34rem; margin: 1rem auto;">
 
 1. `pixi global install gh`, put the workspace on GitHub
 2. Add CI with `setup-pixi`, watch it go green
 3. Build the Docker image and run it: no Pixi inside
-4. Try `pixi publish` and `pixi-pack`
+4. Pack the environment, unpack it and run without Pixi
 
 </div>
 
@@ -1107,7 +1104,6 @@ class: text-center
 
 **prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/03-collaboration/**
 
-Your own workspace works here too. That's the point.
 
 </small>
 
