@@ -23,7 +23,9 @@ The [GitHub CLI](https://cli.github.com) does that from the terminal, and it ins
     1. Install the GitHub CLI, unless you have it already.
        Hint: Pixi installs tools outside your workspace too, with `pixi global install <tool>`.
     2. Log in with your GitHub account.
-    3. Turn your workspace into a repository on GitHub.
+    3. Resolve this workspace to generate its `pixi.lock`.
+       Exercise 3 is a separate workspace, so don't copy the lockfile from Exercise 2.
+    4. Create a Git repository on the `main` branch, commit the workspace including `pixi.lock`, and push it to GitHub.
 
 ??? success "Solution"
 
@@ -33,7 +35,9 @@ The [GitHub CLI](https://cli.github.com) does that from the terminal, and it ins
     # 2
     gh auth login
     # 3
-    git init
+    pixi lock
+    # 4
+    git init -b main
     git add .
     git commit -m "ROS 2 workspace with Pixi"
     gh repo create turtle-workspace --source=. --push --public
@@ -64,7 +68,7 @@ Your job is the Pixi part, with the [`prefix-dev/setup-pixi`](https://pixi.prefi
               # Your turn: set up Pixi and run the tests.
         ```
 
-    2. Add the Pixi setup: install from the lockfile, exactly what it pins.
+    2. Add the Pixi setup with `locked: true`: install from the committed lockfile, and fail if it is missing or out of date.
     3. Run your `test` task in CI.
     4. Commit, push, and watch the Actions tab go green.
 
@@ -74,7 +78,7 @@ Your job is the Pixi part, with the [`prefix-dev/setup-pixi`](https://pixi.prefi
     --8<-- "solutions/03-collaboration/ci-template.yml:workflow"
     ```
 
-    `locked: true` makes setup-pixi run `pixi install --locked`, which errors instead of re-solving when someone edited `pixi.toml` and forgot the lockfile.
+    `locked: true` makes setup-pixi run `pixi install --locked`, which fails if `pixi.lock` is missing or no longer matches the manifest.
 
     ```bash
     # 4
@@ -90,13 +94,23 @@ The [pattern from the Pixi documentation](https://pixi.prefix.dev/latest/deploym
 
 !!! exercise "Your turn"
 
-    1. Read the provided `Dockerfile`: find where the lockfile is enforced, and find the last line where Pixi still exists.
-    2. Build the image.
-    3. Run it, then check what the image weighs.
+    Complete the three `FIXME` lines in `exercises/03-collaboration/Dockerfile`.
+    Use the workspace's **default** environment throughout, not a separate robot environment.
+
+    1. Replace the first `RUN pixi FIXME` with a locked install of the default environment.
+       It must fail rather than re-solve if `pixi.lock` is missing or out of date.
+    2. Replace the second `RUN pixi FIXME` with a Bash activation shell-hook written to `/shell-hook.sh`.
+       Append `exec "$@"` to that script so it runs the container's command after activation.
+    3. Complete `COPY --from=build FIXME` to copy `/app/.pixi/envs/default` from the build stage to the same absolute path in the runtime stage.
+    4. Read your completed file: where is the lockfile enforced, and where does Pixi last run?
+    5. Build the image.
+    6. Run it, stop it with Ctrl+C, then check what the image weighs.
 
 ??? success "Solution"
 
-    ```dockerfile title="solutions/03-collaboration/Dockerfile"
+    Check your three completed lines against this file:
+
+    ```dockerfile title="exercises/03-collaboration/Dockerfile"
     --8<-- "solutions/03-collaboration/Dockerfile"
     ```
 
@@ -104,10 +118,11 @@ The [pattern from the Pixi documentation](https://pixi.prefix.dev/latest/deploym
     Pixi's last appearance is the `pixi shell-hook` line: it writes the activation as a plain shell script, and the runtime stage copies only that script and the installed environment out of the build stage.
 
     ```bash
-    # 2
+    # 5
     docker build -t turtle-dancer:latest .
-    # 3
+    # 6
     docker run --rm turtle-dancer:latest
+    # Stop the node with Ctrl+C before running the next command.
     docker images turtle-dancer
     ```
 

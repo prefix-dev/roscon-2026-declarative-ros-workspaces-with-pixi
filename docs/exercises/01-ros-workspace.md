@@ -141,10 +141,11 @@ Commands you reuse get a name in the manifest, so your teammates run them withou
 
 `src/turtle_dancer/` is a small ROS 2 C++ package, written for you already.
 Building it needs a toolchain and the ROS libraries it includes, and those come from the same channels as everything else.
+On Windows, the compiler and SDK must already be installed: see [Before you start](../setup.md#1-install-pixi).
 
 !!! exercise "Your turn"
 
-    1. Add `ros-dev-tools`: one package that brings colcon, CMake and the compilers.
+    1. Add `ros-dev-tools`: one package that brings colcon, CMake and compiler tooling.
        The ROS libraries the node uses are already there, `ros-lyrical-ros-base` includes them.
     2. Build the workspace with colcon.
     3. Try to run your node with `ros2 run turtle_dancer dance` and read the error.
@@ -225,56 +226,79 @@ Building it needs a toolchain and the ROS libraries it includes, and those come 
 ## 1.5 Two ROS distros, one workspace
 
 A second ROS distribution is a second environment in the same manifest.
-The tasks, the toolchain and the activation are shared; what differs per distro is the channel and the `ros-*` packages.
-Those distro-specific pieces go into an environment of their own, declared inline.
+The toolchain and run tasks are shared, but compiled packages and Python modules belong to the distro that built them.
+Give each environment its own colcon directories and activate only its matching overlay.
 
 !!! exercise "Your turn"
 
-    1. Move the Lyrical pieces into their own environment: declare `[environments.default]` inline, holding the RoboStack channel and the `ros-lyrical` packages.
-       The tasks, `ros-dev-tools` and the activation stay at workspace level.
-    2. Add a `kilted` environment the same way, with the `robostack-kilted` channel and the `ros-kilted` variants of the packages.
-    3. Run turtlesim from each distribution.
-       Hint: `pixi run --environment` picks the environment, and the tasks are shared.
+    1. Move the Lyrical channel and `ros-lyrical` packages into `[environments.default]`.
+       Remove the workspace-level `[target.unix.activation]` and `[target.win-64.activation]` tables you added in 1.4.
+       Put activation under the default environment instead, pointing at `install/default/local_setup.sh` on Unix and `install/default/local_setup.bat` on Windows.
+    2. Add a `kilted` environment with its own channel, packages and activation scripts under `install/kilted/`.
+       Include both OS activation tables so the workspace also works on your teammate's machine.
+    3. Replace the `build` task so colcon uses `build/<environment>`, `install/<environment>` and `log/<environment>`.
+       Pixi sets `$PIXI_ENVIRONMENT_NAME` in its cross-platform task shell.
+    4. From a normal terminal outside `pixi shell`, build once in each environment.
+       Exit any previously activated shell before switching distros.
+    5. Run turtlesim from each distribution, then switch back to Lyrical.
+       Stop each simulator before starting the next one.
 
 ??? success "Solution"
 
-    1: the workspace channel list goes back to `conda-forge` only, and the Lyrical channel and packages become the inline `default` environment:
+    1: keep only `conda-forge` in the workspace channel list.
+    Move the ROS dependencies and activation into the default environment, and remove the old workspace-level activation tables:
 
     ```toml title="exercises/01-ros-workspace/pixi.toml"
     --8<-- "solutions/01-ros-workspace/pixi.toml:lyrical"
     ```
 
-    2: the new environment is the same shape, with a different channel and package prefix:
+    2: Kilted has a different channel, package prefix and overlay directory:
 
     ```toml title="exercises/01-ros-workspace/pixi.toml"
     --8<-- "solutions/01-ros-workspace/pixi.toml:kilted"
     ```
 
+    Use `local_setup` rather than `setup`: Pixi already supplies the selected ROS underlay.
+    Colcon's `setup` script also replays the underlays recorded during the build, which can reintroduce another distro.
+    Separate directories keep the CMake cache, executables and installed Python modules apart too.
+
+    3: replace the old `build = "colcon build"` task with:
+
+    ```toml title="exercises/01-ros-workspace/pixi.toml"
+    --8<-- "solutions/01-ros-workspace/pixi.toml:build"
+    ```
+
+    `--log-base` is a colcon option before the `build` subcommand.
+    `--base-paths src` restricts package discovery to the source tree.
+    The old flat `install/setup.*` files from 1.4 are no longer activated.
+
     ```bash
-    # 3
-    pixi run sim               # turtlesim on Lyrical
-    pixi run -e kilted sim     # the same task, on Kilted
+    # 4: build both overlays before launching nodes
+    pixi run -e default build
+    pixi run -e kilted build
+    ```
+
+    ```bash
+    # 5: stop each simulator with Ctrl+C before the next command
+    pixi run -e default sim
+    pixi run -e kilted sim
+    pixi run -e default sim
     ```
 
     Everything at workspace level belongs to the default feature, and every environment includes it.
-    That is why `sim` runs in both environments without being defined twice.
-
-??? "The full `pixi.toml`"
-
-    ```toml title="solutions/01-ros-workspace/pixi.toml"
-    --8<-- "solutions/01-ros-workspace/pixi.toml"
-    ```
+    The `sim`, `dance` and `build` tasks stay shared; the build paths and activation now select the correct distro.
 
 ## 1.6 Give the turtle a PyTorch brain
 
-`src/turtle_brain/` is a second node, provided pre-written.
+`src/turtle_brain/` is a pre-written `ament_python` ROS package.
 It drives the turtle with a small PyTorch computation, on the GPU when one is available and the CPU otherwise.
 
 !!! exercise "Your turn"
 
     1. Add `pytorch` as a dependency.
-    2. Add a `brain` task that runs `python src/turtle_brain/turtle_brain/brain.py`.
-    3. Run the simulator and the brain, in two terminals.
+    2. Add a `brain` task that runs `ros2 run turtle_brain brain` and depends on `build`.
+    3. Run `pixi run build` once to install the package before activating its overlay in the next command.
+    4. Run the simulator and the brain, in two terminals.
 
 ??? success "Solution"
 
@@ -282,11 +306,18 @@ It drives the turtle with a small PyTorch computation, on the GPU when one is av
     # 1
     pixi add pytorch
     # 2
-    pixi task add brain "python src/turtle_brain/turtle_brain/brain.py"
-    # 3: in two terminals
+    pixi task add brain "ros2 run turtle_brain brain" --depends-on build
+    # 3: build before the next command activates the overlay
+    pixi run build
+    # 4: in two terminals
     pixi run sim
     pixi run brain    # the turtle moves, and the node logs "thinking on: cpu"
     ```
+
+    After the build, `pixi run ros2 pkg executables turtle_brain` should list `turtle_brain brain`.
+    You can also launch it directly with `pixi run ros2 run turtle_brain brain`, or with `ros2 run turtle_brain brain` inside `pixi shell`.
+    On a fresh checkout, build once in each environment before launching nodes there.
+    Start a new `pixi run` or `pixi shell` after that build so its matching overlay can be activated.
 
     On a laptop the node runs on the CPU.
     Next you give it a GPU to think on.
@@ -299,6 +330,7 @@ You tell Pixi a platform has a GPU by giving it a CUDA version, the `__cuda` vir
 !!! exercise "Your turn"
 
     1. Add a CUDA platform: name it `cuda-linux-64`, on `linux-64`, with CUDA 12.
+       Give it priority over ordinary Linux so a compatible GPU host selects the CUDA build.
     2. Add the ordinary platforms too: `linux-64`, `osx-arm64`, `win-64`.
     3. Make PyTorch use the GPU build where CUDA is present, and the CPU build everywhere else.
        Hint: a `when` condition on the dependency.
@@ -311,6 +343,7 @@ You tell Pixi a platform has a GPU by giving it a CUDA version, the `__cuda` vir
     pixi workspace platform add cuda-linux-64=linux-64 --cuda 12
     # 2
     pixi workspace platform add linux-64 osx-arm64 win-64
+    pixi workspace platform move cuda-linux-64 --to-top
     ```
 
     3: the GPU build cannot install without CUDA, so make it conditional and keep a CPU fallback.
@@ -359,6 +392,59 @@ That is just another platform, so you add it the same way, with its own CUDA ver
     You solve on your laptop and install on the Jetson.
 
 ## 1.9 Run it on a real GPU
+
+!!! warning "This step needs an NVIDIA GPU"
+
+    Declaring CUDA lets Pixi solve an environment; it does not give your laptop a GPU.
+    Running this step needs a Linux machine with an NVIDIA GPU and a compatible NVIDIA driver, or the Jetson from 1.8.
+    An Apple GPU cannot run CUDA.
+    If you don't have access to suitable hardware, follow the [Brev setup](../brev.md) with the instructors, then run the commands below **inside the remote terminal**.
+    Wait for the instructor coupon before creating an instance.
+
+The supplied `src/turtle_brain/turtle_brain/check_cuda.py` runs a short tensor computation directly on CUDA.
+It needs neither ROS nodes nor a turtlesim window, so you can run it over SSH.
+It fails if CUDA is unavailable instead of silently using the CPU.
+
+!!! exercise "Your turn"
+
+    1. On the GPU machine, check that `nvidia-smi` can see the device.
+    2. Add a `cuda-check` task that runs `python src/turtle_brain/turtle_brain/check_cuda.py`.
+    3. Run it on the `cuda-linux-64` platform and inspect the device name and computed result.
+       On the Jetson, select `jetson` instead.
+    4. Run the brain on the same platform.
+       Stop it with ++ctrl+c++ after it logs `thinking on: cuda`.
+
+??? success "Solution"
+
+    From your exercise directory on the GPU machine:
+
+    ```bash
+    nvidia-smi
+    pixi task add cuda-check "python src/turtle_brain/turtle_brain/check_cuda.py"
+    pixi run --platform cuda-linux-64 cuda-check
+    ```
+
+    The check prints the GPU name, compute capability, supported architectures and `GPU result: 8.0`.
+    Reading the result waits for the CUDA computation to finish, so detecting a driver alone cannot pass this check.
+    If it fails, check the selected platform and ask an instructor to check the driver and PyTorch build.
+
+    ```bash
+    pixi run --platform cuda-linux-64 build
+    pixi run --platform cuda-linux-64 brain
+    ```
+
+!!! note "Without a GPU"
+
+    You can finish the CPU brain and inspect the GPU/Jetson package selections from your laptop.
+    To try the CUDA computation during the workshop, join the [Brev setup](../brev.md) or follow along on an instructor's GPU machine.
+    A CPU run or successful solve is not a successful CUDA check.
+
+??? "The full `pixi.toml`"
+
+    ```toml title="solutions/01-ros-workspace/pixi.toml"
+    --8<-- "solutions/01-ros-workspace/pixi.toml"
+    ```
+
 
 ## Check your work
 

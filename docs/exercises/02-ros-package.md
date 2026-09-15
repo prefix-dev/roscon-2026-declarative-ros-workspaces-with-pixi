@@ -25,6 +25,8 @@ Same format as before: each step says what to do, the commands are folded away u
 
     This is where Exercise 1 left off, trimmed to Lyrical only: `pixi.toml` builds `src/turtle_dancer/` with `colcon` and sources the overlay on activation.
     The Kilted environment and the PyTorch node are left out so the diff in this exercise stays about the build.
+    The initial build selects only `turtle_dancer`, with its overlay in `install/default/`.
+    The Python package stays unbuilt until 2.6.
 
     Run the colcon way once, so you have the before in front of you:
 
@@ -32,6 +34,8 @@ Same format as before: each step says what to do, the commands are folded away u
     pixi run build      # colcon builds the workspace
     ls                  # build/ install/ log/ appeared next to src/
     ```
+
+    Run this initial build before `pixi run dance`: activation needs the overlay to exist before the command starts.
 
 ## 2.1 Turn on Pixi build
 
@@ -53,11 +57,15 @@ For ROS that is [`pixi-build-ros`](https://pixi.prefix.dev/latest/build/backends
     pixi workspace dependencies add "pixi-build-ros >=0.7.2"
     ```
 
-    ```toml title="exercises/02-ros-package/pixi.toml" hl_lines="6 8 9"
+    ```toml title="exercises/02-ros-package/pixi.toml" hl_lines="10 12 13"
     [workspace]
     name = "02-ros-package"
     channels = ["https://prefix.dev/robostack-lyrical", "conda-forge"]
-    platforms = ["linux-64", "osx-arm64", "win-64"]
+    platforms = [
+      "linux-64",
+      { platform = "osx-arm64", macos = "14.0" },
+      "win-64",
+    ]
     version = "0.1.0"
     preview = ["pixi-build"]
 
@@ -94,7 +102,9 @@ So the package manifest has very little to say.
 ??? success "Solution"
 
     ```toml title="exercises/02-ros-package/src/turtle_dancer/pixi.toml"
-    --8<-- "solutions/02-ros-package/src/turtle_dancer/pixi.toml"
+    [package.build.backend]
+    name = "pixi-build-ros"
+    workspace = true
     ```
 
     Two lines: which backend, and "the version is in the workspace pool".
@@ -136,6 +146,7 @@ The dependency name is the `package.xml` name with the distro prefix and hyphens
 
     A `Running build for recipe: ros-lyrical-turtle-dancer-0.1.0-...` block scrolls by.
     The first install fetches the backend and a build environment (CMake, the compilers, the ROS libraries from `package.xml`) into `.pixi/bld/`, compiles the node and installs the result into the environment as a conda package.
+    On Windows, compiler activation uses the Visual Studio tools you installed in [Before you start](../setup.md#1-install-pixi).
     Later builds are incremental.
 
     ```console
@@ -154,7 +165,7 @@ Everything colcon needed can go.
 
 !!! exercise "Your turn"
 
-    1. Remove the `build` task, the `depends-on` of `dance`, the `ros-dev-tools` dependency and both `activation` tables.
+    1. Remove the `depends-on` of `dance` and both `activation` tables, then remove the `build` task and the `ros-dev-tools` dependency.
     2. Delete `build/`, `install/` and `log/`.
     3. Run the node.
        In a second terminal, run the simulator and watch it go.
@@ -162,10 +173,9 @@ Everything colcon needed can go.
 ??? success "Solution"
 
     ```bash
-    # 1
+    # 1. in your editor: drop `depends-on` from dance and delete both [target.*.activation] tables
     pixi task remove build
     pixi remove ros-dev-tools
-    # ...then in your editor: drop `depends-on` from dance, and delete both [target.*.activation] tables
     # 2 (PowerShell: Remove-Item -Recurse build, install, log)
     rm -rf build install log
     # 3, in two terminals
@@ -179,7 +189,11 @@ Everything colcon needed can go.
     [workspace]
     name = "02-ros-package"
     channels = ["https://prefix.dev/robostack-lyrical", "conda-forge"]
-    platforms = ["linux-64", "osx-arm64", "win-64"]
+    platforms = [
+      "linux-64",
+      { platform = "osx-arm64", macos = "14.0" },
+      "win-64",
+    ]
     version = "0.1.0"
     preview = ["pixi-build"]
 
@@ -246,7 +260,9 @@ It gets the same treatment: a package manifest, a path dependency, a task.
 ??? success "Solution"
 
     ```toml title="exercises/02-ros-package/src/turtle_choreographer/pixi.toml"
-    --8<-- "solutions/02-ros-package/src/turtle_choreographer/pixi.toml"
+    [package.build.backend]
+    name = "pixi-build-ros"
+    workspace = true
     ```
 
     ```toml title="exercises/02-ros-package/pixi.toml"

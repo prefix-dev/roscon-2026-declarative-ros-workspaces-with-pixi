@@ -5,6 +5,3 @@
 channels = ["conda-forge"]
 name = "pixi-build-ros"
 version = "*"
-
-[package.build.config]
-distro = "jazzy"

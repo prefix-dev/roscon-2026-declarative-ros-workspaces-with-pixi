@@ -70,7 +70,8 @@ brev create "$(whoami)-roscon-pixi" \
   --type massedcompute_L40S
 ```
 
-The startup script installs Pixi, clones this repository onto the instance, and pre-downloads the main ROS exercise environment.
+The startup script installs Pixi, clones this repository onto the instance, and pre-downloads both ROS environments with PyTorch.
+On a compatible NVIDIA GPU machine, the preferred CUDA platform selects the GPU build.
 That means you can keep working even if the local room Wi-Fi is slow.
 
 If you are not inside a fresh clone of the workshop repository, download the script first:
@@ -78,8 +79,8 @@ If you are not inside a fresh clone of the workshop repository, download the scr
 ```bash
 curl -sLO https://raw.githubusercontent.com/prefix-dev/roscon-2026-declarative-ros-workspaces-with-pixi/main/docs/code/brev/setup_brev.sh
 brev create "$(whoami)-roscon-pixi" \
-  --startup-script @./setup_brev.sh
-  --type massedcompute_L40S \
+  --startup-script @./setup_brev.sh \
+  --type massedcompute_L40S
 ```
 
 !!! tip "Choosing the instance type"
@@ -115,14 +116,28 @@ pixi --version
 pixi run --manifest-path solutions/01-ros-workspace/pixi.toml topics
 ```
 
-For the PyTorch brain, you can also check whether the instance sees CUDA:
+For [Exercise 1's CUDA run](exercises/01-ros-workspace.md#19-run-it-on-a-real-gpu), the instance must have an NVIDIA GPU and a compatible driver.
+Run this inside the Brev terminal, from the repository root:
 
 ```bash
-pixi run --manifest-path solutions/01-ros-workspace/pixi.toml brain
+nvidia-smi
+pixi run --manifest-path solutions/01-ros-workspace/pixi.toml --platform cuda-linux-64 cuda-check
 ```
 
-Look for the `thinking on: cuda` log line.
-If it says `cpu`, ask an instructor to check the instance type and driver.
+Expect the GPU name, compute capability and `GPU result: 8.0`.
+This executes a tensor operation on CUDA and exits; it fails rather than falling back to CPU.
+If it fails, ask an instructor to check the instance type, driver and selected platform.
+
+Then try the ROS node on the same device:
+
+```bash
+pixi run --manifest-path solutions/01-ros-workspace/pixi.toml --platform cuda-linux-64 build
+pixi run --manifest-path solutions/01-ros-workspace/pixi.toml --platform cuda-linux-64 brain
+```
+
+Look for `thinking on: cuda`, then stop it with ++ctrl+c++.
+The node publishes without a turtlesim window, so this works over SSH.
+Return to [Exercise 1](exercises/01-ros-workspace.md#19-run-it-on-a-real-gpu) for the explanation and Jetson commands.
 
 ## 5. Know the limits
 

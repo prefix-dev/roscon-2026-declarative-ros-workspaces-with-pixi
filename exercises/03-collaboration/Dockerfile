@@ -11,7 +11,7 @@ FROM ghcr.io/prefix-dev/pixi:0.80.0-noble AS build
 WORKDIR /app
 COPY . .
 
-# Install the dependencies for the robot environment, make sure it's locked
+# Install the default environment from pixi.lock without re-solving.
 RUN pixi FIXME
 
 # Bake the activation shell-hook into a script, so the runtime stage needs no Pixi.
@@ -19,6 +19,7 @@ RUN pixi FIXME
 
 FROM ubuntu:26.04 AS runtime
 
+# Copy the default environment to the same absolute path in the runtime stage.
 COPY --from=build FIXME
 COPY --from=build /shell-hook.sh /shell-hook.sh
 COPY --from=build /app/src /app/src

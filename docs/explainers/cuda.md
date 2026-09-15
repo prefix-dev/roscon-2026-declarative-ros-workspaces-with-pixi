@@ -129,18 +129,7 @@ Choose package builds compatible with that stack and with your GPU; a newer CUDA
 On the Jetson, save this as `check_gpu.py` and run it in your PyTorch environment with `pixi run python check_gpu.py`:
 
 ```python title="check_gpu.py"
-import torch
-
-if not torch.cuda.is_available():
-    raise RuntimeError("PyTorch cannot access CUDA; check the driver and package build.")
-
-print("GPU:", torch.cuda.get_device_name(0))
-print("Compute capability:", torch.cuda.get_device_capability(0))
-print("Architectures in this build:", torch.cuda.get_arch_list())
-
-values = torch.ones(4, device="cuda")
-result = (values * 2).sum()
-print("GPU result:", result.item())  # Expected: 8.0
+--8<-- "solutions/01-ros-workspace/src/turtle_brain/turtle_brain/check_cuda.py"
 ```
 
 On Orin, expect compute capability `(8, 7)`.

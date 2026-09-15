@@ -1,8 +1,7 @@
 // Drive the turtlesim turtle in a circle.
 //
-// In Exercise 1 this is built by colcon, which means you have to source
-// install/setup.bash before `ros2 run` can find it. Exercise 2 hands the build
-// to Pixi and that step disappears.
+// In Exercise 1 colcon builds this node, and Pixi activates the selected
+// environment's overlay before `ros2 run`. Exercise 2 hands the build to Pixi.
 
 #include <chrono>
 #include <memory>
