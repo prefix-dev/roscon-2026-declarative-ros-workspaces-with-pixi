@@ -58,7 +58,7 @@ jobs:
       # them writing the repository name twice. Source builds nest deep enough
       # to cross the limit, so park the environments somewhere short.
       - name: Keep pixi's paths short on Windows
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && matrix.solution != '03-collaboration'
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force "$env:USERPROFILE\.pixi" | Out-Null

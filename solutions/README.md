@@ -7,7 +7,7 @@ Every one is a standalone Pixi workspace, installed and smoke-tested on Linux, m
 | --- | --- |
 | `01-ros-workspace/` | Lyrical and Kilted, a colcon-built C++ node, a PyTorch brain, CPU/CUDA/Jetson platform resolutions, and a real CUDA computation |
 | `02-ros-package/` | The same C++ package and a Python one, both built by the `pixi-build-ros` backend: no colcon, no sourcing, and a rebuild whenever a source file changes |
-| `03-collaboration/` | Every platform, named `jetson` and `workstation-gpu` targets solved from a laptop, a lockfile gate, Docker and publishing |
+| `03-collaboration/` | Prebuilt ROS 2 talker and listener binaries, named `jetson` and `workstation-gpu` targets solved from a laptop, a lockfile gate, Docker, and a workspace to pack and unpack |
 
 Run any of them from the repository root:
 
@@ -52,6 +52,11 @@ The `brain` task launches `ros2 run turtle_brain brain` and depends on `build` f
 It keeps running; stop it with Ctrl+C.
 On the supported Jetson, use `--platform jetson` instead.
 Without suitable hardware, follow the [Brev setup](https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/brev/) with the instructors.
+
+For Exercise 3, follow the [pack and unpack solution](https://prefix-dev.github.io/roscon-2026-declarative-ros-workspaces-with-pixi/exercises/03-collaboration/#34-pack-the-environment) from `solutions/03-collaboration/` instead of the exercise directory.
+It starts fresh with prebuilt packages rather than the local packages from Exercise 2.
+The archive includes `demo_nodes_cpp`; after unpacking and activating, run `ros2 pkg executables demo_nodes_cpp`, then `ros2 run demo_nodes_cpp talker`.
+The talker logs `Publishing: 'Hello World: N'` until you stop it with Ctrl+C.
 
 Re-solve all of them after a manifest change:
 

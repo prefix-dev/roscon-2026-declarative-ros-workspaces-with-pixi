@@ -129,14 +129,14 @@ source activate.sh
 ```
 
 That recreates the environment in `./env` and writes an `activate.sh`, with no Pixi, conda or network needed on the robot.
-And because packing only downloads files, you pack for the Jetson from your Mac, the same cross-platform trick as solving.
+For an environment containing only pre-built packages, packing only downloads files, so you can pack for the Jetson from your Mac.
+Exercise 3 starts with only prebuilt ROS packages, so the same applies there.
 
 !!! tip "One file, batteries included"
 
     `pixi-pack --create-executable` produces `environment.sh`: a single self-extracting file that carries the unpacker inside it.
     Run it on the robot and you get the environment, even without `pixi-unpack` there.
 
-If you build your own packages, `--inject my-package.conda` adds them to the pack on top of what the lockfile pins.
 
 ## Docker
 
