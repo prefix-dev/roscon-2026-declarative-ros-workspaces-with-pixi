@@ -140,6 +140,10 @@ Or tell Pixi to keep its environments somewhere short, once, for every workspace
 pixi config set --global detached-environments 'C:\pix'
 ```
 
+Detached environments do not move colcon's `build/`, `install/` or `log/` directories.
+If the failing path is inside those directories, move the workspace itself.
+After moving it, remove the old `build/`, `install/` and `log/` directories and rebuild so CMake caches and overlay scripts do not retain the previous path.
+
 ## Something is slow
 
 First check if it is an internet issue: the first download of a ROS environment is a few gigabytes, and conference Wi-Fi is shared with the whole room.
