@@ -46,7 +46,7 @@ For ROS that is [`pixi-build-ros`](https://pixi.prefix.dev/latest/build/backends
 !!! exercise "Your turn"
 
     1. Enable the `pixi-build` preview in the `[workspace]` table.
-    2. Add `pixi-build-ros = ">=0.7.2"` to `[workspace.dependencies]`.
+    2. Add `pixi-build-ros = ">=0.7.5"` to `[workspace.dependencies]`.
 
 ??? success "Solution"
 
@@ -54,7 +54,7 @@ For ROS that is [`pixi-build-ros`](https://pixi.prefix.dev/latest/build/backends
     # 1. add the preview
     pixi workspace preview add pixi-build
     # 2. add the backend to the pool
-    pixi workspace dependencies add "pixi-build-ros >=0.7.2"
+    pixi workspace dependencies add "pixi-build-ros >=0.7.5"
     ```
 
     ```toml title="exercises/02-ros-package/pixi.toml" hl_lines="10 12 13"
@@ -70,7 +70,7 @@ For ROS that is [`pixi-build-ros`](https://pixi.prefix.dev/latest/build/backends
     preview = ["pixi-build"]
 
     [workspace.dependencies]
-    pixi-build-ros = ">=0.7.2"
+    pixi-build-ros = ">=0.7.5"
     ```
 
     `[workspace.dependencies]` is a pool of shared specs, not an install list: nothing lands in the environment because of it.
@@ -150,7 +150,7 @@ The dependency name is the `package.xml` name with the distro prefix and hyphens
     Later builds are incremental.
 
     ```console
-    $ pixi list | grep turtle          # 3
+    $ pixi list turtle          # 3
     ros-lyrical-turtle-dancer                                       conda  src/turtle_dancer
     ros-lyrical-turtlesim   1.10.9   np2py314h1e5664e_22   417.69 KiB   conda  https://prefix.dev/robostack-lyrical
     ```
@@ -277,16 +277,6 @@ It gets the same treatment: a package manifest, a path dependency, a task.
     ```
 
     One workspace, two languages, one lockfile.
-
-    !!! note "Editing the Python node"
-
-        `pixi-build-ros` 0.7.2 does not have `**/*.py` in its default inputs, so an edit to `choreograph.py` alone does not trigger a rebuild yet.
-        Until the next backend release, add this to the package manifest if you want the loop from 2.5 for the Python node too:
-
-        ```toml title="src/turtle_choreographer/pixi.toml"
-        [package.build.config]
-        extra-input-globs = ["**/*.py"]
-        ```
 
     !!! note "`setup.cfg` is what makes `ros2 run` find a Python node"
 

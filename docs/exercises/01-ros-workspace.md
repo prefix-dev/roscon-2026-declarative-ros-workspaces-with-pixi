@@ -232,15 +232,13 @@ Give each environment its own colcon directories and activate only its matching 
 !!! exercise "Your turn"
 
     1. Move the Lyrical channel and `ros-lyrical` packages into `[environments.default]`.
-       Remove the workspace-level `[target.unix.activation]` and `[target.win-64.activation]` tables you added in 1.4.
-       Put activation under the default environment instead, pointing at `install/default/local_setup.sh` on Unix and `install/default/local_setup.bat` on Windows.
-    2. Add a `kilted` environment with its own channel, packages and activation scripts under `install/kilted/`.
-       Include both OS activation tables so the workspace also works on your teammate's machine.
-    3. Replace the `build` task so colcon uses `build/<environment>`, `install/<environment>` and `log/<environment>`.
+    2. Put activation under the default environment instead, pointing at `install/default/local_setup.sh`.
+    3. Add a `kilted` environment with its own channel, packages and activation scripts under `install/kilted/`.
+    4. Replace the `build` task so colcon uses `build/<environment>`, `install/<environment>` and `log/<environment>`.
        Pixi sets `$PIXI_ENVIRONMENT_NAME` in its cross-platform task shell.
-    4. From a normal terminal outside `pixi shell`, build once in each environment.
+    5. From a normal terminal outside `pixi shell`, build once in each environment.
        Exit any previously activated shell before switching distros.
-    5. Run turtlesim from each distribution, then switch back to Lyrical.
+    6. Run turtlesim and `dance` task from each distribution.
        Stop each simulator before starting the next one.
 
 ??? success "Solution"
