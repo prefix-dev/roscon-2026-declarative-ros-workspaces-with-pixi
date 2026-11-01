@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: prefix-dev/setup-pixi@v0.10.2
+      - uses: prefix-dev/setup-pixi@v0.11.2
         with:
           run-install: false
       - name: Check the workshop lockfile
@@ -64,7 +64,7 @@ jobs:
           New-Item -ItemType Directory -Force "$env:USERPROFILE\.pixi" | Out-Null
           Add-Content "$env:USERPROFILE\.pixi\config.toml" "detached-environments = 'C:\pix'"
 
-      - uses: prefix-dev/setup-pixi@v0.10.2
+      - uses: prefix-dev/setup-pixi@v0.11.2
         with:
           manifest-path: solutions/${{ matrix.solution }}/pixi.toml
           locked: true
@@ -79,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: prefix-dev/setup-pixi@v0.10.2
+      - uses: prefix-dev/setup-pixi@v0.11.2
         with:
           manifest-path: solutions/01-ros-workspace/pixi.toml
           environments: default kilted
@@ -124,7 +124,7 @@ jobs:
           Add-Content $env:GITHUB_ENV "SOLUTION_DIR=$solution"
           New-Item -ItemType Directory -Force "$env:USERPROFILE\.pixi" | Out-Null
           Add-Content "$env:USERPROFILE\.pixi\config.toml" "detached-environments = 'C:\pix'"
-      - uses: prefix-dev/setup-pixi@v0.10.2
+      - uses: prefix-dev/setup-pixi@v0.11.2
         with:
           manifest-path: ${{ env.SOLUTION_DIR }}/pixi.toml
           locked: true
@@ -140,7 +140,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: prefix-dev/setup-pixi@v0.10.2
+      - uses: prefix-dev/setup-pixi@v0.11.2
         with:
           locked: true
       - run: pixi run build-docs
@@ -150,7 +150,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: prefix-dev/setup-pixi@v0.10.2
+      - uses: prefix-dev/setup-pixi@v0.11.2
         with:
           environments: lint
           locked: true
